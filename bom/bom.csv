@@ -1,6 +1,13 @@
 item,qty,spec,supplier,unit_cost_usd,make_buy,notes
-Submersible pressure transducer and vented cable,,,,,,
-Barometric reference sensor,,,,,,
-FieldNode core,,,,,,
-Wellhead cap mount,,,,,,
-Dashboard,,,,,,
+1 Pressure transducer,1,"Submersible gauge (vented) level transducer, 0 to 10 m water (0 to 98 kPa), 4 to 20 mA two-wire, 12 to 30 V supply, 316 stainless body about 24 mm diameter, IP68, 0.25 to 0.5 % full scale",Industrial sensor distributor or online marketplace,45.00,buy,Indicative price (estimate); range choice proposed awaiting Amish; wetted materials must be confirmed food-safe
+2 Vented cable,30,"Vented polyurethane or polyethylene jacketed cable with Kevlar strain member and capillary vent tube, about 7 mm diameter; desiccant cap at the dry end",Supplied with transducer or by the metre,0.80,buy,Indicative price per metre (estimate); length sized per well (to 60 m)
+3 Access tube,1,"25 mm (1 in) PVC pressure pipe to probe depth, slotted over the bottom 0.5 m, solvent or threaded joints, end plug",Local plumbing supplier,30.00,buy,Indicative price for about 30 m (estimate); only needed where a pump or riser shares the casing
+4 Wellhead seal plate and glands,1,"Split sanitary seal plate for 150 mm casing, EPDM gasket, one gland for the riser and one for the access tube",Local fabricator or well supplier,15.00,make,Indicative price (estimate); must keep surface water and insects out of the well
+5 Tube cap and cable hanger,1,"PVC cap with cable grip hanger so the probe hangs at a fixed, recorded depth",Local plumbing and electrical supplier,6.00,buy,Indicative price (estimate)
+6 Junction box with desiccant breather,1,"IP66 box about 160 x 120 x 90 mm, cable gland, replaceable silica gel breather on the vent tube",Electrical supplier,12.00,buy,Indicative price (estimate); desiccant change every visit
+7 4 to 20 mA interface board,1,"150 ohm 0.1 % shunt, 16-bit ADC (ADS1115 class), TVS surge protection, 12 V rail from FieldNode switched per reading",Electronics distributor,10.00,buy,Indicative price (estimate); no custom PCB for the first build
+8 FieldNode core,1,"Lab shared node: IP65 enclosure, 6 W panel, LiFePO4 cell, MPPT board, STM32WL-class LoRaWAN radio, M12 sensor port",See fieldnode repo,126.00,make,Cost from the FieldNode concept BOM; counted separately from WellSense parts (proposed awaiting Amish)
+9 Barometric reference sensor,1,"BMP390 or BME280 class module in a small vented housing under the node",Electronics distributor,8.00,buy,Indicative price (estimate); logs air pressure for barometric response and as a check on the vent
+10 Mounting post and clamps,1,"48 mm galvanized pole about 2.35 m set 0.5 m in concrete, two stainless band clamps",Local steel supplier,20.00,buy,Indicative price (estimate)
+11 Manual water level meter (shared),1,"Electric tape water level meter, 50 m, for install datum and quarterly checks",Well and drilling supplier,80.00,buy,Indicative price (estimate); one per community or partner and not in per-well cost; not modeled
+12 Dashboard,1,"Open web dashboard: level below ground, drawdown, season comparison, CSV export",Open source (this repo),0.00,make,Software; not modeled
