@@ -1,0 +1,17 @@
+# Card metadata consumed by https://designmolecule.com
+name: WellSense
+slug: wellsense
+area: Water Security
+status: concept          # concept | design | prototype | tested | released
+shortlisted: false
+pitch: >-
+  A well and borehole water level logger with a submersible pressure sensor and FieldNode telemetry, showing seasonal drawdown so communities can manage shared groundwater.
+problem: >-
+  Groundwater is falling in many regions, yet most wells have no measurement, so over-pumping is noticed only when wells run dry.
+budget_usd: 180
+difficulty: 2  # 1 easiest, 5 hardest
+hero_image: media/hero.png
+licenses:
+  hardware: CERN-OHL-S-2.0
+  software: MIT
+tags: [water-security, open-hardware, cern-ohl-s]
