@@ -2,7 +2,7 @@
 
 ![TRL 3](https://img.shields.io/badge/TRL-3%20of%209-0F766E) ![Hardware: CERN-OHL-S-2.0](https://img.shields.io/badge/hardware-CERN--OHL--S--2.0-111827) ![Software: MIT](https://img.shields.io/badge/software-MIT-111827)
 
-**Area:** Water Security · **TRL:** 3 of 9 (proof of concept on paper) · **Prototype budget:** $190 USD for WellSense parts, FieldNode core costed separately · **Difficulty:** 2 of 5
+**Area:** Water Security · **TRL:** 3 of 9 (proof of concept on paper) · **Prototype budget:** $200 USD for WellSense parts, FieldNode core costed separately · **Difficulty:** 2 of 5
 
 A well and borehole water level logger with a submersible pressure sensor and FieldNode telemetry, showing seasonal drawdown so communities can manage shared groundwater.
 
@@ -58,7 +58,7 @@ Groundwater is falling in many regions, yet most wells have no measurement, so o
 
 A well and borehole water level logger with a submersible pressure sensor and FieldNode telemetry, showing seasonal drawdown so communities can manage shared groundwater. A vented 4 to 20 mA transducer hangs in its own access tube beside the pump, a sealed wellhead plate keeps the well clean, and the lab's FieldNode core reads it every 15 minutes and sends the level over LoRaWAN to an open dashboard.
 
-TRL 3 calculations ([WLS-CAL-001](docs/04-calcs/01-sizing.md)): 0.52 mm resolution; 12.5 mm accuracy by root sum square after a two-point tape calibration with a 0.25 % class probe, 27.1 mm worst case, so the ±20 mm target is at risk; a 24 V boost on the interface board, because FieldNode's 12 V rail cannot drive the loop; 38.2 mWh a day of sensor energy, 1.6 % of FieldNode's allowance; a 22 mm probe with 2.3 mm radial clearance in the 1 in access tube; and $197.60 in WellSense parts at a 30 m probe depth including a galvanized conduit over the surface cable, over the $190 budget by $7.60 ($323.60 with the FieldNode core). Seven of sixteen requirements are met on paper; cost (R12) and drinking water evidence (R9) are not. See the [design precis](docs/02-concept.md), [requirements](docs/03-requirements.md) and decision records [WLS-DDR-001](docs/decisions/0001-trl2-review-decisions.md) and [WLS-DDR-002](docs/decisions/0002-recommendations-accepted.md).
+TRL 3 calculations ([WLS-CAL-001](docs/04-calcs/01-sizing.md)): 0.52 mm resolution; 12.5 mm accuracy by root sum square after a two-point tape calibration with a 0.25 % class probe, 27.1 mm worst case, so the ±20 mm target is at risk; a 24 V boost on the interface board, because FieldNode's 12 V rail cannot drive the loop; 38.2 mWh a day of sensor energy, 1.6 % of FieldNode's allowance; a 22 mm probe with 2.3 mm radial clearance in the 1 in access tube; and $197.60 in WellSense parts at a 30 m probe depth including a galvanized conduit over the surface cable, within the $200 budget ($323.60 with the FieldNode core). Eight of sixteen requirements are met on paper, including cost (R12); drinking water evidence (R9) is not. See the [design precis](docs/02-concept.md), [requirements](docs/03-requirements.md) and decision records [WLS-DDR-001](docs/decisions/0001-trl2-review-decisions.md) and [WLS-DDR-002](docs/decisions/0002-recommendations-accepted.md).
 
 Full design precis: [docs/02-concept.md](docs/02-concept.md)
 
@@ -100,6 +100,12 @@ The priced bill of materials is in [bom/bom.csv](bom/bom.csv). The parametric mo
 ## Documentation
 
 Controlled documents follow the portfolio [documentation standard](.kit/STANDARDS.md). Each carries a document ID (WLS-PRC-001 for the precis), a version and a revision history. Branded PDFs are built with `python .kit/render.py` and attached to GitHub Releases when a document is tagged, for example `WLS-PRC-001/v1.0`.
+
+## Credits
+
+Designed by Amish Chadha. See [CONTRIBUTORS.md](CONTRIBUTORS.md) for roles. To cite this design, use [CITATION.cff](CITATION.cff) (GitHub shows it as "Cite this repository").
+
+AI assistance (Claude) was used to accelerate concept renders, prototype documentation and first-pass sizing calculations. Design direction and all decisions are Amish Chadha's, recorded in this repository's decision records (`docs/decisions/`).
 
 ## Licenses
 

@@ -41,7 +41,7 @@ render_all(
                  "Resolution 0.52 mm; 12.5 mm RSS after two-point tape calibration",
                  "Probe 30 m design case, to 60 m; borehole shortened for display",
                  "15 min readings; 38 mWh/day, 1.6 % of the FieldNode allowance",
-                 "Parts $197.60 at 30 m (budget $190); $323.60 with FieldNode"],
+                 "Parts $197.60 at 30 m (budget $200); $323.60 with FieldNode"],
     scale_figure=False, context=[person],
     cut=False,
     flow={"title": "data flow (estimated values, WLS-CAL-001)", "unit": "",

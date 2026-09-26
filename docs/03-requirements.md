@@ -3,9 +3,9 @@ doc_id: WLS-REQ-001
 title: WellSense requirements
 project: WellSense
 doc_type: Requirements
-version: "0.4"
+version: "0.5"
 status: Draft
-date: '2026-09-25'
+date: '2026-09-26'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -25,11 +25,15 @@ revisions:
   date: '2026-09-25'
   author: Amish Chadha
   change: Recommendations accepted by Amish (DDR-002)
+- version: "0.5"
+  date: '2026-09-26'
+  author: Amish Chadha
+  change: Budget approved by Amish; R12 target $200, status Not met to Met
 ---
 
 # WellSense requirements
 
-These requirements are checked by calculation in WLS-CAL-001 v0.2 against the design in WLS-PRC-001 v0.4. Targets remain proposals, to be revised after co-design. Under WLS-DDR-001 (decided by Amish, 2026-09-25: go with recommendation), R1 names the 0 to 10 m range (D3), R6 states how 1 min readings are sent (D5), and R12 costs the WellSense parts only, with the FieldNode core costed in the FieldNode repo (D1). Under WLS-DDR-002, R12 is restated at $190 for the 30 m design well, R10 limits the probe to 22 mm in the 1 in tube, R6 adds the 30 min uplink rule for pumping tests on public networks, and R15 requires FieldNode's sun shield at hot sites. No target was relaxed. On paper, 7 requirements are met, 4 are at risk, 2 are not met (R9 and R12) and 3 cannot be verified at TRL 3.
+These requirements are checked by calculation in WLS-CAL-001 v0.2 against the design in WLS-PRC-001 v0.4. Targets remain proposals, to be revised after co-design. Under WLS-DDR-001 (decided by Amish, 2026-09-25: go with recommendation), R1 names the 0 to 10 m range (D3), R6 states how 1 min readings are sent (D5), and R12 costs the WellSense parts only, with the FieldNode core costed in the FieldNode repo (D1). Under WLS-DDR-002, R12 is restated at $190 for the 30 m design well (raised to $200 by Amish on 2026-09-26 to cover the priced BOM), R10 limits the probe to 22 mm in the 1 in tube, R6 adds the 30 min uplink rule for pumping tests on public networks, and R15 requires FieldNode's sun shield at hot sites. No target was relaxed. On paper, 8 requirements are met, 4 are at risk, 1 is not met (R9) and 3 cannot be verified at TRL 3.
 
 Table 1. Requirements and status at TRL 3 (WLS-CAL-001 v0.2, Table 3).
 
@@ -46,7 +50,7 @@ Table 1. Requirements and status at TRL 3 (WLS-CAL-001 v0.2, Table 3).
 | R9 | Water safety | All wetted parts 316 stainless steel or materials certified for drinking water contact; well sealed against surface water | Material certificates | **Not met on evidence:** no certificate in hand for low-cost cable, seals or probe |
 | R10 | Compatibility with the existing pump | Probe of 22 mm or less in its own 1 in access tube (DDR-002); no contact with pump, riser or pump cable | Design review, installation trial | **At risk:** tube and probe fit the 150 mm design well with 2.3 mm radial clearance, but fitting a tube may need the pump pulled |
 | R11 | Installation | Two trained people, hand tools, 2 h or less when an access tube already exists | Installation trial | Not verifiable at TRL 3: 120 min estimate, at the limit |
-| R12 | Cost | WellSense parts $190 or less per well at a 30 m probe depth, plus $1.80 per metre beyond (DDR-002); FieldNode core costed in the FieldNode repo (DDR-001, D1) | Priced BOM | **Not met:** $197.60 at 30 m with the conduit added under DDR-002 ($187.60 without it); met to 25.8 m; $323.60 with the FieldNode core |
+| R12 | Cost | WellSense parts $200 or less per well at a 30 m probe depth (was $190; DDR-002), plus $1.80 per metre beyond; FieldNode core costed in the FieldNode repo (DDR-001, D1) | Priced BOM | Met: $197.60 at 30 m with the conduit added under DDR-002; met to 31.3 m; $323.60 with the FieldNode core |
 | R13 | Data use | Dashboard shows level below ground, daily drawdown and change against the same month last year on a basic phone; CSV export | Demonstration with sample data | Not verifiable at TRL 3 (software not started) |
 | R14 | Data ownership and privacy | Water level, time and well ID only; the hosting community controls sharing | Design review | Met by design |
 | R15 | Environment | Probe IP68 at 1.5 times range; above-ground parts IP65, -10 to 55 °C; FieldNode sun shield fitted at hot sites (DDR-002) | Datasheets, later field test | **At risk:** met on datasheets for WellSense parts; with its shield the FieldNode core stays at 48.5 to 52.2 °C inside at 45 °C ambient (FND-CAL-001 v0.2), but it is rated to 45 °C ambient, not 55 °C |

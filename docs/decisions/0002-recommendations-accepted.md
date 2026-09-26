@@ -3,9 +3,9 @@ doc_id: WLS-DDR-002
 title: WellSense recommendations accepted
 project: WellSense
 doc_type: Design decision record
-version: "0.1"
+version: "0.2"
 status: Draft
-date: '2026-09-25'
+date: '2026-09-26'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -13,12 +13,16 @@ revisions:
   date: '2026-09-25'
   author: Amish Chadha
   change: Record Amish's acceptance of all recommendations (2026-09-25), what changed in the repo, and the items still open
+- version: "0.2"
+  date: '2026-09-26'
+  author: Amish Chadha
+  change: "Budget set to $200 to cover the priced BOM: decided by Amish, 2026-09-26 (N1 closed)"
 ---
 
 # 0002: Recommendations accepted
 
 - **Date:** 2026-09-25
-- **Status:** accepted. Every item below is "Decided by Amish, 2026-09-25: go with recommendation". Items without a recommendation remain "Proposed, awaiting Amish".
+- **Status:** accepted. Every item below is "Decided by Amish, 2026-09-25: go with recommendation". Items without a recommendation remain "Proposed, awaiting Amish", except N1 (cost with the conduit), decided by Amish on 2026-09-26.
 
 ## Context
 
@@ -56,12 +60,19 @@ No rewording of the pitch or problem line was recommended, so both are unchanged
 | --- | --- | --- |
 | O1 | First partner and region for co-design (WLS-DDR-001, O1). No preference stated. | Proposed, awaiting Amish |
 | O2 | Battery-only FieldNode variant (WLS-DDR-001, O2). No recommendation to adopt. | Proposed, awaiting Amish and the FieldNode project |
-| N1 | New: cost with the conduit. A9 and A11 together give $197.60 at 30 m against $190. Options: (a) raise `budget_usd` to $200; (b) keep $190 and state R12 at a 25 m design depth; (c) keep $190 and fit the conduit only where livestock or tampering is likely. | Proposed, awaiting Amish |
+| N1 | New: cost with the conduit. A9 and A11 together give $197.60 at 30 m against $190. Options: (a) raise `budget_usd` to $200; (b) keep $190 and state R12 at a 25 m design depth; (c) keep $190 and fit the conduit only where livestock or tampering is likely. | Decided by Amish, 2026-09-26: budget set to $200 (see below) |
+
+### Budget approved, 2026-09-26
+
+On 2026-09-26 Amish wrote: "i approve all the budget items."
+
+- Budget set to $200 to cover the priced BOM: decided by Amish, 2026-09-26. This closes N1. `project.yaml` `budget_usd` 190 to 200; WLS-REQ-001 R12 target $200, status Not met to Met (budget holds to a 31.3 m probe depth, was 25.8 m); WLS-CAL-001 v0.3 (`sizing.py` and `results.csv` rerun); WLS-PRB-001, WLS-PRC-001, README, `bom/bom-notes.md` and the blueprint key figures updated. The BOM and geometry are unchanged.
 
 ## Consequences
 
 - `project.yaml`: `budget_usd` $190. `trl: 3` and `trl_target: 3` unchanged.
 - Documents revised: WLS-PRB-001 v0.4, WLS-PRC-001 v0.4, WLS-REQ-001 v0.4, WLS-CAL-001 v0.2, WLS-DDR-001 v0.2; drawing WLS-DWG-001 Rev P2.
 - Requirement status: 2 not met (R9 water safety, R12 cost at $197.60 against $190), 4 at risk (R4, R10, R15, R16), 3 not verifiable at TRL 3 (R5, R11, R13), 7 met.
+- After the 2026-09-26 budget approval (WLS-CAL-001 v0.3): 1 not met (R9), 4 at risk, 3 not verifiable at TRL 3, 8 met.
 - Cross-repo action (FieldNode, not edited here): confirm the shielded core's behaviour at 55 °C ambient, since WellSense R15 asks for 55 °C and FieldNode is rated to 45 °C ambient.
 - TRL 4 remains on hold by Amish's instruction. The firmware uplink rule, the interface board build, supplier certificates and any purchasing are decided in principle but not started.

@@ -234,7 +234,7 @@ fixed = c_own - per_m * DS["probe_depth_m"]
 breakeven = (budget_usd - fixed) / per_m
 no_tube = c_own - sum(line(r) for r in rows if num(r) == 3)
 tag("H1", f"BOM {len(rows)} lines, {len(rows) - len(unpriced)} priced; cable {cable_len:.0f} m and tube {tube_len:.2f} m (BOM {math.ceil(tube_len)} m) at {DS['probe_depth_m']:.0f} m probe depth")
-tag("H2", f"WellSense parts (lines 1 to 7, 9, 10, 13, 14): ${c_own:.2f} against budget_usd ${budget_usd:.0f} (over by ${c_own - budget_usd:.2f}); "
+tag("H2", f"WellSense parts (lines 1 to 7, 9, 10, 13, 14): ${c_own:.2f} against budget_usd ${budget_usd:.0f} ({'over' if c_own > budget_usd else 'within'} by ${abs(c_own - budget_usd):.2f}; set to $200 by Amish on 2026-09-26, WLS-DDR-002); "
     f"with the FieldNode core ${c_own + c_node:.2f}; with FieldNode's hot-site shield (+$8.00, FND-DDR-002) ${c_own + c_node + 8:.2f}")
 c_conduit = sum(line(r) for r in rows if num(r) == 14)
 tag("H2b", f"Without the conduit (line 14, ${c_conduit:.2f}) the parts would be ${c_own - c_conduit:.2f}, within the ${budget_usd:.0f} budget")
@@ -244,7 +244,6 @@ tag("H3", f"Depth-dependent ${per_m:.2f}/m; budget met to a probe depth of {brea
 # ------------------------------------------------------------------ results table
 results = [
     ("R9", "Not met", "No drinking water certificate in hand for low-cost cable, seal or probe"),
-    ("R12", "Not met", f"${c_own:.2f} at 30 m against ${budget_usd:.0f}; met to {breakeven:.1f} m"),
     ("R4", "At risk", f"RSS {rss * 1000:.1f} mm, sum {tot * 1000:.1f} mm (0.25 % class, calibrated)"),
     ("R10", "At risk", f"{D['probe_clear_radial']:.1f} mm radial clearance with a 22 mm probe; tube may need the pump pulled"),
     ("R15", "At risk", "FieldNode shield at hot sites (48.5 to 52.2 degC inside at 45 degC); FieldNode rated to 45 degC ambient against 55 degC"),
@@ -258,6 +257,7 @@ results = [
     ("R6", "Met", f"15 min; 1 min logged, sent every 30 min on a public network ({a68 * 48:.1f} s/day)"),
     ("R7", "Met", f"{yr * BYTES_STORED / 1e6:.2f} MB a year"),
     ("R8", "Met", f"{e_day * 1000:.1f} mWh/day, {e_day / (ALLOW_W[0] * 24) * 100:.1f} % of 100 mW"),
+    ("R12", "Met" if c_own <= budget_usd else "Not met", f"${c_own:.2f} at 30 m against ${budget_usd:.0f}; met to {breakeven:.1f} m"),
     ("R14", "Met", "Levels, time and well ID only"),
 ]
 print("\nL. Requirement status")

@@ -3,9 +3,9 @@ doc_id: WLS-PRB-001
 title: WellSense problem statement
 project: WellSense
 doc_type: Problem statement
-version: "0.4"
+version: "0.5"
 status: Draft
-date: '2026-09-25'
+date: '2026-09-26'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -25,6 +25,10 @@ revisions:
   date: '2026-09-25'
   author: Amish Chadha
   change: Recommendations accepted by Amish (DDR-002)
+- version: "0.5"
+  date: '2026-09-26'
+  author: Amish Chadha
+  change: Budget approved by Amish; constraint now $200
 ---
 
 # WellSense problem statement
@@ -53,7 +57,7 @@ Typical wells are 100 to 200 mm (4 to 8 in) boreholes 20 to 150 m deep with a su
 
 ## Constraints
 
-- Garage-buildable prototype, $190 USD in WellSense parts per well at a 30 m probe depth, with the FieldNode core costed in the FieldNode repo (WLS-DDR-001, D1, and WLS-DDR-002, both decided by Amish on 2026-09-25). With the surface conduit added under WLS-DDR-002 the parts cost $197.60 at 30 m, so the budget holds only to about 25.8 m (WLS-CAL-001 v0.2).
+- Garage-buildable prototype, $200 USD in WellSense parts per well at a 30 m probe depth, with the FieldNode core costed in the FieldNode repo (WLS-DDR-001, D1, and WLS-DDR-002, both decided by Amish on 2026-09-25; the figure was raised from $190 to $200 by Amish on 2026-09-26). With the surface conduit added under WLS-DDR-002 the parts cost $197.60 at 30 m, so the budget holds to about 31.3 m (WLS-CAL-001 v0.3).
 - Built on the lab's shared FieldNode core for power, radio and enclosure; WellSense adds only the probe, wellhead parts and interface.
 - No change to the water supply: nothing in the well may contaminate the water, and the well must stay sealed.
 - Must work beside an existing pump and riser without pulling them where possible; the probe body is limited to 22 mm so it runs freely in a 1 in access tube (WLS-DDR-002).

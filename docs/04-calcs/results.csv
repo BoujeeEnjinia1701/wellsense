@@ -34,11 +34,10 @@ E4,"Rule (WLS-DDR-002): on a public network a pumping test sends every 30 min, a
 F1,"Vent capillary 110 mL at 62 m; box and vent breathe 0.15 L/day at a 30 K swing, carrying 3.6 mg of water at worst; 10 g of gel lasts about 552 days if the whole box breathes through it (quarterly change: factor 6.1)"
 G1,Estimated 120 min for two people (9 steps) against 120 min; post footing set and cured on an earlier visit
 H1,"BOM 14 lines, 14 priced; cable 32 m and tube 30.61 m (BOM 31 m) at 30 m probe depth"
-H2,"WellSense parts (lines 1 to 7, 9, 10, 13, 14): $197.60 against budget_usd $190 (over by $7.60); with the FieldNode core $323.60; with FieldNode's hot-site shield (+$8.00, FND-DDR-002) $331.60"
-H2b,"Without the conduit (line 14, $10.00) the parts would be $187.60, within the $190 budget"
-H3,Depth-dependent $1.80/m; budget met to a probe depth of 25.8 m; at 60 m $251.60; without an access tube (no pump in the casing) $166.60
+H2,"WellSense parts (lines 1 to 7, 9, 10, 13, 14): $197.60 against budget_usd $200 (within by $2.40; set to $200 by Amish on 2026-09-26, WLS-DDR-002); with the FieldNode core $323.60; with FieldNode's hot-site shield (+$8.00, FND-DDR-002) $331.60"
+H2b,"Without the conduit (line 14, $10.00) the parts would be $187.60, within the $200 budget"
+H3,Depth-dependent $1.80/m; budget met to a probe depth of 31.3 m; at 60 m $251.60; without an access tube (no pump in the casing) $166.60
 L R9,"Not met: No drinking water certificate in hand for low-cost cable, seal or probe"
-L R12,Not met: $197.60 at 30 m against $190; met to 25.8 m
 L R4,"At risk: RSS 12.5 mm, sum 27.1 mm (0.25 % class, calibrated)"
 L R10,At risk: 2.3 mm radial clearance with a 22 mm probe; tube may need the pump pulled
 L R15,At risk: FieldNode shield at hot sites (48.5 to 52.2 degC inside at 45 degC); FieldNode rated to 45 degC ambient against 55 degC
@@ -52,5 +51,6 @@ L R3,Met: 0.52 mm
 L R6,"Met: 15 min; 1 min logged, sent every 30 min on a public network (22.7 s/day)"
 L R7,Met: 1.12 MB a year
 L R8,"Met: 38.2 mWh/day, 1.6 % of 100 mW"
+L R12,Met: $197.60 at 30 m against $200; met to 31.3 m
 L R14,"Met: Levels, time and well ID only"
-L,"2 not met, 4 at risk, 3 not verifiable at TRL 3, 7 met"
+L,"1 not met, 4 at risk, 3 not verifiable at TRL 3, 8 met"

@@ -176,7 +176,7 @@ Files changed: `project.yaml` (`budget_usd`, evidence list); `bom/bom.csv` (line
 
 1. **O1, first partner and region for co-design.** No preference stated.
 2. **O2, battery-only FieldNode variant.** No recommendation to adopt.
-3. **New, N1, cost with the conduit.** The $190 budget and the $10.00 conduit together give $197.60 at 30 m. Options: (a) raise `budget_usd` to $200; (b) keep $190 and state R12 at a 25 m design depth; (c) keep $190 and fit the conduit only where livestock or tampering is likely. No option applied.
+3. **New, N1, cost with the conduit.** The $190 budget and the $10.00 conduit together give $197.60 at 30 m. Options: (a) raise `budget_usd` to $200; (b) keep $190 and state R12 at a 25 m design depth; (c) keep $190 and fit the conduit only where livestock or tampering is likely. No option applied. **Decided by Amish, 2026-09-26: budget set to $200** (WLS-DDR-002).
 
 ### Cross-repo actions (other repos not edited)
 
@@ -187,3 +187,12 @@ Files changed: `project.yaml` (`budget_usd`, evidence list); `bom/bom.csv` (line
 ### TRL 4
 
 TRL 4 remains on hold by Amish's instruction. `trl` and `trl_target` stay at 3. The firmware uplink rule, the interface board build, the probe fit test, supplier drinking water certificates and any purchasing are decided in principle where recommended but have not been started.
+
+## Session 2026-09-26: budget approved
+
+Amish wrote on 2026-09-26: "i approve all the budget items." Budget set to $200 to cover the priced BOM: decided by Amish, 2026-09-26. This closes N1.
+
+- `project.yaml` `budget_usd` $190 to **$200**. The priced WellSense parts are unchanged at $197.60 at a 30 m probe depth (lines 1 to 7, 9, 10, 13 and 14; the FieldNode core and the shared tape stay outside the budget).
+- R12 (cost): target $190 to $200; status **Not met to Met**, $2.40 under, and the budget now holds to a 31.3 m probe depth (was 25.8 m). Requirement status is now 1 not met (R9), 4 at risk (R4, R10, R15, R16), 3 not verifiable at TRL 3 (R5, R11, R13), 8 met.
+- Files changed: `project.yaml`, `README.md`, WLS-PRB-001 v0.5, WLS-PRC-001 v0.5, WLS-REQ-001 v0.5, WLS-CAL-001 v0.3 (`sizing.py` and `results.csv` rerun; R12 status now computed from the budget), WLS-DDR-002 v0.2, `bom/bom-notes.md`, `cad/src/concept_media.py` (blueprint key figure); media and PDFs regenerated, temporary `media/_views*` folders deleted.
+- Still awaiting Amish: O1 (co-design partner and region) and O2 (battery-only FieldNode variant). `trl: 3` and `trl_target: 3` are unchanged; TRL 4 remains on hold.

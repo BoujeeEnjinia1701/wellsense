@@ -3,9 +3,9 @@ doc_id: WLS-PRC-001
 title: WellSense design precis
 project: WellSense
 doc_type: Design precis
-version: "0.4"
+version: "0.5"
 status: Draft
-date: '2026-09-25'
+date: '2026-09-26'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -25,13 +25,17 @@ revisions:
   date: '2026-09-25'
   author: Amish Chadha
   change: Recommendations accepted by Amish (DDR-002)
+- version: "0.5"
+  date: '2026-09-26'
+  author: Amish Chadha
+  change: Budget approved by Amish; parts within the $200 budget
 ---
 
 # WellSense design precis
 
 ## Summary
 
-WellSense hangs a vented submersible pressure transducer in its own access tube inside an existing well and reads it every 15 minutes through the lab's shared FieldNode core, which sends the level over LoRaWAN to an open community dashboard. The TRL 3 calculations (WLS-CAL-001) give 0.52 mm resolution and a sensor load of 38.2 mWh a day, 1.6 % of FieldNode's 100 mW allowance. They also found that FieldNode's 12 V rail cannot drive the current loop, so the interface board carries a 24 V boost. After a two-point field calibration against a manual tape, a 0.25 % class probe reaches 12.5 mm by root sum square against the ±20 mm target, but 27.1 mm if every error adds, so accuracy is at risk. Amish accepted all recommendations on 2026-09-25 (WLS-DDR-002): the budget rises to $190 for the 30 m design well, the probe is limited to 22 mm so it runs freely in the 1 in access tube (2.3 mm radial clearance), a galvanized conduit protects the surface cable, FieldNode's sun shield is fitted at hot sites, and pumping tests on a public network send every 30 min. With the $10.00 conduit the WellSense parts cost $197.60 at a 30 m probe depth, $7.60 over the $190 budget, and $323.60 with the FieldNode core. The design choices below are decided by Amish (WLS-DDR-001 and WLS-DDR-002).
+WellSense hangs a vented submersible pressure transducer in its own access tube inside an existing well and reads it every 15 minutes through the lab's shared FieldNode core, which sends the level over LoRaWAN to an open community dashboard. The TRL 3 calculations (WLS-CAL-001) give 0.52 mm resolution and a sensor load of 38.2 mWh a day, 1.6 % of FieldNode's 100 mW allowance. They also found that FieldNode's 12 V rail cannot drive the current loop, so the interface board carries a 24 V boost. After a two-point field calibration against a manual tape, a 0.25 % class probe reaches 12.5 mm by root sum square against the ±20 mm target, but 27.1 mm if every error adds, so accuracy is at risk. Amish accepted all recommendations on 2026-09-25 (WLS-DDR-002): the budget rises to $190 for the 30 m design well, the probe is limited to 22 mm so it runs freely in the 1 in access tube (2.3 mm radial clearance), a galvanized conduit protects the surface cable, FieldNode's sun shield is fitted at hot sites, and pumping tests on a public network send every 30 min. With the $10.00 conduit the WellSense parts cost $197.60 at a 30 m probe depth, within the $200 budget Amish approved on 2026-09-26, and $323.60 with the FieldNode core. The design choices below are decided by Amish (WLS-DDR-001 and WLS-DDR-002).
 
 ![Hero render](../media/hero.png)
 
@@ -100,9 +104,9 @@ Table 2. Key numbers from WLS-CAL-001.
 | Storage per year | 1.12 MB | 35,040 readings × 32 bytes | R7 met: 6.7 % of 16 MB |
 | Probe clearance in the tube | 2.3 mm radial | 22 mm probe in 26.6 mm bore | R10 at risk (pump may need pulling) |
 | Hanging loads at 60 m | 35 N cable (factor 11.5); 264 N tube (factor 58) | Dry, worst case | R2 met |
-| WellSense parts per well | $197.60 | bom/bom.csv, 30 m probe depth, conduit included | R12 not met ($190) |
+| WellSense parts per well | $197.60 | bom/bom.csv, 30 m probe depth, conduit included | R12 met ($200) |
 | With FieldNode core | $323.60 | Adds line 8 ($126.00, FND-CAL-001); $331.60 with the hot-site shield | Counted in the FieldNode repo (DDR-001, D1) |
-| Depth-dependent cost | $1.80 per metre | Cable plus access tube | Budget holds to 25.8 m |
+| Depth-dependent cost | $1.80 per metre | Cable plus access tube | Budget holds to 31.3 m |
 
 ## Key design choices
 
@@ -139,6 +143,6 @@ Decided by Amish, 2026-09-25: go with recommendation (WLS-DDR-001 and WLS-DDR-00
 - [ ] How should the dashboard present drawdown so that non-specialists read it correctly? To be answered in co-design.
 - [ ] Locking of the seal plate, tube cap and junction box (R16).
 - [ ] First partner and region for co-design (DDR-001, O1).
-- [ ] Cost at the 30 m design depth with the conduit included ($197.60 against $190). Proposed, awaiting Amish (see `docs/REVIEW.md`).
+- [x] Cost at the 30 m design depth with the conduit included ($197.60). Budget set to $200 to cover the priced BOM: decided by Amish, 2026-09-26 (WLS-DDR-002).
 
 Concept media: [blueprint sheet](../media/concept-blueprint.pdf), [interactive 3D model](../media/viewer.html).

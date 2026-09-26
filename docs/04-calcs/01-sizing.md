@@ -3,9 +3,9 @@ doc_id: WLS-CAL-001
 title: WellSense sizing calculations
 project: WellSense
 doc_type: Calculation
-version: "0.2"
+version: "0.3"
 status: Draft
-date: '2026-09-25'
+date: '2026-09-26'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -17,11 +17,15 @@ revisions:
   date: '2026-09-25'
   author: Amish Chadha
   change: Recommendations accepted by Amish (DDR-002)
+- version: "0.3"
+  date: '2026-09-26'
+  author: Amish Chadha
+  change: Budget approved by Amish; budget $200 covers the priced BOM, so R12 is met and holds to 31.3 m (WLS-DDR-002 v0.2)
 ---
 
 # WellSense sizing calculations
 
-On paper, WellSense meets seven of its sixteen requirements, has four at risk, misses two and leaves three that only field work can settle. The two misses are cost and water safety. With the decisions of WLS-DDR-002 applied (budget raised to $190, a 22 mm probe in the 1 in tube, a galvanized conduit over the surface cable and a 30 min uplink rule for pumping tests on public networks), the WellSense parts cost $197.60 at the 30 m design depth, $7.60 over the $190 `budget_usd`; the $10.00 conduit is the whole overrun, and the budget holds to a probe depth of 25.8 m. No drinking water certificate is in hand for the low-cost cable, seal or probe (R9). The calculations changed the interface: the FieldNode 12 V rail cannot drive a 4 to 20 mA loop through a 150 Ω shunt and 62 m of cable to the transducer's 12 V minimum (it delivers 7.56 V), so the interface board gains a 24 V boost. That doubles the sensor energy of the TRL 2 estimate to 38.2 mWh a day, still only 1.6 % of the FieldNode allowance. Accuracy (R4) is at risk rather than not met: a 0.25 % class probe after a two-point field calibration against a manual tape gives 12.5 mm by root sum square against the ±20 mm target, but 27.1 mm if every term adds. Every number in this note is printed by `docs/04-calcs/sizing.py`; the tag in brackets, for example [B3], is the line of that script's output that carries it.
+On paper, WellSense meets eight of its sixteen requirements, has four at risk, misses one and leaves three that only field work can settle. The miss is water safety. With the decisions of WLS-DDR-002 applied (budget raised to $190 on 2026-09-25 and to $200 on 2026-09-26, a 22 mm probe in the 1 in tube, a galvanized conduit over the surface cable and a 30 min uplink rule for pumping tests on public networks), the WellSense parts cost $197.60 at the 30 m design depth, $2.40 under the $200 `budget_usd`, and the budget holds to a probe depth of 31.3 m. No drinking water certificate is in hand for the low-cost cable, seal or probe (R9). The calculations changed the interface: the FieldNode 12 V rail cannot drive a 4 to 20 mA loop through a 150 Ω shunt and 62 m of cable to the transducer's 12 V minimum (it delivers 7.56 V), so the interface board gains a 24 V boost. That doubles the sensor energy of the TRL 2 estimate to 38.2 mWh a day, still only 1.6 % of the FieldNode allowance. Accuracy (R4) is at risk rather than not met: a 0.25 % class probe after a two-point field calibration against a manual tape gives 12.5 mm by root sum square against the ±20 mm target, but 27.1 mm if every term adds. Every number in this note is printed by `docs/04-calcs/sizing.py`; the tag in brackets, for example [B3], is the line of that script's output that carries it.
 
 > **Safety:** These are first-principles estimates for a paper proof of concept. They do not show that anything lowered into a well is safe for drinking water, that the wellhead is sealed, or that work at a well with a mains-powered pump is safe. See WLS-PRC-001, Safety.
 
@@ -102,7 +106,7 @@ With an access tube already in place, nine steps from isolating the pump to conf
 ## H. Cost (R12)
 
 - **BOM.** All 14 lines are priced. The design case uses 32 m of cable and 30.61 m of tube (31 m in the BOM) [H1].
-- **R12 is not met.** Lines 1 to 7, 9, 10, 13 and 14 total $197.60 against the $190 `budget_usd` (raised from $180 under WLS-DDR-002), $7.60 over; with the $126.00 FieldNode core the complete logger is $323.60, and $331.60 at a hot site with FieldNode's $8.00 sun shield [H2]. Without the $10.00 conduit (line 14, also decided under WLS-DDR-002) the parts would be $187.60, within budget [H2b]. Cable and tube add $1.80 per metre of depth, so the budget holds to a probe depth of 25.8 m; at 60 m the parts cost $251.60, and without an access tube (no pump in the casing) $166.60 [H3]. The combined effect of the $190 budget and the conduit is raised in `docs/REVIEW.md` as a new item awaiting Amish. Against the TRL 2 estimate of about $170, the 0.25 % class probe (+$5), the boost (+$2), the longer post (+$2), the concrete (+$6) and 2 m of surface cable and 1 m more tube (+$2.60) account for the difference up to v0.1; the conduit (+$10.00) is added in v0.2.
+- **R12 is met.** Lines 1 to 7, 9, 10, 13 and 14 total $197.60 against the $200 `budget_usd` (budget approved by Amish on 2026-09-26 to cover the priced BOM, WLS-DDR-002; it was $190, and $180 before 2026-09-25), $2.40 under; with the $126.00 FieldNode core the complete logger is $323.60, and $331.60 at a hot site with FieldNode's $8.00 sun shield [H2]. Without the $10.00 conduit (line 14, also decided under WLS-DDR-002) the parts would be $187.60 [H2b]. Cable and tube add $1.80 per metre of depth, so the budget holds to a probe depth of 31.3 m; at 60 m the parts cost $251.60, and without an access tube (no pump in the casing) $166.60 [H3]. The combined effect of the $190 budget and the conduit (item N1) was decided by Amish on 2026-09-26: `budget_usd` $200. Against the TRL 2 estimate of about $170, the 0.25 % class probe (+$5), the boost (+$2), the longer post (+$2), the concrete (+$6) and 2 m of surface cable and 1 m more tube (+$2.60) account for the difference up to v0.1; the conduit (+$10.00) is added in v0.2.
 
 ## L. Results against every requirement
 
@@ -111,7 +115,6 @@ With an access tube already in place, nine steps from isolating the pump to conf
 | ID | Requirement | Value | Target | Status |
 | --- | --- | --- | --- | --- |
 | R9 | Water safety | No drinking water certificate in hand for low-cost cable, seal or probe | Wetted parts 316 stainless or certified for drinking water; well sealed | **Not met** (no evidence) |
-| R12 | Cost | $197.60 at 30 m; met to 25.8 m; $323.60 with FieldNode | WellSense parts $190 or less per well at 30 m | **Not met** |
 | R4 | Accuracy after field calibration | 12.5 mm RSS, 27.1 mm worst case (0.25 % class) | ±20 mm | **At risk** |
 | R10 | Pump compatibility | 2.3 mm radial clearance with a 22 mm probe; tube may need the pump pulled | Own tube, no contact with pump, riser or cable | **At risk** |
 | R15 | Environment | Probe IP68 on datasheet; FieldNode shield at hot sites gives 48.5 to 52.2 °C inside at 45 °C; FieldNode rated to 45 °C ambient | Above-ground parts IP65, -10 to 55 °C; FieldNode shield at hot sites | **At risk** |
@@ -125,9 +128,10 @@ With an access tube already in place, nine steps from isolating the pump to conf
 | R6 | Reading interval | 15 min; 1 min logged, sent every 30 min on a public network (22.7 s/day) | 15 min; 1 min in tests | Met |
 | R7 | Local storage | 1.12 MB a year, 6.7 % of flash | 1 year | Met |
 | R8 | Energy | 38.2 mWh/day, 1.6 % of 100 mW | 5 % or less | Met |
+| R12 | Cost | $197.60 at 30 m; met to 31.3 m; $323.60 with FieldNode | WellSense parts $200 or less per well at 30 m | Met |
 | R14 | Data ownership | Levels, time and well ID only | Community controls sharing | Met (by design) |
 
-Counts: 2 not met, 4 at risk, 3 not verifiable at TRL 3, 7 met.
+Counts: 1 not met, 4 at risk, 3 not verifiable at TRL 3, 8 met.
 
 ## Checks against the TRL 2 figures
 
@@ -146,9 +150,9 @@ Counts: 2 not met, 4 at risk, 3 not verifiable at TRL 3, 7 met.
 
 | Item | v0.1 | v0.2 |
 | --- | --- | --- |
-| `budget_usd` | $180 | $190 [H2] |
+| `budget_usd` | $180 | $190; $200 in v0.3 (approved by Amish, 2026-09-26) [H2] |
 | Probe body and clearance | 24 mm, 1.3 mm radial | 22 mm maximum, 2.3 mm radial [D1] |
 | Surface cable | Exposed from the tube cap to the box | Galvanized conduit, BOM line 14, $10.00 |
-| WellSense parts at 30 m | $187.60 ($7.60 over $180) | $197.60 ($7.60 over $190) [H2] |
+| WellSense parts at 30 m | $187.60 ($7.60 over $180) | $197.60 ($7.60 over $190; $2.40 under the $200 budget of v0.3) [H2] |
 | Pumping test uplinks, public network | 15 min batches, 31.6 s/day | 30 min batches, 22.7 s/day [E4] |
 | R15 hot sites | FieldNode 45 °C rating only | FieldNode shield required at hot sites (FND-DDR-002) |
