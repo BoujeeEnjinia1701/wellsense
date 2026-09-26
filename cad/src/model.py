@@ -1,5 +1,8 @@
 """WellSense parametric model (build123d), TRL 3, massing-plus level of detail.
 
+WLS-DDR-002 (2026-09-25): probe body 22 mm or less for the 1 in access tube, and a galvanized
+conduit (BOM line 14) over the surface cable from the tube cap to the junction box.
+
 Run from the repo root:  python cad/src/model.py
 Exports STEP and STL into cad/step and cad/stl:
     wellsense-assembly.step / .stl   wellhead, access tube and probe in the existing well, post,
@@ -35,9 +38,11 @@ PARAMS = {
     "tube_x": 40.0, "tube_od": 33.4, "tube_id": 26.6, "tube_top": 560.0, "tube_bot": -1950.0,
     "slot": (3.0, 60.0), "slot_rows": 4, "slot_zone": 500.0,
     # 1 transducer body (diameter, length); gap between the probe tip and the end plug
-    "probe": (24.0, 170.0), "probe_gap": 50.0,
+    "probe": (22.0, 170.0), "probe_gap": 50.0,   # 22 mm maximum body (WLS-DDR-002)
     # 2 vented cable diameter; route height above the wellhead
     "cable_d": 7.0, "cable_z": 720.0,
+    # 14 surface conduit: 1/2 in galvanized rigid conduit, OD (WLS-DDR-002)
+    "conduit_od": 21.3,
     # 4 split seal plate (thickness, overhang past the casing OD)
     "seal_t": 25.0, "seal_over": 16.0,
     # 5 tube cap and cable-grip hanger (cap OD, cap height, grip OD, grip height)
@@ -78,6 +83,7 @@ BOM = {  # model key: (BOM line, name, color)
     "baro": (9, "Barometric reference sensor", "#7C3AED"),
     "post": (10, "Mounting post and clamps", "#A16207"),
     "footing": (13, "Post footing, concrete", "#C9C5BC"),
+    "conduit": (14, "Surface cable conduit, galvanized", "#64748B"),
 }
 CONTEXT = {  # existing well, grey, no BOM number
     "casing": ("Existing casing, 150 mm (not in kit)", "#9CA3AF"),
@@ -237,6 +243,9 @@ def build_parts(p=PARAMS):
     lead = [(jcx, -20, jcz + jz / 2), (jcx, -45, z0 - 150),
             (px + p["fnd_port_x"][0], D["enc_yc"], z0 - 45), (px + p["fnd_port_x"][0], D["enc_yc"], z0 - 20)]
     s["cable"] = polyline_tube(run, p["cable_d"] / 2) + polyline_tube(lead, 3.0)
+
+    # 14 galvanized conduit over the surface run, tube cap to the junction box entry
+    s["conduit"] = polyline_tube([(tx, 0, D["cap_top"])] + run[1:], p["conduit_od"] / 2)
     return s
 
 
@@ -273,9 +282,9 @@ if __name__ == "__main__":
     probe_clip = box(P["tube_x"], 0, P["tube_bot"] + 350, 80, 80, 700)
     sets = {
         "wellsense-assembly": assembly(),
-        "wellsense-wellhead": subset(["seal", "cap", "tube"], clip=head_clip),
+        "wellsense-wellhead": subset(["seal", "cap", "tube", "conduit"], clip=head_clip),
         "wellsense-probe": subset(["probe", "tube"], clip=probe_clip),
-        "wellsense-post": subset(["post", "footing", "jbox", "board", "baro", "fieldnode"]),
+        "wellsense-post": subset(["post", "footing", "jbox", "board", "baro", "fieldnode", "conduit"]),
     }
     for name, shape in sets.items():
         export_step(shape, str(out / "step" / f"{name}.step"))

@@ -1,4 +1,4 @@
-"""WellSense general arrangement sheet WLS-DWG-001, Rev P1 (TRL 3).
+"""WellSense general arrangement sheet WLS-DWG-001, Rev P2 (TRL 3; P2 applies WLS-DDR-002).
 
 Run from the repo root:  python cad/src/sheets.py
 Writes cad/drawings/WLS-DWG-001.svg, .pdf and .png from the parametric model in
@@ -106,10 +106,11 @@ def main():
     probe = Compound(children=[s_parts[k] & lo for k in ("tube", "probe")])
     pviews = safe_project_views(probe, work / "probe", names=("front",))
     bb = surf.bounding_box()
-    s = Sheet(project="WellSense", title="General arrangement", dwg_no="WLS-DWG-001", rev="P1",
+    s = Sheet(project="WellSense", title="General arrangement", dwg_no="WLS-DWG-001", rev="P2",
               author="Amish Chadha", date=DATE, scale=None, theme="technical",
               material="Bought-in parts per bom/bom.csv; borehole not drawn below -700. PRELIMINARY, NOT FOR FABRICATION",
-              revisions=[("P1", "Preliminary GA for TRL 3 (from cad/src/model.py)", DATE, "AC")])
+              revisions=[("P1", "Preliminary GA for TRL 3 (from cad/src/model.py)", DATE, "AC"),
+                         ("P2", "22 mm probe; conduit 14 added (WLS-DDR-002)", DATE, "AC")])
     s.add_ortho(views)
     k = s.scale
     c = ortho_cells(s, views)
@@ -143,6 +144,7 @@ def main():
     L += leader(X(tx), Z(P["tube_top"] + 20), X(tx) + 12, Z(P["tube_top"] + 380), "5 CAP AND HANGER")
     L += leader(X(-D["seal_d"] / 2 + 10), Z(D["seal_top"] - 10), X(-D["seal_d"] / 2) - 8, Z(D["seal_top"] + 110), "4 SEAL PLATE", "end")
     L += leader(X(px + 40), Z(D["enc_bot"] + 100), X(px) + 30, Z(D["enc_bot"] + 560), "8 FIELDNODE CORE")
+    L += leader(X(-300), Z(P["cable_z"]), X(-300) + 6, Z(P["cable_z"] + 330), "14 CONDUIT")
 
     # top view (from +Z)
     x, y, w, h = c["top"]
@@ -177,12 +179,13 @@ def main():
     s.add_notes("Main dimensions and interfaces (mm)", [
         f"Casing {P['casing_id']:.0f} bore (existing); stick-up {P['stickup']:.0f}; seal plate {D['seal_d']:.0f} x {P['seal_t']:.0f}",
         f"Access tube 1 in Sch 40 PVC {P['tube_od']} x {P['tube_id']}; {D['tube_to_riser']:.0f} clear of riser",
-        f"Probe {P['probe'][0]:.0f} x {P['probe'][1]:.0f}; {D['probe_clear_radial']:.1f} radial clearance in the tube",
+        f"Probe {P['probe'][0]:.0f} max dia. x {P['probe'][1]:.0f}; {D['probe_clear_radial']:.1f} radial clearance in the tube",
         f"Probe {DS['probe_depth_m']:.0f} m below the casing top (design); to {DS['probe_depth_max_m']:.0f} m",
         f"Post 48.3 x 3.2 galv., {P['post_h']:.0f} above ground, {P['embed']:.0f} in {P['footing_d']:.0f} footing",
         f"Junction box {P['jbox'][0]:.0f} x {P['jbox'][1]:.0f} x {P['jbox'][2]:.0f}, center {P['jbox_z']:.0f}",
         f"FieldNode core per FND-DWG-001; base {D['enc_bot']:.0f}; sensor port 1 (I2C, 12 V rail)",
         "Loop 4 to 20 mA from a 24 V boost; 150 ohm shunt (WLS-CAL-001)",
+        f"Cable in 1/2 in galv. conduit ({P['conduit_od']} OD), tube cap to junction box",
         "Third-angle; front view from -Y; well on the Z axis",
     ], x=276, y=158, width=146)
     out = s.save(ROOT / "cad" / "drawings" / "WLS-DWG-001")

@@ -37,15 +37,15 @@ Requirements not met or at risk:
 - **R16 tamper resistance at risk:** the cable run from wellhead to post is exposed in the concept.
 - R11 and R13 are unverified (installation trial and dashboard not started).
 
-### Proposed, awaiting Amish
+### Proposed, awaiting Amish (status updated 2026-09-25: items 1 to 7 decided; 8 and 9 still open)
 
-1. **Budget treatment of FieldNode.** Options: (a) count the FieldNode core in the FieldNode repo and hold WellSense to $180 for its own parts (about $170 now); (b) raise `budget_usd` to about $300 for a complete logger; (c) cut cost with a battery-only node or cheaper transducer. Recommendation: (a), with the complete cost stated in the README as done here. `budget_usd` is unchanged.
-2. **Sensor type.** Option A: vented 4 to 20 mA gauge transducer (proposed; simple, no compensation, needs desiccant care). Option B: sealed absolute sensor with RS-485 and surface barometric compensation (no vent; adds error and a digital probe). Recommendation: A for the first build, with B kept as a variant.
-3. **Range.** 0 to 10 m (recommended; better resolution and accuracy) or 0 to 20 m for wells with large pumping drawdown.
-4. **Access tube** fitted wherever a pump shares the casing (recommended), versus hanging the probe freely where there is no pump.
-5. **Default interval** of 15 min, with 1 min during pumping tests.
-6. **Manual tape check** each quarter as part of the method, with one shared tape per community or partner.
-7. **Data ownership:** levels only, community controls sharing, CSV export.
+1. **Budget treatment of FieldNode.** Options: (a) count the FieldNode core in the FieldNode repo and hold WellSense to $180 for its own parts (about $170 now); (b) raise `budget_usd` to about $300 for a complete logger; (c) cut cost with a battery-only node or cheaper transducer. Recommendation: (a), with the complete cost stated in the README as done here. `budget_usd` is unchanged. **Decided by Amish, 2026-09-25: go with recommendation** (WLS-DDR-002).
+2. **Sensor type.** Option A: vented 4 to 20 mA gauge transducer (proposed; simple, no compensation, needs desiccant care). Option B: sealed absolute sensor with RS-485 and surface barometric compensation (no vent; adds error and a digital probe). Recommendation: A for the first build, with B kept as a variant. **Decided by Amish, 2026-09-25: go with recommendation** (WLS-DDR-002).
+3. **Range.** 0 to 10 m (recommended; better resolution and accuracy) or 0 to 20 m for wells with large pumping drawdown. **Decided by Amish, 2026-09-25: go with recommendation** (WLS-DDR-002).
+4. **Access tube** fitted wherever a pump shares the casing (recommended), versus hanging the probe freely where there is no pump. **Decided by Amish, 2026-09-25: go with recommendation** (WLS-DDR-002).
+5. **Default interval** of 15 min, with 1 min during pumping tests. **Decided by Amish, 2026-09-25: go with recommendation** (WLS-DDR-002).
+6. **Manual tape check** each quarter as part of the method, with one shared tape per community or partner. **Decided by Amish, 2026-09-25: go with recommendation** (WLS-DDR-002).
+7. **Data ownership:** levels only, community controls sharing, CSV export. **Decided by Amish, 2026-09-25: go with recommendation** (WLS-DDR-002).
 8. **First partner and region** for co-design (an Indian farmer group, an African handpump programme, or a US groundwater agency).
 9. **Battery-only FieldNode variant** without the panel, given the very small load; to be discussed with the FieldNode project, not changed here.
 
@@ -101,17 +101,17 @@ Key numbers and changes from TRL 2: the FieldNode 12 V rail leaves the transduce
 
 ### Decisions recorded (WLS-DDR-001)
 
-Adopted as recommended for TRL 3 under Amish's 2026-09-25 instruction, open for his review: D1 budget covers WellSense parts, FieldNode core costed in its own repo, `budget_usd` unchanged (R12 restated); D2 vented 4 to 20 mA transducer, absolute RS-485 sensor as a variant; D3 0 to 10 m range, 0 to 20 m variant; D4 access tube wherever a pump shares the casing; D5 15 min default, 1 min in pumping tests; D6 quarterly manual tape check with a shared tape; D7 levels only, community controls sharing, CSV export; D8 FieldNode as the core. Detail choices within D2 and D8 that Amish should see: 24 V boost and 3.3 V regulator on the interface board, 0.25 % class probe, two-point calibration by lifting the probe 1 m, a longer post for FieldNode's 1.75 m mounting height, and a footing concrete line.
+Adopted as recommended for TRL 3 under Amish's 2026-09-25 instruction (now decided by Amish, 2026-09-25: go with recommendation; see WLS-DDR-002): D1 budget covers WellSense parts, FieldNode core costed in its own repo, `budget_usd` unchanged (R12 restated); D2 vented 4 to 20 mA transducer, absolute RS-485 sensor as a variant; D3 0 to 10 m range, 0 to 20 m variant; D4 access tube wherever a pump shares the casing; D5 15 min default, 1 min in pumping tests; D6 quarterly manual tape check with a shared tape; D7 levels only, community controls sharing, CSV export; D8 FieldNode as the core. Detail choices within D2 and D8 that Amish should see: 24 V boost and 3.3 V regulator on the interface board, 0.25 % class probe, two-point calibration by lifting the probe 1 m, a longer post for FieldNode's 1.75 m mounting height, and a footing concrete line.
 
-### Still awaiting Amish
+### Still awaiting Amish (status updated 2026-09-25: items 3 to 7 decided; O1 and O2 still open)
 
 1. **O1, first partner and region for co-design.** No preference stated.
 2. **O2, battery-only FieldNode variant.** For discussion with the FieldNode project; no recommendation to adopt.
-3. **New, cost at the design depth (R12).** Options: (a) keep $180 and state R12 at a 25 m design depth; (b) raise `budget_usd` to $190 to cover a 30 m design well, with $1.80 per metre beyond; (c) cost down, for example a cheaper probe (fails R4) or no access tube where there is no pump. Recommendation: (b), $190. Not applied; `budget_usd` stays at $180.
-4. **New, access tube bore (R10).** Options: (a) keep the 1 in tube and require a probe of 22 mm or less; (b) 1-1/4 in tube, which takes 24 to 28 mm probes but fits beside a centered riser only in 200 mm casing. Recommendation: (a). Not applied.
-5. **New, surface cable protection (R16).** Options: (a) galvanized conduit from the seal plate to the junction box, about $10 (estimate); (b) a buried conduit; (c) accept the exposed run. Recommendation: (a). Not applied and not in the BOM total.
-6. **New, hot-site rating (R15).** FieldNode is rated -20 to +45 °C ambient, and its own review recommends a sun shield for hot-climate sites. Options: (a) keep R15 at 55 °C and require the FieldNode shield at hot sites; (b) restate R15 to FieldNode's range. Recommendation: (a), following FieldNode's item 4. Not applied.
-7. **New, pumping-test uplinks.** A 1 min test batch uses 31.6 s a day at SF9, over public fair use. Recommendation: on a public network send every 30 min during a test; use a TwinKit gateway where possible. Not applied.
+3. **New, cost at the design depth (R12).** Options: (a) keep $180 and state R12 at a 25 m design depth; (b) raise `budget_usd` to $190 to cover a 30 m design well, with $1.80 per metre beyond; (c) cost down, for example a cheaper probe (fails R4) or no access tube where there is no pump. Recommendation: (b), $190. Not applied; `budget_usd` stays at $180. **Decided by Amish, 2026-09-25: go with recommendation** (WLS-DDR-002).
+4. **New, access tube bore (R10).** Options: (a) keep the 1 in tube and require a probe of 22 mm or less; (b) 1-1/4 in tube, which takes 24 to 28 mm probes but fits beside a centered riser only in 200 mm casing. Recommendation: (a). Not applied. **Decided by Amish, 2026-09-25: go with recommendation** (WLS-DDR-002).
+5. **New, surface cable protection (R16).** Options: (a) galvanized conduit from the seal plate to the junction box, about $10 (estimate); (b) a buried conduit; (c) accept the exposed run. Recommendation: (a). Not applied and not in the BOM total. **Decided by Amish, 2026-09-25: go with recommendation** (WLS-DDR-002).
+6. **New, hot-site rating (R15).** FieldNode is rated -20 to +45 °C ambient, and its own review recommends a sun shield for hot-climate sites. Options: (a) keep R15 at 55 °C and require the FieldNode shield at hot sites; (b) restate R15 to FieldNode's range. Recommendation: (a), following FieldNode's item 4. Not applied. **Decided by Amish, 2026-09-25: go with recommendation** (WLS-DDR-002).
+7. **New, pumping-test uplinks.** A 1 min test batch uses 31.6 s a day at SF9, over public fair use. Recommendation: on a public network send every 30 min during a test; use a TwinKit gateway where possible. Not applied. **Decided by Amish, 2026-09-25: go with recommendation** (WLS-DDR-002).
 
 ### Cross-repo consistency
 
@@ -138,3 +138,52 @@ Adopted as recommended for TRL 3 under Amish's 2026-09-25 instruction, open for 
 ### Recommended next step
 
 TRL 4 is on hold by Amish's instruction; this repo stops at TRL 3. Amish's review is needed on items 3 to 7 above, on O1 and O2, and on the adopted items D1 to D8. For the record only, TRL 4 would need: a bench build of the interface board with a chosen transducer; a lab test report (TST, `environment: lab`) covering calibration and linearity against a water column, loop supply at the far end of 60 m of cable, temperature drift of the shunt and ADC, and probe fit in the chosen access tube; supplier drinking water certificates for wetted parts; and build log entries. None of this has been started.
+
+## Session 2026-09-25: recommendations accepted
+
+On 2026-09-25 Amish wrote: "i accept all your recommendations, go with them across all repos." Every item in this note and in WLS-DDR-001 that carried a recommendation is now decided by Amish, 2026-09-25: go with recommendation. The decisions and their effects are recorded in `docs/decisions/0002-recommendations-accepted.md` (WLS-DDR-002 v0.1).
+
+### Decisions applied and what changed
+
+| Decision | Before | After |
+| --- | --- | --- |
+| D1 to D8 (WLS-DDR-001) | Adopted for TRL 3, open for review | Decided; no design change beyond the items below |
+| Cost at the design depth, option (b) | `budget_usd` $180; R12 at $180 | `budget_usd` $190 for a 30 m design well, $1.80 per metre beyond; R12 restated |
+| Access tube bore, option (a) | 24 mm probe, 1.3 mm radial clearance in the 1 in tube | Probe 22 mm or less, 2.3 mm radial clearance; model, BOM line 1, R10 updated |
+| Surface cable protection, option (a) | Cable exposed from the tube cap to the junction box; not in the BOM | Galvanized 1/2 in conduit, BOM line 14, $10.00; modeled and on the drawing |
+| Hot-site rating, option (a) | R15 at risk on the FieldNode 45 °C rating | R15 kept at 55 °C with FieldNode's sun shield required at hot sites (48.5 to 52.2 °C inside at 45 °C, FND-CAL-001 v0.2); still at risk above 45 °C ambient |
+| Pumping-test uplinks | 15 min batches, 31.6 s a day at SF9, over public fair use | Every 30 min on a public network: 22.7 s a day; 15 min on a TwinKit gateway; R6 text updated. Firmware on hold (TRL 4) |
+| WellSense parts at 30 m | $187.60 ($7.60 over $180); $313.60 with FieldNode | $197.60 ($7.60 over $190); $323.60 with FieldNode; $331.60 with the hot-site shield |
+
+Files changed: `project.yaml` (`budget_usd`, evidence list); `bom/bom.csv` (line 1 respecified, line 14 added) and `bom/bom-notes.md`; `cad/src/model.py` (probe 22 mm, `conduit` part) and re-exported STEP and STL; `cad/src/sheets.py` and WLS-DWG-001 at Rev P2; `cad/src/concept_media.py` and all of `media/` re-rendered (hero, blueprint, exploded and cutaway checked; `_views` folders deleted); `docs/04-calcs/sizing.py`, `results.csv` and WLS-CAL-001 v0.2; WLS-PRB-001 v0.4, WLS-PRC-001 v0.4, WLS-REQ-001 v0.4, WLS-DDR-001 v0.2, new WLS-DDR-002 v0.1; `README.md` (budget, concept figures, components, and a rewritten "What sparked the idea" citing the Andhra Pradesh Farmer Managed Groundwater Systems project). All PDFs rebuilt, and all generated files now carry designmolecule.com.
+
+### Requirement status (WLS-CAL-001 v0.2, Table 3)
+
+2 not met, 4 at risk, 3 not verifiable at TRL 3, 7 met.
+
+| ID | Status | Key number |
+| --- | --- | --- |
+| R9 Water safety | **Not met** (no evidence) | No drinking water certificate in hand for low-cost cable, seals or probe |
+| R12 Cost | **Not met** | $197.60 at 30 m against $190 ($187.60 without the conduit); met to 25.8 m |
+| R4 Accuracy | At risk | 12.5 mm RSS, 27.1 mm worst case |
+| R10 Pump compatibility | At risk | 2.3 mm radial clearance with a 22 mm probe; fitting a tube may need the pump pulled |
+| R15 Environment | At risk | Shielded FieldNode core rated to 45 °C ambient against 55 °C |
+| R16 Tamper resistance | At risk | Cable now in conduit; locking of the seal plate, tube cap and box not specified |
+| R5, R11, R13 | Not verifiable at TRL 3 | Drift unknown; install 120 min estimate; dashboard not started |
+| R1, R2, R3, R6, R7, R8, R14 | Met | R6 now with the 30 min public-network rule (22.7 s a day) |
+
+### Still awaiting Amish
+
+1. **O1, first partner and region for co-design.** No preference stated.
+2. **O2, battery-only FieldNode variant.** No recommendation to adopt.
+3. **New, N1, cost with the conduit.** The $190 budget and the $10.00 conduit together give $197.60 at 30 m. Options: (a) raise `budget_usd` to $200; (b) keep $190 and state R12 at a 25 m design depth; (c) keep $190 and fit the conduit only where livestock or tampering is likely. No option applied.
+
+### Cross-repo actions (other repos not edited)
+
+- **FieldNode:** confirm how the shielded core behaves at 55 °C ambient, or state the limit, since WellSense R15 asks for 55 °C and FieldNode is rated to 45 °C ambient.
+- **FieldNode:** WellSense now cites only the published 100 mW sensor allowance (no longer 115 mW), and uses the sun shield (BOM line 14, $8.00) at hot sites.
+- **FieldNode:** the sensor port pinout (FND-DDR-001, O2) is still open; WellSense assumes I2C on port 1.
+
+### TRL 4
+
+TRL 4 remains on hold by Amish's instruction. `trl` and `trl_target` stay at 3. The firmware uplink rule, the interface board build, the probe fit test, supplier drinking water certificates and any purchasing are decided in principle where recommended but have not been started.

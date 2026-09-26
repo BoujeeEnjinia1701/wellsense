@@ -1,4 +1,4 @@
-"""WellSense sizing calculations, WLS-CAL-001 v0.1 (TRL 3).
+"""WellSense sizing calculations, WLS-CAL-001 v0.2 (TRL 3, WLS-DDR-002 applied).
 
 Run from the repo root:  python docs/04-calcs/sizing.py
 Prints every number quoted in docs/04-calcs/01-sizing.md. Each line carries a tag such as
@@ -93,7 +93,7 @@ def airtime(pl, sf=9, bw=125e3, cr=1, npre=8, header=True, crc=True):
     return (npre + 4.25) * ts + n * ts
 
 
-print("WellSense sizing, WLS-CAL-001 v0.1")
+print("WellSense sizing, WLS-CAL-001 v0.2")
 print(f"Model: casing {P['casing_id']:.0f} mm bore, tube {P['tube_od']} x {P['tube_id']} mm, probe {P['probe'][0]:.0f} x {P['probe'][1]:.0f} mm; "
       f"design probe depth {DS['probe_depth_m']:.0f} m (to {DS['probe_depth_max_m']:.0f} m)")
 
@@ -126,8 +126,7 @@ e_read = e_loop + e_ctrl
 e_day = e_read * READ_DAY / 3600
 e_test = e_read * READ_TEST / 3600
 tag("B2", f"Per reading: loop {e_loop:.2f} J (24 V x 22 mA x 2 s, boost 85 %, rail 90 %) + controller {e_ctrl:.3f} J = {e_read:.2f} J")
-tag("B3", f"At 15 min: {e_day * 1000:.1f} mWh/day, {e_day / 24 * 1000:.2f} mW average; {e_day / (ALLOW_W[0] * 24) * 100:.1f} % of the 100 mW allowance, "
-    f"{e_day / (ALLOW_W[1] * 24) * 100:.1f} % of 115 mW")
+tag("B3", f"At 15 min: {e_day * 1000:.1f} mWh/day, {e_day / 24 * 1000:.2f} mW average; {e_day / (ALLOW_W[0] * 24) * 100:.1f} % of FieldNode's published 100 mW allowance")
 tag("B4", f"At 1 min (pumping test): {e_test:.3f} Wh/day, {e_test / 24 * 1000:.1f} mW average; {e_test / (ALLOW_W[0] * 24) * 100:.0f} % of the 100 mW allowance")
 e_trl2 = 12 * I_MAX * T_ON / 0.80
 tag("B5", f"TRL 2 figure for comparison: {e_trl2:.2f} J per reading, {e_trl2 * READ_DAY / 3600 * 1000:.0f} mWh/day (12 V direct, 80 %)")
@@ -194,6 +193,9 @@ tag("E2", f"A 7-day pumping test at 1 min adds {7 * READ_TEST:,} readings, {7 * 
 a20, a38 = airtime(20 + 13), airtime(38 + 13)
 tag("E3", f"Airtime at SF9: 20-byte uplink {a20 * 1000:.1f} ms, {a20 * 96:.1f} s/day at 15 min (FieldNode figure); pumping test batch of 15 readings "
     f"(38 bytes) {a38 * 1000:.1f} ms, {a38 * 96:.1f} s/day, over the 30 s/day fair use on a public network; fits a private TwinKit gateway")
+a68 = airtime(68 + 13)
+tag("E4", f"Rule (WLS-DDR-002): on a public network a pumping test sends every 30 min, a batch of 30 readings (68 bytes) "
+    f"{a68 * 1000:.1f} ms, {a68 * 48:.1f} s/day, within 30 s/day; on a private TwinKit gateway the 15 min batch is kept")
 
 # ------------------------------------------------------------------ F. Desiccant (R15, maintenance)
 print("\nF. Vent desiccant")
@@ -232,26 +234,28 @@ fixed = c_own - per_m * DS["probe_depth_m"]
 breakeven = (budget_usd - fixed) / per_m
 no_tube = c_own - sum(line(r) for r in rows if num(r) == 3)
 tag("H1", f"BOM {len(rows)} lines, {len(rows) - len(unpriced)} priced; cable {cable_len:.0f} m and tube {tube_len:.2f} m (BOM {math.ceil(tube_len)} m) at {DS['probe_depth_m']:.0f} m probe depth")
-tag("H2", f"WellSense parts (lines 1 to 7, 9, 10, 13): ${c_own:.2f} against budget_usd ${budget_usd:.0f} (over by ${c_own - budget_usd:.2f}); "
-    f"with the FieldNode core ${c_own + c_node:.2f}")
+tag("H2", f"WellSense parts (lines 1 to 7, 9, 10, 13, 14): ${c_own:.2f} against budget_usd ${budget_usd:.0f} (over by ${c_own - budget_usd:.2f}); "
+    f"with the FieldNode core ${c_own + c_node:.2f}; with FieldNode's hot-site shield (+$8.00, FND-DDR-002) ${c_own + c_node + 8:.2f}")
+c_conduit = sum(line(r) for r in rows if num(r) == 14)
+tag("H2b", f"Without the conduit (line 14, ${c_conduit:.2f}) the parts would be ${c_own - c_conduit:.2f}, within the ${budget_usd:.0f} budget")
 tag("H3", f"Depth-dependent ${per_m:.2f}/m; budget met to a probe depth of {breakeven:.1f} m; at 60 m ${c_own + per_m * 30:.2f}; "
     f"without an access tube (no pump in the casing) ${no_tube:.2f}")
 
 # ------------------------------------------------------------------ results table
 results = [
     ("R9", "Not met", "No drinking water certificate in hand for low-cost cable, seal or probe"),
-    ("R12", "Not met", f"${c_own:.2f} at 30 m against $180; met to {breakeven:.1f} m"),
+    ("R12", "Not met", f"${c_own:.2f} at 30 m against ${budget_usd:.0f}; met to {breakeven:.1f} m"),
     ("R4", "At risk", f"RSS {rss * 1000:.1f} mm, sum {tot * 1000:.1f} mm (0.25 % class, calibrated)"),
-    ("R10", "At risk", f"{D['probe_clear_radial']:.1f} mm radial clearance; tube may need the pump pulled"),
-    ("R15", "At risk", "FieldNode rated to 45 degC ambient against 55 degC"),
-    ("R16", "At risk", "Cable exposed from the wellhead to the post"),
+    ("R10", "At risk", f"{D['probe_clear_radial']:.1f} mm radial clearance with a 22 mm probe; tube may need the pump pulled"),
+    ("R15", "At risk", "FieldNode shield at hot sites (48.5 to 52.2 degC inside at 45 degC); FieldNode rated to 45 degC ambient against 55 degC"),
+    ("R16", "At risk", "Cable in conduit from the tube cap to the box; locking of the wellhead parts not specified"),
     ("R5", "Not verifiable at TRL 3", "Drift unknown; quarterly check leaves 5 mm"),
     ("R11", "Not verifiable at TRL 3", f"{t_inst} min estimate"),
     ("R13", "Not verifiable at TRL 3", "Dashboard not started"),
     ("R1", "Met", f"0 to 10 m, {p_fs:.2f} kPa"),
     ("R2", "Met", f"Cable factor {STRAIN_N / w_cable:.1f}, tube factor {PVC[1] / (w_tube / a_tube):.0f} at 60 m"),
     ("R3", "Met", f"{res:.2f} mm"),
-    ("R6", "Met", "15 min; 1 min logged and batched"),
+    ("R6", "Met", f"15 min; 1 min logged, sent every 30 min on a public network ({a68 * 48:.1f} s/day)"),
     ("R7", "Met", f"{yr * BYTES_STORED / 1e6:.2f} MB a year"),
     ("R8", "Met", f"{e_day * 1000:.1f} mWh/day, {e_day / (ALLOW_W[0] * 24) * 100:.1f} % of 100 mW"),
     ("R14", "Met", "Levels, time and well ID only"),

@@ -2,7 +2,7 @@
 
 ![TRL 3](https://img.shields.io/badge/TRL-3%20of%209-0F766E) ![Hardware: CERN-OHL-S-2.0](https://img.shields.io/badge/hardware-CERN--OHL--S--2.0-111827) ![Software: MIT](https://img.shields.io/badge/software-MIT-111827)
 
-**Area:** Water Security · **TRL:** 3 of 9 (proof of concept on paper) · **Prototype budget:** $180 USD for WellSense parts, FieldNode core costed separately · **Difficulty:** 2 of 5
+**Area:** Water Security · **TRL:** 3 of 9 (proof of concept on paper) · **Prototype budget:** $190 USD for WellSense parts, FieldNode core costed separately · **Difficulty:** 2 of 5
 
 A well and borehole water level logger with a submersible pressure sensor and FieldNode telemetry, showing seasonal drawdown so communities can manage shared groundwater.
 
@@ -48,7 +48,7 @@ When levels fall unmeasured, the response is to drill deeper: in the United Stat
 
 ## What sparked the idea
 
-It came out of a September 2026 review of Design Molecule's applied research areas against the open projects already in the lab. It extends the lab's water security work. The trigger in the wider world is the 2024 global synthesis of well records, which found accelerating declines in almost a third of aquifers but also showed recovery where people acted ([Jasechko et al., Nature, 2024](https://www.nature.com/articles/s41586-023-06879-8)).
+The starting point was the Andhra Pradesh Farmer Managed Groundwater Systems project, launched in 2003 in seven drought-prone districts of southern India ([FAO](https://www.fao.org/land-water/overview/projects/previous-projects/andhra-pradesh-farmer-managed-groundwater-systems/en/)). There, farmers took fortnightly measurements of static and pumping water levels in their own wells, kept rain gauges, and used the numbers to draw up a crop-water budget before each winter season; about half a million farmers in 661 habitations took part ([FAO, *Smallholders and Sustainable Wells*, 2013](https://www.fao.org/4/i3320e/i3320e.pdf)). The project showed that people who share an aquifer will manage it when they can see the water level themselves. WellSense asks what that practice looks like with a continuous, low-cost record in place of a hand reading every two weeks, so that the daily pumping cycle and the seasonal decline are visible between visits.
 
 ## Problem
 
@@ -58,18 +58,19 @@ Groundwater is falling in many regions, yet most wells have no measurement, so o
 
 A well and borehole water level logger with a submersible pressure sensor and FieldNode telemetry, showing seasonal drawdown so communities can manage shared groundwater. A vented 4 to 20 mA transducer hangs in its own access tube beside the pump, a sealed wellhead plate keeps the well clean, and the lab's FieldNode core reads it every 15 minutes and sends the level over LoRaWAN to an open dashboard.
 
-TRL 3 calculations ([WLS-CAL-001](docs/04-calcs/01-sizing.md)): 0.52 mm resolution; 12.5 mm accuracy by root sum square after a two-point tape calibration with a 0.25 % class probe, 27.1 mm worst case, so the ±20 mm target is at risk; a 24 V boost on the interface board, because FieldNode's 12 V rail cannot drive the loop; 38.2 mWh a day of sensor energy, 1.6 % of FieldNode's allowance; and $187.60 in WellSense parts at a 30 m probe depth, over the $180 budget by $7.60 ($313.60 with the FieldNode core). Seven of sixteen requirements are met on paper; cost (R12) and drinking water evidence (R9) are not. See the [design precis](docs/02-concept.md), [requirements](docs/03-requirements.md) and [decision record](docs/decisions/0001-trl2-review-decisions.md).
+TRL 3 calculations ([WLS-CAL-001](docs/04-calcs/01-sizing.md)): 0.52 mm resolution; 12.5 mm accuracy by root sum square after a two-point tape calibration with a 0.25 % class probe, 27.1 mm worst case, so the ±20 mm target is at risk; a 24 V boost on the interface board, because FieldNode's 12 V rail cannot drive the loop; 38.2 mWh a day of sensor energy, 1.6 % of FieldNode's allowance; a 22 mm probe with 2.3 mm radial clearance in the 1 in access tube; and $197.60 in WellSense parts at a 30 m probe depth including a galvanized conduit over the surface cable, over the $190 budget by $7.60 ($323.60 with the FieldNode core). Seven of sixteen requirements are met on paper; cost (R12) and drinking water evidence (R9) are not. See the [design precis](docs/02-concept.md), [requirements](docs/03-requirements.md) and decision records [WLS-DDR-001](docs/decisions/0001-trl2-review-decisions.md) and [WLS-DDR-002](docs/decisions/0002-recommendations-accepted.md).
 
 Full design precis: [docs/02-concept.md](docs/02-concept.md)
 
 ## Key components
 
-- Vented submersible pressure transducer, 4 to 20 mA, 0 to 10 m, 0.25 % class
+- Vented submersible pressure transducer, 4 to 20 mA, 0 to 10 m, 0.25 % class, 22 mm diameter or less
 - Vented cable with desiccant breather
 - 25 mm PVC access tube, tube cap and cable hanger
 - Wellhead seal plate with glands
+- Galvanized conduit over the surface cable from the tube cap to the junction box
 - 4 to 20 mA interface board with 24 V boost, and barometric reference sensor
-- FieldNode core (shared lab node) on a mounting post set in a concrete footing
+- FieldNode core (shared lab node) on a mounting post set in a concrete footing, with FieldNode's sun shield at hot sites
 - Open community dashboard, plus a shared manual water level tape for checks
 
 The priced bill of materials is in [bom/bom.csv](bom/bom.csv). The parametric model is `cad/src/model.py`, with STEP and STL exports in `cad/step/` and `cad/stl/`.
@@ -105,4 +106,4 @@ Controlled documents follow the portfolio [documentation standard](.kit/STANDARD
 - **Hardware** (CAD, drawings, BOM, electronics): [CERN-OHL-S v2](LICENSE)
 - **Software** (firmware, scripts, notebooks): [MIT](LICENSE-SOFTWARE)
 
-A project of the [Design Molecule](https://designmolecule.com) lab. Extending strong areas set.
+A project of the [Design Molecule](https://designmolecule.com) lab.

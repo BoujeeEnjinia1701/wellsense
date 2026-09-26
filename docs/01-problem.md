@@ -3,7 +3,7 @@ doc_id: WLS-PRB-001
 title: WellSense problem statement
 project: WellSense
 doc_type: Problem statement
-version: "0.3"
+version: "0.4"
 status: Draft
 date: '2026-09-25'
 author: Amish Chadha
@@ -21,6 +21,10 @@ revisions:
   date: '2026-09-25'
   author: Amish Chadha
   change: Reflect WLS-DDR-001 (budget covers WellSense parts only) and the TRL 3 cost and access findings of WLS-CAL-001
+- version: "0.4"
+  date: '2026-09-25'
+  author: Amish Chadha
+  change: Recommendations accepted by Amish (DDR-002)
 ---
 
 # WellSense problem statement
@@ -49,10 +53,10 @@ Typical wells are 100 to 200 mm (4 to 8 in) boreholes 20 to 150 m deep with a su
 
 ## Constraints
 
-- Garage-buildable prototype, $180 USD in WellSense parts per well, with the FieldNode core costed in the FieldNode repo (WLS-DDR-001, D1, adopted for TRL 3 pending Amish's review). At TRL 3 the parts cost $187.60 at a 30 m probe depth, so the budget holds only to about 25.8 m (WLS-CAL-001).
+- Garage-buildable prototype, $190 USD in WellSense parts per well at a 30 m probe depth, with the FieldNode core costed in the FieldNode repo (WLS-DDR-001, D1, and WLS-DDR-002, both decided by Amish on 2026-09-25). With the surface conduit added under WLS-DDR-002 the parts cost $197.60 at 30 m, so the budget holds only to about 25.8 m (WLS-CAL-001 v0.2).
 - Built on the lab's shared FieldNode core for power, radio and enclosure; WellSense adds only the probe, wellhead parts and interface.
 - No change to the water supply: nothing in the well may contaminate the water, and the well must stay sealed.
-- Must work beside an existing pump and riser without pulling them where possible.
+- Must work beside an existing pump and riser without pulling them where possible; the probe body is limited to 22 mm so it runs freely in a 1 in access tube (WLS-DDR-002).
 - Data belongs to the community that hosts the well. Readings are water levels only; the owner decides what to share.
 - Hand tools only for installation; parts available from plumbing, electrical and online suppliers.
 
@@ -61,7 +65,7 @@ Typical wells are 100 to 200 mm (4 to 8 in) boreholes 20 to 150 m deep with a su
 - **Commercial loggers.** Absolute-pressure loggers with barometric compensation and vented 4 to 20 mA transducers are the standard tools in groundwater monitoring. They are accurate and robust but closed and costly for community use.
 - **Standard methods.** The U.S. Geological Survey publishes procedures for measuring well water levels with a steel tape, an electric tape and a submersible pressure transducer ([Cunningham and Schalk, USGS Techniques and Methods 1-A1, 2011](https://pubs.usgs.gov/tm/1a1/)). WellSense follows the same logic: a transducer for the continuous record and a manual tape for the datum and periodic checks.
 - **Open loggers.** The Cave Pearl Project showed that an Arduino-class logger built from breakout boards can run for more than a year on three AA cells for $25 to $50 before sensors ([Beddows and Mallon, Sensors, 2018](https://www.mdpi.com/1424-8220/18/2/530)).
-- **Community groundwater management.** Farmer-led monitoring programmes in India have trained villagers to record well levels and rainfall and use them to plan crops. WellSense aims to make that record continuous and cheap. The specific programme data were not verified in this session and are left out.
+- **Community groundwater management.** In the Andhra Pradesh Farmer Managed Groundwater Systems project, farmers took fortnightly measurements of static and pumping water levels in their own wells, ran rain gauges and drew up crop-water budgets before the winter season; about half a million farmers in 661 habitations took part ([FAO, *Smallholders and Sustainable Wells*, 2013](https://www.fao.org/4/i3320e/i3320e.pdf)). WellSense aims to make that record continuous and cheap.
 
 ## Out of scope
 

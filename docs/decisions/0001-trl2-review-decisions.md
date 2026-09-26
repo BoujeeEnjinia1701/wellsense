@@ -3,7 +3,7 @@ doc_id: WLS-DDR-001
 title: WellSense TRL 2 review decisions
 project: WellSense
 doc_type: Design decision record
-version: "0.1"
+version: "0.2"
 status: Draft
 date: '2026-09-25'
 author: Amish Chadha
@@ -13,16 +13,20 @@ revisions:
   date: '2026-09-25'
   author: Amish Chadha
   change: Record the TRL 2 review recommendations adopted for TRL 3 work under Amish's 2026-09-25 instruction, and the items that remain open
+- version: "0.2"
+  date: '2026-09-25'
+  author: Amish Chadha
+  change: Recommendations accepted by Amish (DDR-002)
 ---
 
 # 0001: TRL 2 review decisions
 
 - **Date:** 2026-09-25
-- **Status:** proposed. The recommendations in items D1 to D8 are adopted for TRL 3 work pending Amish's review; items O1 and O2 remain "Proposed, awaiting Amish".
+- **Status:** accepted for D1 to D8. On 2026-09-25 Amish accepted all recommendations, so items D1 to D8 are "Decided by Amish, 2026-09-25: go with recommendation" (see WLS-DDR-002). Items O1 and O2 carry no recommendation and remain "Proposed, awaiting Amish".
 
 ## Context
 
-The TRL 2 review note (`docs/REVIEW.md`, session 2026-09-25, /populate) listed nine items as "Proposed, awaiting Amish", and the design precis WLS-PRC-001 v0.2 listed five key design choices, all marked proposed. On 2026-09-25 Amish asked for this batch of Design Molecule repos to be taken through the usual process with the instruction "you know the drill, nothing gets past TRL 3". He has not reviewed this repo's items one by one. Every item that carried a recommendation is therefore adopted as recommended for TRL 3 work, open for his review. Items without a recommendation stay open. Nothing here is recorded as decided or approved by Amish.
+The TRL 2 review note (`docs/REVIEW.md`, session 2026-09-25, /populate) listed nine items as "Proposed, awaiting Amish", and the design precis WLS-PRC-001 v0.2 listed five key design choices, all marked proposed. On 2026-09-25 Amish asked for this batch of Design Molecule repos to be taken through the usual process with the instruction "you know the drill, nothing gets past TRL 3". He has not reviewed this repo's items one by one. Every item that carried a recommendation is therefore adopted as recommended for TRL 3 work, open for his review. Items without a recommendation stay open. At v0.1 nothing here was recorded as decided by Amish; he accepted the recommendations later the same day (WLS-DDR-002).
 
 ## Options considered
 
@@ -30,18 +34,18 @@ The options for each item are those listed in `docs/REVIEW.md` (session 2026-09-
 
 ## Decision
 
-*Table 1. Items adopted for TRL 3 work.*
+*Table 1. Items decided (adopted for TRL 3 work, then accepted by Amish on 2026-09-25).*
 
 | # | Item | Adopted recommendation | Status |
 | --- | --- | --- | --- |
-| D1 | Budget treatment of FieldNode (review item 1) | Option (a): the FieldNode core is costed in the FieldNode repo, and the $180 `budget_usd` covers the WellSense parts only; the complete logger cost is stated alongside. `budget_usd` is unchanged. | Adopted as recommended for TRL 3 under Amish's 2026-09-25 instruction, open for his review |
-| D2 | Sensor type (review item 2; precis choice 1) | Option A: vented (gauge) 4 to 20 mA transducer for the first build; option B, a sealed absolute sensor with RS-485 and surface barometric compensation, kept as a variant | Adopted as recommended for TRL 3 under Amish's 2026-09-25 instruction, open for his review |
-| D3 | Range (review item 3) | 0 to 10 m of water; 0 to 20 m kept as a variant for wells with large pumping drawdown | Adopted as recommended for TRL 3 under Amish's 2026-09-25 instruction, open for his review |
-| D4 | Access tube (review item 4; precis choice 2) | Own access tube wherever a pump or riser shares the casing; probe hung freely where there is no pump | Adopted as recommended for TRL 3 under Amish's 2026-09-25 instruction, open for his review |
-| D5 | Default interval (review item 5) | 15 min, with 1 min during pumping tests | Adopted as recommended for TRL 3 under Amish's 2026-09-25 instruction, open for his review |
-| D6 | Manual tape check (review item 6; precis choice 4) | Tape datum at installation and a tape check each quarter as part of the method, with one shared tape per community or partner | Adopted as recommended for TRL 3 under Amish's 2026-09-25 instruction, open for his review |
-| D7 | Data ownership (review item 7; precis choice 5) | Levels, time and well ID only; the hosting community controls sharing; CSV export | Adopted as recommended for TRL 3 under Amish's 2026-09-25 instruction, open for his review |
-| D8 | FieldNode as the core (precis choice 3) | Reuse the lab's shared FieldNode core for enclosure, power, radio and storage; WellSense designs only the well side and the interface | Adopted as recommended for TRL 3 under Amish's 2026-09-25 instruction, open for his review |
+| D1 | Budget treatment of FieldNode (review item 1) | Option (a): the FieldNode core is costed in the FieldNode repo, and `budget_usd` covers the WellSense parts only; the complete logger cost is stated alongside. The figure itself was raised from $180 to $190 under WLS-DDR-002. | Decided by Amish, 2026-09-25: go with recommendation |
+| D2 | Sensor type (review item 2; precis choice 1) | Option A: vented (gauge) 4 to 20 mA transducer for the first build; option B, a sealed absolute sensor with RS-485 and surface barometric compensation, kept as a variant | Decided by Amish, 2026-09-25: go with recommendation |
+| D3 | Range (review item 3) | 0 to 10 m of water; 0 to 20 m kept as a variant for wells with large pumping drawdown | Decided by Amish, 2026-09-25: go with recommendation |
+| D4 | Access tube (review item 4; precis choice 2) | Own access tube wherever a pump or riser shares the casing; probe hung freely where there is no pump | Decided by Amish, 2026-09-25: go with recommendation |
+| D5 | Default interval (review item 5) | 15 min, with 1 min during pumping tests | Decided by Amish, 2026-09-25: go with recommendation |
+| D6 | Manual tape check (review item 6; precis choice 4) | Tape datum at installation and a tape check each quarter as part of the method, with one shared tape per community or partner | Decided by Amish, 2026-09-25: go with recommendation |
+| D7 | Data ownership (review item 7; precis choice 5) | Levels, time and well ID only; the hosting community controls sharing; CSV export | Decided by Amish, 2026-09-25: go with recommendation |
+| D8 | FieldNode as the core (precis choice 3) | Reuse the lab's shared FieldNode core for enclosure, power, radio and storage; WellSense designs only the well side and the interface | Decided by Amish, 2026-09-25: go with recommendation |
 
 No rewording of the pitch or problem line was recommended at TRL 2, so both stay as they are in `project.yaml` and `README.md`.
 

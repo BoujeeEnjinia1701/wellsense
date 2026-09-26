@@ -3,7 +3,7 @@ doc_id: WLS-PRC-001
 title: WellSense design precis
 project: WellSense
 doc_type: Design precis
-version: "0.3"
+version: "0.4"
 status: Draft
 date: '2026-09-25'
 author: Amish Chadha
@@ -21,13 +21,17 @@ revisions:
   date: '2026-09-25'
   author: Amish Chadha
   change: TRL 3 update from WLS-CAL-001 and WLS-DDR-001 (24 V loop boost, 0.25 % class probe, two-point calibration, numbers checked, choices adopted for TRL 3 pending review)
+- version: "0.4"
+  date: '2026-09-25'
+  author: Amish Chadha
+  change: Recommendations accepted by Amish (DDR-002)
 ---
 
 # WellSense design precis
 
 ## Summary
 
-WellSense hangs a vented submersible pressure transducer in its own access tube inside an existing well and reads it every 15 minutes through the lab's shared FieldNode core, which sends the level over LoRaWAN to an open community dashboard. The TRL 3 calculations (WLS-CAL-001) give 0.52 mm resolution and a sensor load of 38.2 mWh a day, 1.6 % of FieldNode's 100 mW allowance. They also found that FieldNode's 12 V rail cannot drive the current loop, so the interface board carries a 24 V boost. After a two-point field calibration against a manual tape, a 0.25 % class probe reaches 12.5 mm by root sum square against the ±20 mm target, but 27.1 mm if every error adds, so accuracy is at risk. The WellSense parts cost $187.60 at a 30 m probe depth, $7.60 over the $180 budget, and $313.60 with the FieldNode core. The design choices below are adopted for TRL 3 work under Amish's 2026-09-25 instruction, open for his review (WLS-DDR-001).
+WellSense hangs a vented submersible pressure transducer in its own access tube inside an existing well and reads it every 15 minutes through the lab's shared FieldNode core, which sends the level over LoRaWAN to an open community dashboard. The TRL 3 calculations (WLS-CAL-001) give 0.52 mm resolution and a sensor load of 38.2 mWh a day, 1.6 % of FieldNode's 100 mW allowance. They also found that FieldNode's 12 V rail cannot drive the current loop, so the interface board carries a 24 V boost. After a two-point field calibration against a manual tape, a 0.25 % class probe reaches 12.5 mm by root sum square against the ±20 mm target, but 27.1 mm if every error adds, so accuracy is at risk. Amish accepted all recommendations on 2026-09-25 (WLS-DDR-002): the budget rises to $190 for the 30 m design well, the probe is limited to 22 mm so it runs freely in the 1 in access tube (2.3 mm radial clearance), a galvanized conduit protects the surface cable, FieldNode's sun shield is fitted at hot sites, and pumping tests on a public network send every 30 min. With the $10.00 conduit the WellSense parts cost $197.60 at a 30 m probe depth, $7.60 over the $190 budget, and $323.60 with the FieldNode core. The design choices below are decided by Amish (WLS-DDR-001 and WLS-DDR-002).
 
 ![Hero render](../media/hero.png)
 
@@ -36,10 +40,10 @@ Figure 1. Concept massing model in a borehole with a pump and riser, soil cut op
 ## How it works
 
 1. **Sense.** The transducer measures the pressure of the water column above it. Its cable carries a capillary vent tube to the surface, so the sensor reads gauge pressure and air pressure changes cancel out. Water above the probe is h = p / (ρg), about 102 mm per kPa.
-2. **Keep clear of the pump.** The probe hangs at a recorded depth inside a 25 mm PVC access tube, slotted at the bottom, so it cannot tangle with the pump cable or riser and can be pulled for checks without touching the pump.
-3. **Seal the wellhead.** A split seal plate replaces or supplements the existing well cap, with glands for the riser and access tube. The cable leaves the tube through a cap with a cable-grip hanger.
+2. **Keep clear of the pump.** The probe, 22 mm in diameter or less, hangs at a recorded depth inside a 25 mm PVC access tube, slotted at the bottom, so it cannot tangle with the pump cable or riser and can be pulled for checks without touching the pump.
+3. **Seal the wellhead.** A split seal plate replaces or supplements the existing well cap, with glands for the riser and access tube. The cable leaves the tube through a cap with a cable-grip hanger and runs to the junction box inside a 1/2 in galvanized conduit.
 4. **Read.** FieldNode switches its 12 V rail on sensor port 1 for about 2 s every 15 min. A boost on the interface board raises it to 24 V, because 12 V leaves the transducer 4.44 V short of its 12 V minimum through the shunt and 62 m of cable (WLS-CAL-001, section B). The 4 to 20 mA loop current develops 0.6 to 3.0 V across a 150 Ω precision shunt, read by a 16-bit ADC over I2C. A barometric sensor on the post logs air pressure.
-5. **Convert and send.** Firmware converts current to water above the probe, then to depth to water below the measuring point: depth = probe depth below the measuring point minus water above the probe. FieldNode stores each reading and sends it in a short LoRaWAN uplink.
+5. **Convert and send.** Firmware converts current to water above the probe, then to depth to water below the measuring point: depth = probe depth below the measuring point minus water above the probe. FieldNode stores each reading and sends it in a short LoRaWAN uplink. During a pumping test at 1 min, readings are batched: every 15 min on a private TwinKit gateway, every 30 min on a public network to stay within fair use (22.7 s a day at SF9).
 6. **Show.** An open dashboard plots level below ground, daily pumping drawdown and recovery, and the change against the same month last year. The community owns the data and can export CSV.
 7. **Check.** At installation a caretaker measures depth to water with a manual electric tape, as in USGS procedures ([Cunningham and Schalk, 2011](https://pubs.usgs.gov/tm/1a1/)), then lifts the probe a measured 1 m and reads again; the two points fix offset and span. Each quarter a tape reading checks and corrects drift.
 
@@ -53,17 +57,18 @@ Table 1. Main components, numbered as in the BOM and the exploded view.
 
 | # | Component | Adopted choice | Notes |
 | --- | --- | --- | --- |
-| 1 | Pressure transducer | Vented 4 to 20 mA, 0 to 10 m, 0.25 % full scale class, 316 stainless, 24 mm diameter or less, IP68 | Range and type per DDR-001, D2 and D3 |
+| 1 | Pressure transducer | Vented 4 to 20 mA, 0 to 10 m, 0.25 % full scale class, 316 stainless, 22 mm diameter or less, IP68 | Range and type per DDR-001, D2 and D3; diameter per DDR-002 |
 | 2 | Vented cable | PU or PE jacket, two 0.2 mm² cores, 400 N strain member, vent capillary, about 7 mm | Probe depth plus 2 m, to 60 m |
-| 3 | Access tube | 25 mm (1 in) Sch 40 PVC, 26.6 mm bore, slotted over the bottom 0.5 m | Where a pump or riser shares the casing (DDR-001, D4); bore tight for a 24 mm probe |
+| 3 | Access tube | 25 mm (1 in) Sch 40 PVC, 26.6 mm bore, slotted over the bottom 0.5 m | Where a pump or riser shares the casing (DDR-001, D4); 2.3 mm radial clearance for a 22 mm probe (DDR-002) |
 | 4 | Wellhead seal plate | Split plate, 200 mm diameter, EPDM gasket, two glands and a tube clamp, for 150 mm casing | Fits round an installed riser; keeps surface water and insects out |
 | 5 | Tube cap and hanger | PVC cap with cable grip | Sets and records probe depth |
 | 6 | Junction box | IP66 box with silica gel breather on the vent tube | Desiccant changed every visit |
 | 7 | Interface board | 150 Ω 0.1 % 10 ppm/K shunt, 16-bit ADC with series input resistor, 12 to 24 V boost, 3.3 V regulator, TVS surge protection | Off-the-shelf modules, no custom PCB |
-| 8 | FieldNode core | Lab shared node: enclosure, 6 W panel, LiFePO4 cell, LoRaWAN radio | See the FieldNode repo |
+| 8 | FieldNode core | Lab shared node: enclosure, 6 W panel, LiFePO4 cell, LoRaWAN radio; sun shield at hot sites | See the FieldNode repo (FND-DDR-002 for the shield) |
 | 9 | Barometric sensor | BMP390 or BME280 class, in a vented housing on the post | Aquifer air pressure response; vent check |
 | 10 | Mounting post | 48.3 mm galvanized pipe, 2.7 m, 2.1 m above ground, 0.75 m from the well | FieldNode base at 1.75 m (FND-DDR-001, D11) |
 | 13 | Post footing | 300 mm diameter, 0.6 m deep, one 25 kg bag of concrete | Added at TRL 3 |
+| 14 | Surface cable conduit | 1/2 in (21.3 mm OD) galvanized rigid conduit, about 1.3 m, tube cap to junction box | Added under DDR-002 for R16 |
 
 ![Exploded view](../media/exploded.png)
 
@@ -90,17 +95,18 @@ Table 2. Key numbers from WLS-CAL-001.
 | Absolute sensor without compensation | ±306 mm | ±3 kPa weather swing | Reason for the vented design |
 | Energy per reading | 1.43 J | 24 V × 22 mA × 2 s through boost and rail, plus the controller | |
 | Sensor energy per day | 38.2 mWh | 96 readings | R8 met: 1.6 % of 100 mW |
+| Pumping test airtime, public network | 22.7 s/day | 30-reading batch every 30 min at SF9 | R6 met, within 30 s fair use |
 | Energy at 1 min interval | 0.573 Wh/day | 1,440 readings | 24 % of the allowance during tests |
 | Storage per year | 1.12 MB | 35,040 readings × 32 bytes | R7 met: 6.7 % of 16 MB |
-| Probe clearance in the tube | 1.3 mm radial | 24 mm probe in 26.6 mm bore | R10 at risk |
+| Probe clearance in the tube | 2.3 mm radial | 22 mm probe in 26.6 mm bore | R10 at risk (pump may need pulling) |
 | Hanging loads at 60 m | 35 N cable (factor 11.5); 264 N tube (factor 58) | Dry, worst case | R2 met |
-| WellSense parts per well | $187.60 | bom/bom.csv, 30 m probe depth | R12 not met ($180) |
-| With FieldNode core | $313.60 | Adds line 8 ($126.00, FND-CAL-001) | Counted in the FieldNode repo (DDR-001, D1) |
+| WellSense parts per well | $197.60 | bom/bom.csv, 30 m probe depth, conduit included | R12 not met ($190) |
+| With FieldNode core | $323.60 | Adds line 8 ($126.00, FND-CAL-001); $331.60 with the hot-site shield | Counted in the FieldNode repo (DDR-001, D1) |
 | Depth-dependent cost | $1.80 per metre | Cable plus access tube | Budget holds to 25.8 m |
 
 ## Key design choices
 
-Adopted as recommended for TRL 3 under Amish's 2026-09-25 instruction, open for his review (WLS-DDR-001).
+Decided by Amish, 2026-09-25: go with recommendation (WLS-DDR-001 and WLS-DDR-002).
 
 - **Vented 4 to 20 mA transducer rather than an absolute-pressure sensor with barometric compensation (D2).** The current loop is robust over long cables and the reading needs no compensation. The costs are desiccant maintenance at the vent and a 24 V boost, since the loop needs more than FieldNode's 12 V rail. A sealed absolute sensor with RS-485 and a surface barometer is kept as a variant.
 - **0 to 10 m range (D3),** with a 0 to 20 m variant for wells whose seasonal swing plus drawdown exceeds 9 m.
@@ -108,6 +114,10 @@ Adopted as recommended for TRL 3 under Amish's 2026-09-25 instruction, open for 
 - **FieldNode as the core (D8).** Reuses the lab's shared enclosure, solar charging, storage and radio, so WellSense designs only the well side. The interface board connects to sensor port 1 (switched 12 V rail and I2C); the pinout is still open in FieldNode (FND-DDR-001, O2). A battery-only node remains a question for the FieldNode project (DDR-001, O2).
 - **Manual tape as the reference (D6).** A shared electric tape sets the datum and the two-point calibration at installation and checks drift each quarter.
 - **Levels only (D7).** No camera, audio or pump data; the dashboard shows water level so that sharing the data carries little risk.
+- **1 in access tube with a probe of 22 mm or less (DDR-002).** Keeps the tube small enough to pass a centered riser in 150 mm casing; a 1-1/4 in tube would fit only 200 mm casing.
+- **Galvanized conduit over the surface cable (DDR-002).** Protects the cable from livestock, mowing and tampering between the tube cap and the junction box.
+- **Hot sites (DDR-002).** R15 stays at 55 °C; where the design maximum air temperature exceeds 30 °C (FND-CAL-001 v0.2), the FieldNode core carries FieldNode's sun shield (FND-DDR-002).
+- **Pumping-test uplinks (DDR-002).** Every 30 min on a public network, every 15 min on a private TwinKit gateway.
 
 ## Safety
 
@@ -123,12 +133,12 @@ Adopted as recommended for TRL 3 under Amish's 2026-09-25 instruction, open for 
 
 ## Open questions
 
-- [ ] Access tube bore: keep 1 in and require a probe of 22 mm or less, or use 1-1/4 in where the casing allows? Proposed, awaiting Amish (see `docs/REVIEW.md`).
 - [ ] Can an access tube be added beside an installed pump without pulling it? Only an installation trial can tell.
 - [ ] Real long-term drift of low-cost vented transducers; is a quarterly tape check enough?
 - [ ] Which drinking water material certifications can low-cost suppliers show for cable, seals and probe?
 - [ ] How should the dashboard present drawdown so that non-specialists read it correctly? To be answered in co-design.
-- [ ] Protection of the surface cable run against livestock, flooding and tampering (R16). Proposed, awaiting Amish.
+- [ ] Locking of the seal plate, tube cap and junction box (R16).
 - [ ] First partner and region for co-design (DDR-001, O1).
+- [ ] Cost at the 30 m design depth with the conduit included ($197.60 against $190). Proposed, awaiting Amish (see `docs/REVIEW.md`).
 
 Concept media: [blueprint sheet](../media/concept-blueprint.pdf), [interactive 3D model](../media/viewer.html).
