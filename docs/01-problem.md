@@ -3,7 +3,7 @@ doc_id: WLS-PRB-001
 title: WellSense problem statement
 project: WellSense
 doc_type: Problem statement
-version: "0.2"
+version: "0.3"
 status: Draft
 date: '2026-09-25'
 author: Amish Chadha
@@ -17,6 +17,10 @@ revisions:
   date: '2026-09-25'
   author: Amish Chadha
   change: Populate to TRL 2 (problem, users, context, constraints, prior work)
+- version: "0.3"
+  date: '2026-09-25'
+  author: Amish Chadha
+  change: Reflect WLS-DDR-001 (budget covers WellSense parts only) and the TRL 3 cost and access findings of WLS-CAL-001
 ---
 
 # WellSense problem statement
@@ -45,7 +49,7 @@ Typical wells are 100 to 200 mm (4 to 8 in) boreholes 20 to 150 m deep with a su
 
 ## Constraints
 
-- Garage-buildable prototype, about $180 USD in parts (see the budget question in `docs/REVIEW.md`).
+- Garage-buildable prototype, $180 USD in WellSense parts per well, with the FieldNode core costed in the FieldNode repo (WLS-DDR-001, D1, adopted for TRL 3 pending Amish's review). At TRL 3 the parts cost $187.60 at a 30 m probe depth, so the budget holds only to about 25.8 m (WLS-CAL-001).
 - Built on the lab's shared FieldNode core for power, radio and enclosure; WellSense adds only the probe, wellhead parts and interface.
 - No change to the water supply: nothing in the well may contaminate the water, and the well must stay sealed.
 - Must work beside an existing pump and riser without pulling them where possible.
@@ -67,8 +71,8 @@ Typical wells are 100 to 200 mm (4 to 8 in) boreholes 20 to 150 m deep with a su
 
 ## Open questions
 
-- First partner and region for co-design: an Indian farmer group, an African handpump programme or a US groundwater agency? Proposed, awaiting Amish.
-- How much access to the wellhead can a community give: can an access tube be added without pulling the pump?
+- First partner and region for co-design: an Indian farmer group, an African handpump programme or a US groundwater agency? Proposed, awaiting Amish (WLS-DDR-001, O1).
+- How much access to the wellhead can a community give: can an access tube be added without pulling the pump? WLS-CAL-001 shows a 1 in tube fits beside the riser of a 150 mm well in plan, but only an installation trial can show whether it can be lowered past an installed pump's riser and cable.
 - Who holds and publishes the data, and in what language and form do users want the dashboard?
 
 ## User research and co-design

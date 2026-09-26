@@ -3,7 +3,7 @@ doc_id: WLS-REQ-001
 title: WellSense requirements
 project: WellSense
 doc_type: Requirements
-version: "0.2"
+version: "0.3"
 status: Draft
 date: '2026-09-25'
 author: Amish Chadha
@@ -17,36 +17,42 @@ revisions:
   date: '2026-09-25'
   author: Amish Chadha
   change: First measurable requirements for TRL 2, with status against the concept
+- version: "0.3"
+  date: '2026-09-25'
+  author: Amish Chadha
+  change: TRL 3 status from WLS-CAL-001; R1, R6 and R12 restated under WLS-DDR-001 (D1, D3, D5); assumptions updated
 ---
 
 # WellSense requirements
 
-These are first-pass requirements for the concept. Targets are proposals for review, to be revised after co-design and checked by calculation at TRL 3. The status column states whether the concept in WLS-PRC-001 meets each target on first-order estimates.
+These requirements are checked by calculation in WLS-CAL-001 against the design in WLS-PRC-001 v0.3. Targets remain proposals, to be revised after co-design. Under WLS-DDR-001 (adopted as recommended for TRL 3 under Amish's 2026-09-25 instruction, open for his review), R1 names the adopted 0 to 10 m range (D3), R6 states how 1 min readings are sent (D5), and R12 costs the WellSense parts only, with the FieldNode core costed in the FieldNode repo (D1). No target was relaxed. On paper, 7 requirements are met, 4 are at risk, 2 are not met (R9 and R12) and 3 cannot be verified at TRL 3.
 
-Table 1. Requirements and status at TRL 2.
+Table 1. Requirements and status at TRL 3 (WLS-CAL-001, Table 3).
 
-| ID | Requirement | Target | Verification (TRL 3 or later) | Status at TRL 2 |
+| ID | Requirement | Target | Verification (TRL 3 or later) | Status at TRL 3 |
 | --- | --- | --- | --- | --- |
-| R1 | Measurement range (water above the probe) | 0 to 10 m, with a 0 to 20 m option | Datasheet | Met by the proposed transducer |
-| R2 | Installation depth below the wellhead | Probe to 60 m or more | Cable and tube length; hanger load | Met by design (cable sized per well) |
-| R3 | Resolution | 1 mm or better | ADC and shunt calculation | Met: about 0.5 mm (estimate) |
-| R4 | Accuracy after field calibration against a manual tape | ±20 mm over the range | Calculation, then side-by-side with a manual tape | **Not met on datasheet:** about ±50 mm at 0.5 % of full scale; may be met with a 0.25 % sensor or two-point field calibration, unverified |
-| R5 | Long-term drift | 20 mm a year or less, checked by a manual reading each quarter | Field record | **Unverified, at risk:** drift of low-cost transducers is not published |
-| R6 | Reading interval | 15 min default; 1 min during a pumping test | Firmware configuration | Met by design |
-| R7 | Local storage | 1 year of 15 min readings without a link | Storage calculation | Met: about 0.3 MB a year against FieldNode flash (estimate) |
-| R8 | Energy | Probe and interface use 5 % or less of the FieldNode sensor energy budget at 15 min | Power budget | Met: about 18 mWh a day, about 0.6 % (estimate) |
-| R9 | Water safety | All wetted parts 316 stainless steel or materials certified for drinking water contact; well sealed against surface water | Material certificates | **Not met on evidence:** cable jacket and sensor seal certification for low-cost transducers unknown |
-| R10 | Compatibility with the existing pump | Probe in its own access tube; no contact with pump, riser or pump cable | Design review, installation trial | **At risk:** fitting a tube may need the pump pulled; no room in narrow casings |
-| R11 | Installation | Two trained people, hand tools, 2 h or less when an access tube already exists | Installation trial | Unverified |
-| R12 | Cost | WellSense parts $180 or less per well (FieldNode core counted separately) | Priced BOM | Met: about $170; **not met** if FieldNode is included (about $296) |
-| R13 | Data use | Dashboard shows level below ground, daily drawdown and change against the same month last year on a basic phone; CSV export | Demonstration with sample data | Unverified (software not started) |
+| R1 | Measurement range (water above the probe) | 0 to 10 m (DDR-001, D3), with a 0 to 20 m variant | Datasheet | Met: 98.07 kPa full scale; swings to 9 m fit with 1 m headroom |
+| R2 | Installation depth below the wellhead | Probe to 60 m or more | Cable and tube length; hanger load | Met: cable factor 11.5 and tube factor 58 at 60 m; tube clamp needed at the seal plate |
+| R3 | Resolution | 1 mm or better | ADC and shunt calculation | Met: 0.52 mm (1.04 mm on the 20 m variant) |
+| R4 | Accuracy after field calibration against a manual tape | ±20 mm over the range | Calculation, then side-by-side with a manual tape | **At risk:** 12.5 mm root sum square, 27.1 mm worst case, with a 0.25 % class probe and two-point calibration; a 0.5 % class probe does not meet it |
+| R5 | Long-term drift | 20 mm a year or less, checked by a manual reading each quarter | Field record | Not verifiable at TRL 3: drift of low-cost transducers is not published; a quarterly check leaves at most 5 mm uncorrected |
+| R6 | Reading interval | 15 min default; 1 min during a pumping test, logged and sent in batches (DDR-001, D5) | Firmware configuration | Met by design; a 1 min batch uses 31.6 s a day of airtime at SF9, over public fair use, so tests on a public network send every 30 min |
+| R7 | Local storage | 1 year of 15 min readings without a link | Storage calculation | Met: 1.12 MB a year, 6.7 % of FieldNode flash |
+| R8 | Energy | Probe and interface use 5 % or less of the FieldNode sensor energy budget at 15 min | Power budget | Met: 38.2 mWh a day, 1.6 % of the 100 mW allowance |
+| R9 | Water safety | All wetted parts 316 stainless steel or materials certified for drinking water contact; well sealed against surface water | Material certificates | **Not met on evidence:** no certificate in hand for low-cost cable, seals or probe |
+| R10 | Compatibility with the existing pump | Probe in its own access tube; no contact with pump, riser or pump cable | Design review, installation trial | **At risk:** tube fits the 150 mm design well, but the 24 mm probe has 1.3 mm radial clearance in a 1 in tube, and fitting a tube may need the pump pulled |
+| R11 | Installation | Two trained people, hand tools, 2 h or less when an access tube already exists | Installation trial | Not verifiable at TRL 3: 120 min estimate, at the limit |
+| R12 | Cost | WellSense parts $180 or less per well at a 30 m probe depth; FieldNode core costed in the FieldNode repo (DDR-001, D1) | Priced BOM | **Not met:** $187.60 at 30 m; met to 25.8 m; $313.60 with the FieldNode core |
+| R13 | Data use | Dashboard shows level below ground, daily drawdown and change against the same month last year on a basic phone; CSV export | Demonstration with sample data | Not verifiable at TRL 3 (software not started) |
 | R14 | Data ownership and privacy | Water level, time and well ID only; the hosting community controls sharing | Design review | Met by design |
-| R15 | Environment | Probe IP68 at 1.5 times range; above-ground parts IP65, -10 to 55 °C | Datasheets, later field test | Met on datasheets; unverified in the field |
-| R16 | Tamper resistance | Wellhead parts lockable; no exposed cable at reachable height | Design review | **At risk:** cable run from the wellhead to the post is exposed in the concept |
+| R15 | Environment | Probe IP68 at 1.5 times range; above-ground parts IP65, -10 to 55 °C | Datasheets, later field test | **At risk:** met on datasheets for WellSense parts, but the FieldNode core is rated to 45 °C ambient and misses its own interior temperature target in hot sun (FND-CAL-001) |
+| R16 | Tamper resistance | Wellhead parts lockable; no exposed cable at reachable height | Design review | **At risk:** the cable run from the wellhead to the post is exposed |
 
 ## Assumptions
 
-- Water density 1,000 kg/m³; 1 m of water is 9.81 kPa. Temperature changes density by about 0.3 % between 4 and 25 °C, which firmware corrects using the probe temperature where available.
-- A vented (gauge) transducer is assumed, so the reading is already referenced to air pressure. The barometric sensor is kept to record the aquifer's response to air pressure and to detect a blocked vent.
-- Accuracy stated as a percentage of full scale applies over the whole 10 m range; ±0.5 % of 10 m is ±50 mm.
-- Sensor supply 12 V, current up to about 22 mA, powered for about 2 s per reading, from FieldNode's switched 12 V rail at about 80 % boost efficiency.
+- The full list of assumptions is in WLS-CAL-001, Table 1. The main ones follow.
+- Water density 1,000 kg/m³ nominal; 1 m of water is 9.81 kPa. Density changes by 0.29 % between 4 and 25 °C, so firmware uses a fixed site density set from the groundwater temperature at installation, and local gravity rather than standard gravity.
+- A vented (gauge) transducer (DDR-001, D2), so the reading is already referenced to air pressure. The barometric sensor records the aquifer's response to air pressure and detects a blocked vent.
+- Accuracy after a two-point field calibration: the tape reading at installation and again after lifting the probe a measured 1 m. Nonlinearity, hysteresis and repeatability of a 0.25 % class probe taken as 0.10 % of full scale (typical, not measured).
+- Loop powered at 24 V from a boost on the interface board, fed by FieldNode's switched 12 V rail at 90 % efficiency; 22 mA for 2 s per reading.
+- Design case: 150 mm casing, 4 in pump on a 1-1/4 in riser, probe 30 m below the top of the casing.
