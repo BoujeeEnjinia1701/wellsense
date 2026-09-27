@@ -1,4 +1,4 @@
-"""WellSense general arrangement sheet WLS-DWG-001, Rev P2 (TRL 3; P2 applies WLS-DDR-002).
+"""WellSense general arrangement sheet WLS-DWG-001, Rev P3 (TRL 3; P2 applies WLS-DDR-002; P3 applies WLS-DDR-003).
 
 Run from the repo root:  python cad/src/sheets.py
 Writes cad/drawings/WLS-DWG-001.svg, .pdf and .png from the parametric model in
@@ -18,6 +18,7 @@ from drawing import Sheet, _viewbox, _t, M, TB_Y, INK, MUTED  # noqa: E402
 from model import DESIGN as DS, PARAMS as P, box, build_parts, derived  # noqa: E402
 
 DATE = "2026-09-25"
+DATE_P3 = "2026-09-27"
 Z_CUT = -700.0
 
 
@@ -106,11 +107,12 @@ def main():
     probe = Compound(children=[s_parts[k] & lo for k in ("tube", "probe")])
     pviews = safe_project_views(probe, work / "probe", names=("front",))
     bb = surf.bounding_box()
-    s = Sheet(project="WellSense", title="General arrangement", dwg_no="WLS-DWG-001", rev="P2",
-              author="Amish Chadha", date=DATE, scale=None, theme="technical",
+    s = Sheet(project="WellSense", title="General arrangement", dwg_no="WLS-DWG-001", rev="P3",
+              author="Amish Chadha", date=DATE_P3, scale=None, theme="technical",
               material="Bought-in parts per bom/bom.csv; borehole not drawn below -700. PRELIMINARY, NOT FOR FABRICATION",
               revisions=[("P1", "Preliminary GA for TRL 3 (from cad/src/model.py)", DATE, "AC"),
-                         ("P2", "22 mm probe; conduit 14 added (WLS-DDR-002)", DATE, "AC")])
+                         ("P2", "22 mm probe; conduit 14 added (WLS-DDR-002)", DATE, "AC"),
+                         ("P3", "FieldNode panel tilt corrected to face -Y (WLS-DDR-003)", DATE_P3, "AC")])
     s.add_ortho(views)
     k = s.scale
     c = ortho_cells(s, views)

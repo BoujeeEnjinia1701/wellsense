@@ -114,6 +114,9 @@ def derived(p=PARAMS):
         "head_display": p["water_z"] - probe_bot,
         "enc_back": enc_back, "enc_front": enc_back - ed, "enc_yc": enc_back - ed / 2,
         "enc_bot": p["fnd_z0"], "enc_top": p["fnd_z0"] + eh,
+        # X rotation of the FieldNode panel: positive tilts the cells toward -Y (the way the node
+        # faces, as in FND-DWG-001) with the high edge at the back, toward the post
+        "panel_rot_x": p["fnd_tilt"],
         "panel_high_z": pcz + half * math.sin(t) + p["fnd_panel"][2] / 2 * math.cos(t),
         "overall_h": pcz + half * math.sin(t) + p["fnd_panel"][2] / 2 * math.cos(t),
         "cap_top": p["tube_top"] + p["cap"][1] + p["cap"][3],
@@ -231,9 +234,13 @@ def build_parts(p=PARAMS):
     whip = cyl(wd / 2, z0 - 20 - wl, z0, x=px + p["fnd_ant_x"], y=D["enc_yc"])
     pnw, pnl, pnt = p["fnd_panel"]
     pcy, pcz = p["fnd_panel_c"][0], z0 + p["fnd_panel_c"][1]
-    panel = Pos(px, pcy, pcz) * Rot(-p["fnd_tilt"], 0, 0) * Box(pnw, pnl, pnt)
-    legs = (tube((px - 80, enc_back_y(p), z0 + 260), (px - 80, pcy + 60, pcz - 40), 6)
-            + tube((px + 80, enc_back_y(p), z0 + 260), (px + 80, pcy + 60, pcz - 40), 6))
+    panel = Pos(px, pcy, pcz) * Rot(D["panel_rot_x"], 0, 0) * Box(pnw, pnl, pnt)
+    # legs from the back plate to the underside of the panel, 60 mm behind its center line
+    t = math.radians(D["panel_rot_x"])
+    ly, lz = 60.0, -pnt / 2 + 2.0      # ends 2 mm into the panel so the massing fuses
+    ley, lez = pcy + ly * math.cos(t) - lz * math.sin(t), pcz + ly * math.sin(t) + lz * math.cos(t)
+    legs = (tube((px - 80, enc_back_y(p), z0 + 260), (px - 80, ley, lez), 6)
+            + tube((px + 80, enc_back_y(p), z0 + 260), (px + 80, ley, lez), 6))
     s["fieldnode"] = plate + enc + ports + whip + panel + legs
 
     # 2 vented cable: probe up the tube, out of the hanger, across to the box, box to FieldNode port 1

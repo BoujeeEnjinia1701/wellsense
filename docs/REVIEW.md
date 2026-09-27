@@ -196,3 +196,55 @@ Amish wrote on 2026-09-26: "i approve all the budget items." Budget set to $200 
 - R12 (cost): target $190 to $200; status **Not met to Met**, $2.40 under, and the budget now holds to a 31.3 m probe depth (was 25.8 m). Requirement status is now 1 not met (R9), 4 at risk (R4, R10, R15, R16), 3 not verifiable at TRL 3 (R5, R11, R13), 8 met.
 - Files changed: `project.yaml`, `README.md`, WLS-PRB-001 v0.5, WLS-PRC-001 v0.5, WLS-REQ-001 v0.5, WLS-CAL-001 v0.3 (`sizing.py` and `results.csv` rerun; R12 status now computed from the budget), WLS-DDR-002 v0.2, `bom/bom-notes.md`, `cad/src/concept_media.py` (blueprint key figure); media and PDFs regenerated, temporary `media/_views*` folders deleted.
 - Still awaiting Amish: O1 (co-design partner and region) and O2 (battery-only FieldNode variant). `trl: 3` and `trl_target: 3` are unchanged; TRL 4 remains on hold.
+
+## Session 2026-09-26: product appearance model and photoreal renders
+
+Amish chose WellSense for the first batch of product renders on 2026-09-26. This session adds an appearance model for photoreal renders; the renders themselves (`media/render-hero.png`, `media/render-exploded.png`, `media/render-detail.png`) are produced later by the orchestrator.
+
+### What was done
+
+- `cad/src/product_model.py` (new): `product_parts()` returns 84 parts (48 shell, 11 internal, 15 accessory, 10 context), each valid and tessellating, with material, BOM line, group and exploded-view offset. It also defines `TITLE` and three `RENDER_VIEWS`: hero (front right, about 30 deg, ground cut open), exploded (front right, about 28 deg) and detail (front right, about 14 deg, the logger on its post without the well).
+- What the appearance model adds:
+  - FieldNode core (line 8): filleted enclosure with side ribs, lid parting line and gasket, lid screws, clear lid window over the controller board, lit green status light, lid label, M12 port 1 with the WellSense lead plugged in and port 2 capped, whip antenna, 6 W panel with frame and cell grid on flat-bar legs, back plate with V-blocks and band clamps.
+  - Junction box (line 6) and interface board (line 7): filleted IP66 box with side ribs, lid gasket and screws, clear lid window over the board (shunt, ADC and boost modules, inductor, terminal block, lit power light), WellSense label with the teal band, top cable gland, galvanized conduit hub and a clear desiccant breather showing orange indicating silica gel.
+  - Barometric sensor (line 9): louvered housing on a small bracket.
+  - Wellhead: teal split seal plate (line 4) with a split line, EPDM gasket, stainless bolts and glands; PVC tube cap with a stainless cable-grip hanger (line 5); galvanized conduit (line 14) with swept bends and a compression gland at the tube cap.
+  - In the well: slotted access tube (line 3) with an end plug, shown in half section; the 22 mm stainless transducer (line 1) with a black nose guard, teal band and strain relief, on its vented cable (line 2).
+  - Context: a compact block of ground cut open on the viewer's side (dry soil over the saturated aquifer), a small concrete apron, the steel casing in half section, the pump riser and the well water (clear).
+- `README.md`: hero image now `media/render-hero.png`; an exploded render link added at the start of the links line.
+- Self-check previews (matplotlib, clear parts left out) were reviewed for all three views; they are scratch files and are not in the repo.
+
+### Differences from model.py (appearance model only)
+
+Each is **Proposed, awaiting Amish**. `model.py`, the BOM, the drawing and the docs are unchanged.
+
+1. **Render layout.** For a compact render the post is drawn 330 mm from the well instead of 750 mm, and everything on it 350 mm lower than installed (FieldNode base 1.40 m instead of 1.75 m, junction box center 0.90 m instead of 1.25 m); the relative positions on the post and all part sizes are unchanged. The borehole is shortened further than in `model.py` (probe tip 0.58 m and water 0.15 m below the ground, against a 30 m design depth), and the concrete apron is drawn 640 mm across instead of 1.2 m. The hero caption says the post is drawn closer and lower and the borehole is shortened. Recommendation: accept for renders only; the installed layout stays in `model.py` and WLS-DWG-001.
+2. **Solar panel tilt direction.** `model.py` rotates the FieldNode panel by -40 deg about X, which turns its cells toward +Y (toward the post) with the high edge at the front. The FieldNode model (FND-DWG-001) tilts the panel toward -Y, the direction the node faces, and the product model follows FieldNode. Recommendation: correct the sign in `model.py` in the next media refresh, so the massing, the drawing and the renders agree with FieldNode.
+3. **Conduit route at the tube cap.** `model.py` leaves the cap vertically for 30 mm and then runs a short diagonal up to the 720 mm route height; the product model rises vertically to 720 mm and turns with a 42 mm bend radius. End points, route height and the entry under the junction box are unchanged. Recommendation: accept; a single bend is what a rigid conduit installer would fit.
+4. **Seal plate gasket.** The lower 2.5 mm of the 25 mm seal plate is drawn as the EPDM gasket, so the plate top stays at 475 mm. Recommendation: accept as appearance only.
+5. **Groups for the views.** The post, access tube and vented cable are drawn in two parts each; the lower post, footing, upper tube and upper cable are grouped with the context so the exploded view stays compact, and the probe is shown on the slotted bottom section. Recommendation: accept.
+
+### Status
+
+Appearance only: no tolerances, no fabrication detail, nothing past TRL 3. `trl: 3` and `trl_target: 3` are unchanged, and TRL 4 remains on hold. Still awaiting Amish: O1 (co-design partner and region), O2 (battery-only FieldNode variant) and the five render items above.
+
+## Session 2026-09-27: owner decision applied
+
+On 2026-09-27 Amish wrote: "resolve the challenges for ConePro, BridgePulse, Grainguard and WellSense." For WellSense this applies the recommendation for render item 2 of the 2026-09-26 session (solar panel tilt direction). Decided by Amish on 2026-09-27.
+
+### What changed
+
+- `cad/src/model.py`: `derived()` adds `panel_rot_x` (+40 deg about X), and `build_parts()` rotates the FieldNode panel by it instead of -40 deg, so the cells face -Y (the way the node faces, as in FND-DWG-001) with the high edge at the back toward the post. The two panel legs now end at the panel underside 60 mm behind its center line so they still meet the tilted panel. Tilt angle, panel size and center, enclosure, post and every interface are unchanged; the overall height stays 2,206 mm and the FieldNode massing is one valid solid clear of the post.
+- `cad/src/product_model.py`: the panel rotation now comes from `derived()["panel_rot_x"]` instead of its own opposite-sign rotation of `fnd_tilt`; the docstring and comment say so. The product geometry is unchanged (still 84 valid parts).
+- `cad/src/sheets.py`: WLS-DWG-001 reissued at Rev P3 ("FieldNode panel tilt corrected to face -Y (WLS-DDR-003)", 2026-09-27).
+- `docs/decisions/0003-panel-tilt-direction.md` (new, WLS-DDR-003 v0.1), listed in `project.yaml` `trl_evidence` and linked from `README.md`.
+- Regenerated: `cad/step/*.step`, `cad/stl/*.stl`, `cad/drawings/WLS-DWG-001.*`, `media/hero.png`, `media/concept-blueprint.*`, `media/cutaway.png`, `media/exploded.png`, `media/flow.png`, `media/model.glb`, `media/viewer.html` and `docs/pdf/`.
+- No other document stated the old tilt direction; the BOM, requirements and calculations are unaffected.
+
+### Result
+
+The massing model, the drawing and the appearance model now agree with FieldNode: the panel faces -Y in all three. Photoreal renders (`media/render-*.png`) do **not** need regenerating: the appearance model already drew the panel facing -Y, and no part in the hero, exploded or detail views changes shape, size or position.
+
+### Still awaiting Amish
+
+O1 (co-design partner and region), O2 (battery-only FieldNode variant) and render items 1, 3, 4 and 5 of the 2026-09-26 session remain "Proposed, awaiting Amish". `trl: 3` and `trl_target: 3` are unchanged, and TRL 4 remains on hold.
