@@ -54,12 +54,12 @@ def safe_project_views(part, workdir, names=("front", "top", "right", "iso"), li
 def ortho_cells(sheet, views, names=("front", "top", "right")):
     """Repeat Sheet.add_ortho's layout arithmetic to find where each view lands (x, y, w, h)."""
     ax, ay, aw, ah = M + 10, M + 16, 245, TB_Y - M - 20
-    gap, lab = 14, 12
+    gap, lab, dl = 14, 12, 11
     dims = {n: _viewbox(Path(views[n]).read_text())[2:] for n in names}
     fw, fh = dims["front"]; tw, th = dims["top"]; rw, rh = dims["right"]
     k = sheet.scale
-    ax += (aw - (k * (max(fw, tw) + rw) + gap)) / 2
-    ay += (ah - (k * (th + max(fh, rh)) + gap + 2 * lab)) / 2
+    ax += (aw - (k * (max(fw, tw) + rw) + gap + dl)) / 2 + dl
+    ay += (ah - (k * (th + max(fh, rh)) + gap + 2 * lab + dl)) / 2 + dl
     colw = k * max(fw, tw)
     front_y = ay + k * th + lab + gap
     row_h = k * max(fh, rh)
@@ -107,12 +107,13 @@ def main():
     probe = Compound(children=[s_parts[k] & lo for k in ("tube", "probe")])
     pviews = safe_project_views(probe, work / "probe", names=("front",))
     bb = surf.bounding_box()
-    s = Sheet(project="WellSense", title="General arrangement", dwg_no="WLS-DWG-001", rev="P3",
+    s = Sheet(project="WellSense", title="General arrangement", dwg_no="WLS-DWG-001", rev="P4",
               author="Amish Chadha", date=DATE_P3, scale=None, theme="technical",
               material="Bought-in parts per bom/bom.csv; borehole not drawn below -700. PRELIMINARY, NOT FOR FABRICATION",
               revisions=[("P1", "Preliminary GA for TRL 3 (from cad/src/model.py)", DATE, "AC"),
                          ("P2", "22 mm probe; conduit 14 added (WLS-DDR-002)", DATE, "AC"),
-                         ("P3", "FieldNode panel tilt corrected to face -Y (WLS-DDR-003)", DATE_P3, "AC")])
+                         ("P3", "FieldNode panel tilt corrected to face -Y (WLS-DDR-003)", DATE_P3, "AC"),
+                         ("P4", "Layout and labels tidied", DATE_P3, "AC")])
     s.add_ortho(views)
     k = s.scale
     c = ortho_cells(s, views)
@@ -128,7 +129,7 @@ def main():
     L.append(_t(X(-560), zg - 1, "GROUND", 2.0, 600, MUTED, "start"))
     for zz, txt in ((-260, "EXISTING WELL"), (-330, "(NOT IN BOM)"), (-560, "BOREHOLE CONTINUES"), (-630, "PROBE 30 m (DESIGN)")):
         L.append(_t(X(-110), Z(zz), txt, 1.7, 600, MUTED, "end"))
-    xl = X(bb.min.X) - 4
+    xl = X(bb.min.X) - 12
     for i, (zz, label) in enumerate(((D["enc_bot"], f"{D['enc_bot']:.0f} FieldNode base"),
                                      (P["post_h"], f"{P['post_h']:.0f} post top"),
                                      (D["overall_h"], f"{D['overall_h']:,.0f} overall"))):
@@ -138,12 +139,13 @@ def main():
     L += dim_v(X(px) - 14, zg, Z(-P["embed"]), f"{P['embed']:.0f}")
     xr = X(bb.max.X) + 5
     L += [ext(X(tx), Z(D["cap_top"]), xr + 1, Z(D["cap_top"])), ext(X(0), Z(P["stickup"]), xr + 1, Z(P["stickup"]))]
-    L += dim_v(xr, Z(D["cap_top"]), zg, f"{D['cap_top']:.0f} cap", side=1)
-    L += dim_v(xr + 6, Z(P["stickup"]), zg, f"{P['stickup']:.0f} casing", side=1)
+    L += dim_v(xr, Z(D["cap_top"]), zg, f"{D['cap_top']:.0f} cap", side=3.2)
+    L += dim_v(xr + 6, Z(P["stickup"]), zg, f"{P['stickup']:.0f} casing", side=3.2)
     zt = -430
-    L += dim_h(X(px), X(0), Z(zt), f"{D['well_to_post']:.0f} well to post")
+    L += dim_h(X(px), X(0), Z(zt), f"{D['well_to_post']:.0f}")
     L += leader(X(D["jbox_x"]), Z(P["jbox_z"]), X(D["jbox_x"]) + 18, Z(P["jbox_z"] + 60), "6 JUNCTION BOX, 7 BOARD")
-    L += leader(X(tx), Z(P["tube_top"] + 20), X(tx) + 12, Z(P["tube_top"] + 380), "5 CAP AND HANGER")
+    L += leader(X(tx), Z(P["tube_top"] + 20), X(tx) + 9, Z(P["tube_top"] + 380), "5 CAP AND")
+    L.append(_t(X(tx) + 10, Z(P["tube_top"] + 380) + 4.6, "HANGER", 2.1, 400, INK, "start"))
     L += leader(X(-D["seal_d"] / 2 + 10), Z(D["seal_top"] - 10), X(-D["seal_d"] / 2) - 8, Z(D["seal_top"] + 110), "4 SEAL PLATE", "end")
     L += leader(X(px + 40), Z(D["enc_bot"] + 100), X(px) + 30, Z(D["enc_bot"] + 560), "8 FIELDNODE CORE")
     L += leader(X(-300), Z(P["cable_z"]), X(-300) + 6, Z(P["cable_z"] + 330), "14 CONDUIT")
@@ -152,22 +154,22 @@ def main():
     x, y, w, h = c["top"]
     Xt = lambda mx: x + (mx - bb.min.X) * k
     Yt = lambda my: y + h - (my - bb.min.Y) * k
-    L.append(_t(x + w / 2, y - 3, "FIELDNODE AND PANEL FACE -Y (TOWARD THE EQUATOR)", 1.9, 400, MUTED, "middle"))
 
     # right view: seal plate diameter
     x, y, w, h = c["right"]
     Yr = lambda my: x + (my - bb.min.Y) * k
     Zr = lambda mz: y + h - (mz - bb.min.Z) * k
-    L += dim_h(Yr(-D["seal_d"] / 2), Yr(D["seal_d"] / 2), Zr(D["seal_top"] + 330), f"{D['seal_d']:.0f}")
+    L += dim_h(Yr(-D["seal_d"] / 2), Yr(D["seal_d"] / 2), Zr(D["seal_top"] + 330), "")
+    L.append(_t(Yr(D["seal_d"] / 2) + 1.5, Zr(D["seal_top"] + 330) + 0.8, f"{D['seal_d']:.0f}", 2.3, 400, INK, "start", mono=True))
     L += [ext(Yr(-D["seal_d"] / 2), Zr(D["seal_top"]), Yr(-D["seal_d"] / 2), Zr(D["seal_top"] + 340)),
           ext(Yr(D["seal_d"] / 2), Zr(D["seal_top"]), Yr(D["seal_d"] / 2), Zr(D["seal_top"] + 340))]
 
     s._layers += L
-    s.add_svg(views["iso"], 276, 32, 66, 100, label="Isometric view", sublabel="Not to scale")
-    # probe detail at 1:5
-    pk = 0.2
+    s.add_svg(views["iso"], 276, 41, 66, 96, label="Isometric view", sublabel="Not to scale")
+    # probe detail at 1:6
+    pk = 1 / 6
     pb = probe.bounding_box()
-    dx, dy = 360, 34
+    dx, dy = 368, 42
     s.add_svg(pviews["front"], dx, dy, scale=pk, label=None)
     pw_, ph_ = _viewbox(pviews["front"].read_text())[2:]
     Zp = lambda mz: dy + ph_ * pk - (mz - pb.min.Z) * pk
@@ -175,7 +177,7 @@ def main():
     s._layers += dim_v(Xp(pb.min.X) - 4, Zp(D["probe_top"]), Zp(D["probe_bot"]), f"{P['probe'][1]:.0f}")
     s._layers += dim_v(Xp(pb.min.X) - 10, Zp(P["tube_bot"] + P["slot_zone"]), Zp(P["tube_bot"]), f"{P['slot_zone']:.0f} slotted")
     s._layers.append(_t(dx + pw_ * pk / 2, dy + ph_ * pk + 6, "DETAIL A: PROBE ZONE", 2.8, 600, INK, "middle"))
-    s._layers.append(_t(dx + pw_ * pk / 2, dy + ph_ * pk + 10, "Scale 1:5; bottom of tube", 2.2, 400, MUTED, "middle"))
+    s._layers.append(_t(dx + pw_ * pk / 2, dy + ph_ * pk + 10, "Scale 1:6; bottom of tube", 2.2, 400, MUTED, "middle"))
     s._layers += leader(Xp(pb.max.X) - 2, Zp(D["probe_top"] - 60), Xp(pb.max.X) + 5, Zp(D["probe_top"] - 60), "1 PROBE")
     s._layers += leader(Xp(pb.max.X) - 1, Zp(D["probe_top"] + 120), Xp(pb.max.X) + 5, Zp(D["probe_top"] + 120), "3 TUBE")
     s.add_notes("Main dimensions and interfaces (mm)", [
@@ -188,7 +190,7 @@ def main():
         f"FieldNode core per FND-DWG-001; base {D['enc_bot']:.0f}; sensor port 1 (I2C, 12 V rail)",
         "Loop 4 to 20 mA from a 24 V boost; 150 ohm shunt (WLS-CAL-001)",
         f"Cable in 1/2 in galv. conduit ({P['conduit_od']} OD), tube cap to junction box",
-        "Third-angle; front view from -Y; well on the Z axis",
+        "Third-angle; front view from -Y, FieldNode and panel face the equator; well on the Z axis",
     ], x=276, y=158, width=146)
     out = s.save(ROOT / "cad" / "drawings" / "WLS-DWG-001")
     shutil.rmtree(work, ignore_errors=True)
