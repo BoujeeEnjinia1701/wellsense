@@ -1,4 +1,4 @@
-"""WellSense sizing calculations, WLS-CAL-001 v0.2 (TRL 3, WLS-DDR-002 applied).
+"""WellSense sizing calculations, WLS-CAL-001 v0.4 (TRL 3, WLS-DDR-002 and WLS-DDR-004 applied).
 
 Run from the repo root:  python docs/04-calcs/sizing.py
 Prints every number quoted in docs/04-calcs/01-sizing.md. Each line carries a tag such as
@@ -93,7 +93,7 @@ def airtime(pl, sf=9, bw=125e3, cr=1, npre=8, header=True, crc=True):
     return (npre + 4.25) * ts + n * ts
 
 
-print("WellSense sizing, WLS-CAL-001 v0.2")
+print("WellSense sizing, WLS-CAL-001 v0.4")
 print(f"Model: casing {P['casing_id']:.0f} mm bore, tube {P['tube_od']} x {P['tube_id']} mm, probe {P['probe'][0]:.0f} x {P['probe'][1]:.0f} mm; "
       f"design probe depth {DS['probe_depth_m']:.0f} m (to {DS['probe_depth_max_m']:.0f} m)")
 
@@ -183,7 +183,16 @@ tag("D3", f"Cable and probe hanging in air at {DS['probe_depth_max_m']:.0f} m: {
 a_tube = math.pi / 4 * (P["tube_od"] ** 2 - P["tube_id"] ** 2) / 1e6
 w_tube = a_tube * PVC[0] * 9.81 * DS["probe_depth_max_m"]
 tag("D4", f"Access tube {a_tube * 1e6:.0f} mm2, {a_tube * PVC[0]:.2f} kg/m; {DS['probe_depth_max_m']:.0f} m hanging dry: {w_tube:.0f} N, stress {w_tube / a_tube / 1e6:.2f} MPa "
-    f"against {PVC[1] / 1e6:.0f} MPa (factor {PVC[1] / (w_tube / a_tube):.0f}); the seal plate gland needs a tube clamp for {w_tube:.0f} N")
+    f"against {PVC[1] / 1e6:.0f} MPa (factor {PVC[1] / (w_tube / a_tube):.0f}); the tube collar carries {w_tube:.0f} N onto the seal plate")
+# WLS-DDR-004: load paths of the constructable wellhead
+co_od, co_w = P["collar"]
+a_collar = math.pi / 4 * (co_od ** 2 - P["tube_od"] ** 2)
+tag("D5", f"Collar on the HDPE seal plate: {w_tube:.0f} N on {a_collar:.0f} mm2, {w_tube / a_collar:.2f} MPa bearing against about 20 MPa for HDPE "
+    f"(factor {20 / (w_tube / a_collar):.0f}); the collar's friction grip on the tube is the maker's rating, to confirm at purchase")
+wall = (P["cap"][0] - P["tube_od"]) / 2
+a_bolt = 2 * 5.0 * wall
+tag("D6", f"Probe and cable ({w_cable:.0f} N at {DS['probe_depth_max_m']:.0f} m) hang from the support grip on the M5 cross bolt: bearing on the two "
+    f"{wall:.1f} mm cap walls {w_cable / a_bolt:.2f} MPa against about 50 MPa for PVC; the cap sits on the tube end, so the load reaches the collar through the tube")
 
 # ------------------------------------------------------------------ E. Storage and airtime (R6, R7)
 print("\nE. Storage and airtime")
@@ -203,7 +212,7 @@ vent_ml = math.pi / 4 * VENT_ID ** 2 * (DS["probe_depth_max_m"] + DS["surface_ru
 breath_l = (BOX_AIR_L + vent_ml / 1000) * DT_DAY / 300
 water_mg = breath_l / 1000 * ABS_HUM * 1000
 days = GEL[0] * GEL[1] * 1000 / water_mg
-tag("F1", f"Vent capillary {vent_ml:.0f} mL at 62 m; box and vent breathe {breath_l:.2f} L/day at a {DT_DAY:.0f} K swing, carrying {water_mg:.1f} mg of water at worst; "
+tag("F1", f"Vent capillary {vent_ml:.0f} mL at {DS['probe_depth_max_m'] + DS['surface_run_m']:.1f} m; box and vent breathe {breath_l:.2f} L/day at a {DT_DAY:.0f} K swing, carrying {water_mg:.1f} mg of water at worst; "
     f"{GEL[0]:.0f} g of gel lasts about {days:.0f} days if the whole box breathes through it (quarterly change: factor {days / 91:.1f})")
 
 # ------------------------------------------------------------------ G. Installation (R11)
@@ -234,11 +243,14 @@ fixed = c_own - per_m * DS["probe_depth_m"]
 breakeven = (budget_usd - fixed) / per_m
 no_tube = c_own - sum(line(r) for r in rows if num(r) == 3)
 tag("H1", f"BOM {len(rows)} lines, {len(rows) - len(unpriced)} priced; cable {cable_len:.0f} m and tube {tube_len:.2f} m (BOM {math.ceil(tube_len)} m) at {DS['probe_depth_m']:.0f} m probe depth")
-tag("H2", f"WellSense parts (lines 1 to 7, 9, 10, 13, 14): ${c_own:.2f} against budget_usd ${budget_usd:.0f} ({'over' if c_own > budget_usd else 'within'} by ${abs(c_own - budget_usd):.2f}; set to $200 by Amish on 2026-09-26, WLS-DDR-002); "
-    f"with the FieldNode core ${c_own + c_node:.2f}; with FieldNode's hot-site shield (+$8.00, FND-DDR-002) ${c_own + c_node + 8:.2f}")
+tag("H2", f"WellSense parts (lines 1 to 7, 9, 10, 13 to 15): ${c_own:.2f} against the ${budget_usd:.0f} value-engineering target (budget_usd, a hypothetical control target, not a limit): "
+    f"${abs(c_own - budget_usd):.2f} {'over' if c_own > budget_usd else 'under'} the target; with the FieldNode core ${c_own + c_node:.2f}; with FieldNode's hot-site shield (+$9.00, FND-DDR-002) ${c_own + c_node + 9:.2f}")
+c_dfc = {n: sum(line(r) for r in rows if num(r) == n) for n in (4, 5, 6, 7, 10, 14, 15)}
+tag("H2c", "Lines repriced or added for construction (WLS-DDR-004): " + ", ".join(f"{n} ${v:.2f}" for n, v in c_dfc.items())
+    + "; the concept total was $197.60")
 c_conduit = sum(line(r) for r in rows if num(r) == 14)
-tag("H2b", f"Without the conduit (line 14, ${c_conduit:.2f}) the parts would be ${c_own - c_conduit:.2f}, within the ${budget_usd:.0f} budget")
-tag("H3", f"Depth-dependent ${per_m:.2f}/m; budget met to a probe depth of {breakeven:.1f} m; at 60 m ${c_own + per_m * 30:.2f}; "
+tag("H2b", f"Without the conduit (line 14, ${c_conduit:.2f}) the parts would be ${c_own - c_conduit:.2f}, ${abs(c_own - c_conduit - budget_usd):.2f} {'over' if c_own - c_conduit > budget_usd else 'under'} the target")
+tag("H3", f"Depth-dependent ${per_m:.2f}/m; the target is met to a probe depth of {breakeven:.1f} m; at 60 m ${c_own + per_m * 30:.2f}; "
     f"without an access tube (no pump in the casing) ${no_tube:.2f}")
 
 # ------------------------------------------------------------------ results table
@@ -257,7 +269,7 @@ results = [
     ("R6", "Met", f"15 min; 1 min logged, sent every 30 min on a public network ({a68 * 48:.1f} s/day)"),
     ("R7", "Met", f"{yr * BYTES_STORED / 1e6:.2f} MB a year"),
     ("R8", "Met", f"{e_day * 1000:.1f} mWh/day, {e_day / (ALLOW_W[0] * 24) * 100:.1f} % of 100 mW"),
-    ("R12", "Met" if c_own <= budget_usd else "Not met", f"${c_own:.2f} at 30 m against ${budget_usd:.0f}; met to {breakeven:.1f} m"),
+    ("R12", "Under the value-engineering target" if c_own <= budget_usd else "Over the value-engineering target", f"${c_own:.2f} at 30 m against the ${budget_usd:.0f} target, ${abs(c_own - budget_usd):.2f} {'over' if c_own > budget_usd else 'under'}"),
     ("R14", "Met", "Levels, time and well ID only"),
 ]
 print("\nL. Requirement status")

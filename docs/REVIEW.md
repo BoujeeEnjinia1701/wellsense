@@ -254,3 +254,57 @@ O1 (co-design partner and region), O2 (battery-only FieldNode variant) and rende
 - Kit 1.5.0 synced: STANDARDS v1.5 (sections 12 to 15: product renders, storefront images and image quality, public release, authorship and signing), `.kit/cards.py`, `.kit/image_qc.py`, `.kit/release_gate.py`, issue templates, and the `/render-product` and `/release` commands. `CLAUDE.md` now matches `.kit/CLAUDE.md`.
 - Every `media/render-*.png` recaptioned from its original render with the new layout: the title, concept label and repository sit in a band above the render and the view note in a band below it, each line wrapped to the image width, so no text overlaps other text or the render or runs off the image. `media/card.png` and `media/social-preview.png` regenerated with the same rules.
 - `python .kit/image_qc.py` and `python .kit/release_gate.py` pass. trl stays 3.
+
+## Session 2026-10-02: kit 1.7.0, design for construction and prototype build plan
+
+Kit 1.7.0 installed (`.kit/`, `.claude/commands/`; `CLAUDE.md` now matches `.kit/CLAUDE.md`). Following Amish's 2026-09-30 instruction ("If you are realising that the design cannot be built as per concept - fix the design assumptions to match and be physically feasible as you draw the illustrations"), the model was checked with build123d and made constructable, and the prototype build plan and the design decisions register were written. TRL stays 3; nothing was built or tested.
+
+### Design changes made for construction (WLS-DDR-004, open for Amish's review)
+
+| # | Change |
+| --- | --- |
+| P1 | FieldNode core is now FieldNode's constructable design on its own V-blocks and bands, geometry vendored from the FieldNode model (`cad/vendor/`); WellSense uses sensor port A (the massing floated 17.9 mm off the post). |
+| P2 | Junction box on a 140 x 530 x 3 mm aluminium plate with two V-blocks and two band clamps through slots; box held by its maker's four lugs (it was drawn into the post, overlapping it by 602 mm³). |
+| P3 | Junction box hollow with moulded bosses; printed internal plate carrying the interface modules and a terminal strip; four entries in the floor (hub, M16 gland, M12 gland, breather). |
+| P4 | Barometric housing screwed to the plate below the box, lead through the M12 gland (it floated beside the post). |
+| P5 | Rigid conduit with one 100 mm radius bend, a hub and two spacer saddles; 0.3 m flexible tail to the tube cap; 1.1 m service loop in the box so the probe can be lifted 1 m for calibration (the conduit was a solid rod with mitred corners fixed to the cap). |
+| P6 | Split seal plate: two 20 mm HDPE halves with spigot half rings, EPDM gasket and wraps, a rim band; adds a split hole for the pump's power cable. |
+| P7 | Split shaft collar on the tube, resting on the seal plate, carries the tube (264 N at 60 m). |
+| P8 | Tube cap: slip cap (not glued) with a conduit connector, an M5 cross bolt and a cable support grip that carries the probe. |
+| P9 | Access tube drilled with ten rings of 8 mm holes instead of lengthwise slots; bought slip cap with a drain hole on the bottom. |
+| P10 | New FieldNode lead with an M12 plug through a gland in the box floor with a drip loop (BOM line 15). |
+| P11 | Push-in cap on the post. |
+
+The model now runs 99 constructability checks (`python cad/src/model.py --check`): all pass.
+
+### What was done
+
+- `cad/src/model.py`: rewritten as components (`build_components`) with the changes above and the checks; `cad/vendor/fieldnode-node.step` and `fieldnode-bands.step` exported read-only from the approved FieldNode model; STEP and STL regenerated.
+- `bom/bom.csv`: lines 2 to 10 and 14 respecified or repriced, line 15 added; `bom/bom-notes.md` rewritten.
+- `docs/04-calcs/sizing.py` and WLS-CAL-001 v0.4: surface cable run 2.7 m (loop margin still 8.16 V), new load-path checks [D5] collar on HDPE 0.24 MPa and [D6] cross bolt on the cap walls 0.79 MPa, cost against the value-engineering target.
+- `cad/drawings/WLS-DWG-001` Rev P5 (`cad/src/sheets.py`); making sketches WLS-DWG-101 to 109.
+- `cad/src/build_plan_media.py`: overview, 9 making sketches, 3 hole layouts (plate, box floor, seal plate), 9 joint pictures (joints 6 to 8 as true 2D sections), 17 assembly step pictures and a block-level wiring diagram, in `docs/05-build-plan/` and `cad/drawings/`.
+- `docs/05-build-plan.md` (WLS-BLD-001 v0.1), `docs/06-design-decisions.md` (WLS-DEC-001 v0.1), `docs/decisions/0004-design-for-construction.md` (WLS-DDR-004 v0.1, Draft).
+- WLS-REQ-001 v0.6 and WLS-PRC-001 v0.6 updated; `project.yaml` (`design_state: constructable`, evidence list); `README.md` (links line, "Building the prototype" section, key components, value-engineering wording).
+- Concept media regenerated from the model (`python cad/src/concept_media.py`); PDFs rebuilt for every controlled document changed.
+
+### Key results
+
+- Value-engineering target: USD 200. Estimated cost of the constructable design: USD 244.40 at a 30 m probe depth (USD 44.40 over the target); $383.40 with the FieldNode core ($139.00, FND-CAL-001 v0.3). The register lists savings worth trying.
+- Requirement status: 1 not met (R9, no drinking-water certificates), 4 at risk (R4, R10, R15, R16), 3 not verifiable at TRL 3 (R5, R11, R13), 7 met, R12 over its value-engineering target.
+
+### Proposed, awaiting Amish
+
+All open items are in the design decisions register, `docs/06-design-decisions.md`: review of WLS-DDR-004 (P1 to P11); locking of the wellhead and box (R16; recommendation: security screw on the rim band, padlock through the cross bolt, hasp kit on the box); first partner and region (O1); battery-only FieldNode (O2); FieldNode port pinout and 55 °C rating (FieldNode decisions); keeping the vendored FieldNode geometry up to date; render items 1 and 5.
+
+### Stale items (made on Amish's Mac)
+
+The design changed visibly at the wellhead, the junction box mounting and the FieldNode core, so `media/render-hero.png`, `media/render-exploded.png`, `media/render-detail.png`, `media/card.png`, `media/social-preview.png` and the appearance model `cad/src/product_model.py` are stale and need regenerating with Blender.
+
+### Safety
+
+Unchanged hazards (drinking water contamination, mains-powered pumps, open wells, lithium cell in the FieldNode core, cable and tube running away during lowering) are carried as safety stops S1 to S8 in the build plan. New: the seal plate now carries the tube's weight through a friction collar, whose grip rating must be confirmed at purchase.
+
+### Recommended next step
+
+Amish reviews WLS-DDR-004 and the register. TRL 4 remains on hold; if approved, TRL 4 would build this plan and record the first checks of WLS-BLD-001 section 5 in a test report.

@@ -28,7 +28,7 @@ S = build_parts()
 EXPLODE = {"probe": (-340, -212, 500), "cable": (-187, -117, 0), "tube": (255, 159, 0), "seal": (0, 0, 350),
            "cap": (128, 80, 300), "jbox": (300, -250, -150), "board": (380, -330, 0), "fieldnode": (-255, -159, 250),
            "baro": (-298, -186, -120), "post": (0, 0, 0), "footing": (0, 0, -300),
-           "conduit": (60, -420, -320)}
+           "conduit": (60, -420, -320), "lead": (-200, 250, 0)}
 parts = [Part(CONTEXT[k][0], S[k], CONTEXT[k][1], None) for k in ("casing", "apron", "pump", "water")]
 for k, (n, name, color) in BOM.items():
     parts.append(Part(name, S[k], color, n, EXPLODE[k]))
@@ -41,7 +41,7 @@ render_all(
                  "Resolution 0.52 mm; 12.5 mm RSS after two-point tape calibration",
                  "Probe 30 m design case, to 60 m; borehole shortened for display",
                  "15 min readings; 38 mWh/day, 1.6 % of the FieldNode allowance",
-                 "Parts $197.60 at 30 m (budget $200); $323.60 with FieldNode"],
+                 "Parts $244.40 at 30 m (target $200); $383.40 with FieldNode"],
     scale_figure=False, context=[person],
     cut=False,
     flow={"title": "data flow (estimated values, WLS-CAL-001)", "unit": "",
@@ -73,10 +73,11 @@ concept._render(hero_parts, concept.ROOT / "media" / "hero.png", title="WellSens
 
 # Cutaway: broken section. Left, the wellhead (-0.9 to +0.8 m); right, the lower borehole around the
 # water level and probe, moved up and across so both fit one image at a readable scale.
-keep_names = {"Existing casing, 150 mm (not in kit)", "Existing concrete apron", "Existing pump and riser (not in kit)",
+keep_names = {"Existing casing, 150 mm (not in kit)", "Existing concrete apron", "Existing pump, riser and cable (not in kit)",
               "Well water (static level shown)", "Pressure transducer, vented, 4 to 20 mA",
-              "Vented cable with desiccant end", "Access tube, 25 mm PVC, slotted",
-              "Wellhead seal plate and glands", "Tube cap and cable hanger", "Surface cable conduit, galvanized"}
+              "Vented cable with service loop", "Access tube, 25 mm PVC, drilled, end cap",
+              "Split seal plate, gasket, wraps, rim band, collar", "Tube cap, cross bolt, support grip",
+              "Conduit, flexible tail, saddles, hub"}
 half = box(0, 2500, 0, 6000, 5000, 8000)          # keep y >= 0; the viewer looks from -Y
 halves = []
 for p in parts:

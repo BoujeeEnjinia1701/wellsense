@@ -1,4 +1,5 @@
-"""WellSense general arrangement sheet WLS-DWG-001, Rev P3 (TRL 3; P2 applies WLS-DDR-002; P3 applies WLS-DDR-003).
+"""WellSense general arrangement sheet WLS-DWG-001, Rev P5 (TRL 3; P2 applies WLS-DDR-002; P3 applies WLS-DDR-003;
+P5 shows the constructable design of WLS-DDR-004).
 
 Run from the repo root:  python cad/src/sheets.py
 Writes cad/drawings/WLS-DWG-001.svg, .pdf and .png from the parametric model in
@@ -19,6 +20,7 @@ from model import DESIGN as DS, PARAMS as P, box, build_parts, derived  # noqa: 
 
 DATE = "2026-09-25"
 DATE_P3 = "2026-09-27"
+DATE_P5 = "2026-10-02"
 Z_CUT = -700.0
 
 
@@ -107,13 +109,14 @@ def main():
     probe = Compound(children=[s_parts[k] & lo for k in ("tube", "probe")])
     pviews = safe_project_views(probe, work / "probe", names=("front",))
     bb = surf.bounding_box()
-    s = Sheet(project="WellSense", title="General arrangement", dwg_no="WLS-DWG-001", rev="P4",
-              author="Amish Chadha", date=DATE_P3, scale=None, theme="technical",
+    s = Sheet(project="WellSense", title="General arrangement", dwg_no="WLS-DWG-001", rev="P5",
+              author="Amish Chadha", date=DATE_P5, scale=None, theme="technical",
               material="Bought-in parts per bom/bom.csv; borehole not drawn below -700. PRELIMINARY, NOT FOR FABRICATION",
               revisions=[("P1", "Preliminary GA for TRL 3 (from cad/src/model.py)", DATE, "AC"),
                          ("P2", "22 mm probe; conduit 14 added (WLS-DDR-002)", DATE, "AC"),
                          ("P3", "FieldNode panel tilt corrected to face -Y (WLS-DDR-003)", DATE_P3, "AC"),
-                         ("P4", "Layout and labels tidied", DATE_P3, "AC")])
+                         ("P4", "Layout and labels tidied", DATE_P3, "AC"),
+                         ("P5", "Constructable design (WLS-DDR-004)", DATE_P5, "AC")])
     s.add_ortho(views)
     k = s.scale
     c = ortho_cells(s, views)
@@ -144,11 +147,11 @@ def main():
     zt = -430
     L += dim_h(X(px), X(0), Z(zt), f"{D['well_to_post']:.0f}")
     L += leader(X(D["jbox_x"]), Z(P["jbox_z"]), X(D["jbox_x"]) + 18, Z(P["jbox_z"] + 60), "6 JUNCTION BOX, 7 BOARD")
-    L += leader(X(tx), Z(P["tube_top"] + 20), X(tx) + 9, Z(P["tube_top"] + 380), "5 CAP AND")
-    L.append(_t(X(tx) + 10, Z(P["tube_top"] + 380) + 4.6, "HANGER", 2.1, 400, INK, "start"))
+    L += leader(X(tx), Z(P["tube_top"] + 20), X(tx) + 9, Z(P["tube_top"] + 380), "5 CAP")
+    L.append(_t(X(tx) + 10, Z(P["tube_top"] + 380) + 4.6, "AND GRIP", 2.1, 400, INK, "start"))
     L += leader(X(-D["seal_d"] / 2 + 10), Z(D["seal_top"] - 10), X(-D["seal_d"] / 2) - 8, Z(D["seal_top"] + 110), "4 SEAL PLATE", "end")
-    L += leader(X(px + 40), Z(D["enc_bot"] + 100), X(px) + 30, Z(D["enc_bot"] + 560), "8 FIELDNODE CORE")
-    L += leader(X(-300), Z(P["cable_z"]), X(-300) + 6, Z(P["cable_z"] + 330), "14 CONDUIT")
+    L += leader(X(px + 40), Z(D["enc_bot"] + 100), X(px) + 30, Z(D["enc_bot"] + 560), "8 FIELDNODE CORE (FND-BLD-001)")
+    L += leader(X(-300), Z(P["cable_z"]), X(-300) + 6, Z(P["cable_z"] + 330), "14 CONDUIT AND TAIL")
 
     # top view (from +Z)
     x, y, w, h = c["top"]
@@ -165,33 +168,32 @@ def main():
           ext(Yr(D["seal_d"] / 2), Zr(D["seal_top"]), Yr(D["seal_d"] / 2), Zr(D["seal_top"] + 340))]
 
     s._layers += L
-    s.add_svg(views["iso"], 276, 41, 66, 96, label="Isometric view", sublabel="Not to scale")
+    s.add_svg(views["iso"], 276, 47, 66, 90, label="Isometric view", sublabel="Not to scale")
     # probe detail at 1:6
     pk = 1 / 6
     pb = probe.bounding_box()
-    dx, dy = 368, 42
+    dx, dy = 368, 44
     s.add_svg(pviews["front"], dx, dy, scale=pk, label=None)
     pw_, ph_ = _viewbox(pviews["front"].read_text())[2:]
     Zp = lambda mz: dy + ph_ * pk - (mz - pb.min.Z) * pk
     Xp = lambda mx: dx + (mx - pb.min.X) * pk
     s._layers += dim_v(Xp(pb.min.X) - 4, Zp(D["probe_top"]), Zp(D["probe_bot"]), f"{P['probe'][1]:.0f}")
-    s._layers += dim_v(Xp(pb.min.X) - 10, Zp(P["tube_bot"] + P["slot_zone"]), Zp(P["tube_bot"]), f"{P['slot_zone']:.0f} slotted")
+    s._layers += dim_v(Xp(pb.min.X) - 10, Zp(P["tube_bot"] + P["slot_zone"]), Zp(P["tube_bot"]), f"{P['slot_zone']:.0f} drilled")
     s._layers.append(_t(dx + pw_ * pk / 2, dy + ph_ * pk + 6, "DETAIL A: PROBE ZONE", 2.8, 600, INK, "middle"))
     s._layers.append(_t(dx + pw_ * pk / 2, dy + ph_ * pk + 10, "Scale 1:6; bottom of tube", 2.2, 400, MUTED, "middle"))
     s._layers += leader(Xp(pb.max.X) - 2, Zp(D["probe_top"] - 60), Xp(pb.max.X) + 5, Zp(D["probe_top"] - 60), "1 PROBE")
     s._layers += leader(Xp(pb.max.X) - 1, Zp(D["probe_top"] + 120), Xp(pb.max.X) + 5, Zp(D["probe_top"] + 120), "3 TUBE")
     s.add_notes("Main dimensions and interfaces (mm)", [
-        f"Casing {P['casing_id']:.0f} bore (existing); stick-up {P['stickup']:.0f}; seal plate {D['seal_d']:.0f} x {P['seal_t']:.0f}",
+        f"Casing {P['casing_id']:.0f} bore (existing), stick-up {P['stickup']:.0f}. Seal plate: split {D['seal_d']:.0f} x {P['seal_t']:.0f} HDPE, rim band",
         f"Access tube 1 in Sch 40 PVC {P['tube_od']} x {P['tube_id']}; {D['tube_to_riser']:.0f} clear of riser",
-        f"Probe {P['probe'][0]:.0f} max dia. x {P['probe'][1]:.0f}; {D['probe_clear_radial']:.1f} radial clearance in the tube",
-        f"Probe {DS['probe_depth_m']:.0f} m below the casing top (design); to {DS['probe_depth_max_m']:.0f} m",
+        f"Probe {P['probe'][0]:.0f} max x {P['probe'][1]:.0f}, {D['probe_clear_radial']:.1f} radial clearance; {DS['probe_depth_m']:.0f} m below casing top (to {DS['probe_depth_max_m']:.0f} m)",
         f"Post 48.3 x 3.2 galv., {P['post_h']:.0f} above ground, {P['embed']:.0f} in {P['footing_d']:.0f} footing",
-        f"Junction box {P['jbox'][0]:.0f} x {P['jbox'][1]:.0f} x {P['jbox'][2]:.0f}, center {P['jbox_z']:.0f}",
-        f"FieldNode core per FND-DWG-001; base {D['enc_bot']:.0f}; sensor port 1 (I2C, 12 V rail)",
+        f"Junction box {P['jbox'][0]:.0f} x {P['jbox'][1]:.0f} x {P['jbox'][2]:.0f}, center {P['jbox_z']:.0f}, on a plate with V-blocks",
+        f"FieldNode core per FND-DWG-001; base {D['enc_bot']:.0f}; sensor port A (I2C, 12 V rail)",
         "Loop 4 to 20 mA from a 24 V boost; 150 ohm shunt (WLS-CAL-001)",
-        f"Cable in 1/2 in galv. conduit ({P['conduit_od']} OD), tube cap to junction box",
+        f"Cable in 1/2 in galv. conduit ({P['conduit_od']} OD) and a flexible tail to the cap",
         "Third-angle; front view from -Y, FieldNode and panel face the equator; well on the Z axis",
-    ], x=276, y=158, width=146)
+    ], x=276, y=161, width=146)
     out = s.save(ROOT / "cad" / "drawings" / "WLS-DWG-001")
     shutil.rmtree(work, ignore_errors=True)
     print(f"wrote {out} and .pdf, .png at scale 1:{1 / k:g}")

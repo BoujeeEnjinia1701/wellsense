@@ -2,7 +2,7 @@ tag,result
 A1,Full scale 10 m of water = 98.07 kPa; 1 kPa = 102.0 mm of water
 A2,"Shunt 150 ohm gives 0.60 to 3.00 V; ADC step 125 uV; 19,200 steps; resolution 0.52 mm (0 to 10 m), 1.04 mm (0 to 20 m variant)"
 A3,Placement rule: probe at least 1 m below the lowest pumping level; seasonal swing plus pumping drawdown up to 9 m then stays in range with 1 m of headroom; larger swings need the 0 to 20 m variant
-B1,"Loop at 22 mA, 62 m cable (10.8 ohm): from the 12 V rail (low 11.4 V) the transducer gets 7.56 V against 12 V minimum (short by 4.44 V); with a 24 V boost it gets 20.16 V (margin 8.16 V)"
+B1,"Loop at 22 mA, 63 m cable (10.9 ohm): from the 12 V rail (low 11.4 V) the transducer gets 7.56 V against 12 V minimum (short by 4.44 V); with a 24 V boost it gets 20.16 V (margin 8.16 V)"
 B1b,"Shunt voltage at a 25 mA fault is 3.75 V, above the ADC's 3.6 V limit at 3.3 V supply; a series input resistor is needed"
 B2,"Per reading: loop 1.38 J (24 V x 22 mA x 2 s, boost 85 %, rail 90 %) + controller 0.053 J = 1.43 J"
 B3,"At 15 min: 38.2 mWh/day, 1.59 mW average; 1.6 % of FieldNode's published 100 mW allowance"
@@ -26,17 +26,20 @@ D1,Model: probe 22 mm in a 26.6 mm bore: 2.3 mm radial clearance; tube 32.2 mm f
 D2 1 in (DN25),"bore 26.6 mm takes probes up to 22 mm with 2 mm radial clearance; fits beside a centered riser in casings of 150, 200 mm; beside a riser against the wall in 100, 125, 150, 200 mm"
 D2 1-1/4 in (DN32),"bore 35.1 mm takes probes up to 28 mm with 2 mm radial clearance; fits beside a centered riser in casings of 200 mm; beside a riser against the wall in 100, 125, 150, 200 mm"
 D3,Cable and probe hanging in air at 60 m: 35 N against a 400 N strain member (factor 11.5)
-D4,"Access tube 320 mm2, 0.45 kg/m; 60 m hanging dry: 264 N, stress 0.82 MPa against 48 MPa (factor 58); the seal plate gland needs a tube clamp for 264 N"
+D4,"Access tube 320 mm2, 0.45 kg/m; 60 m hanging dry: 264 N, stress 0.82 MPa against 48 MPa (factor 58); the tube collar carries 264 N onto the seal plate"
+D5,"Collar on the HDPE seal plate: 264 N on 1087 mm2, 0.24 MPa bearing against about 20 MPa for HDPE (factor 82); the collar's friction grip on the tube is the maker's rating, to confirm at purchase"
+D6,"Probe and cable (35 N at 60 m) hang from the support grip on the M5 cross bolt: bearing on the two 4.4 mm cap walls 0.79 MPa against about 50 MPa for PVC; the cap sits on the tube end, so the load reaches the collar through the tube"
 E1,"One year at 15 min: 35,040 readings x 32 B = 1.12 MB, 6.7 % of the 16 MB flash"
 E2,"A 7-day pumping test at 1 min adds 10,080 readings, 0.32 MB"
 E3,"Airtime at SF9: 20-byte uplink 246.8 ms, 23.7 s/day at 15 min (FieldNode figure); pumping test batch of 15 readings (38 bytes) 328.7 ms, 31.6 s/day, over the 30 s/day fair use on a public network; fits a private TwinKit gateway"
 E4,"Rule (WLS-DDR-002): on a public network a pumping test sends every 30 min, a batch of 30 readings (68 bytes) 472.1 ms, 22.7 s/day, within 30 s/day; on a private TwinKit gateway the 15 min batch is kept"
-F1,"Vent capillary 110 mL at 62 m; box and vent breathe 0.15 L/day at a 30 K swing, carrying 3.6 mg of water at worst; 10 g of gel lasts about 552 days if the whole box breathes through it (quarterly change: factor 6.1)"
+F1,"Vent capillary 111 mL at 62.7 m; box and vent breathe 0.15 L/day at a 30 K swing, carrying 3.6 mg of water at worst; 10 g of gel lasts about 552 days if the whole box breathes through it (quarterly change: factor 6.1)"
 G1,Estimated 120 min for two people (9 steps) against 120 min; post footing set and cured on an earlier visit
-H1,"BOM 14 lines, 14 priced; cable 32 m and tube 30.61 m (BOM 31 m) at 30 m probe depth"
-H2,"WellSense parts (lines 1 to 7, 9, 10, 13, 14): $197.60 against budget_usd $200 (within by $2.40; set to $200 by Amish on 2026-09-26, WLS-DDR-002); with the FieldNode core $323.60; with FieldNode's hot-site shield (+$8.00, FND-DDR-002) $331.60"
-H2b,"Without the conduit (line 14, $10.00) the parts would be $187.60, within the $200 budget"
-H3,Depth-dependent $1.80/m; budget met to a probe depth of 31.3 m; at 60 m $251.60; without an access tube (no pump in the casing) $166.60
+H1,"BOM 15 lines, 15 priced; cable 33 m and tube 30.61 m (BOM 31 m) at 30 m probe depth"
+H2,"WellSense parts (lines 1 to 7, 9, 10, 13 to 15): $244.40 against the $200 value-engineering target (budget_usd, a hypothetical control target, not a limit): $44.40 over the target; with the FieldNode core $383.40; with FieldNode's hot-site shield (+$9.00, FND-DDR-002) $392.40"
+H2c,"Lines repriced or added for construction (WLS-DDR-004): 4 $23.00, 5 $10.00, 6 $18.00, 7 $13.00, 10 $32.00, 14 $20.00, 15 $7.00; the concept total was $197.60"
+H2b,"Without the conduit (line 14, $20.00) the parts would be $224.40, $24.40 over the target"
+H3,Depth-dependent $1.80/m; the target is met to a probe depth of 5.3 m; at 60 m $298.40; without an access tube (no pump in the casing) $213.40
 L R9,"Not met: No drinking water certificate in hand for low-cost cable, seal or probe"
 L R4,"At risk: RSS 12.5 mm, sum 27.1 mm (0.25 % class, calibrated)"
 L R10,At risk: 2.3 mm radial clearance with a 22 mm probe; tube may need the pump pulled
@@ -51,6 +54,6 @@ L R3,Met: 0.52 mm
 L R6,"Met: 15 min; 1 min logged, sent every 30 min on a public network (22.7 s/day)"
 L R7,Met: 1.12 MB a year
 L R8,"Met: 38.2 mWh/day, 1.6 % of 100 mW"
-L R12,Met: $197.60 at 30 m against $200; met to 31.3 m
+L R12,"Over the value-engineering target: $244.40 at 30 m against the $200 target, $44.40 over"
 L R14,"Met: Levels, time and well ID only"
-L,"1 not met, 4 at risk, 3 not verifiable at TRL 3, 8 met"
+L,"1 not met, 4 at risk, 3 not verifiable at TRL 3, 7 met, 1 over the value-engineering target"

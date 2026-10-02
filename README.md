@@ -2,13 +2,13 @@
 
 ![TRL 3](https://img.shields.io/badge/TRL-3%20of%209-0F766E) ![Hardware: CERN-OHL-S-2.0](https://img.shields.io/badge/hardware-CERN--OHL--S--2.0-111827) ![Software: MIT](https://img.shields.io/badge/software-MIT-111827) [![DOI](https://zenodo.org/badge/1388478202.svg)](https://zenodo.org/badge/latestdoi/1388478202) [![REUSE compliant](https://github.com/BoujeeEnjinia1701/wellsense/actions/workflows/reuse.yml/badge.svg)](https://github.com/BoujeeEnjinia1701/wellsense/actions/workflows/reuse.yml) [![Archived in Software Heritage](https://archive.softwareheritage.org/badge/origin/https://github.com/BoujeeEnjinia1701/wellsense/)](https://archive.softwareheritage.org/browse/origin/?origin_url=https://github.com/BoujeeEnjinia1701/wellsense)
 
-**Area:** Water Security · **TRL:** 3 of 9 (proof of concept on paper) · **Prototype budget:** $200 USD for WellSense parts, FieldNode core costed separately · **Difficulty:** 2 of 5
+**Area:** Water Security · **TRL:** 3 of 9 (proof of concept on paper) · **Value-engineering target:** $200 USD for WellSense parts (estimated $244.40), FieldNode core costed separately · **Difficulty:** 2 of 5
 
 A well and borehole water level logger with a submersible pressure sensor and FieldNode telemetry, showing seasonal drawdown so communities can manage shared groundwater.
 
 ![WellSense: well and borehole water level logger, product render](media/render-hero.png)
 
-[Exploded render](media/render-exploded.png) · [Detail render](media/render-detail.png) · [Interactive 3D model](media/viewer.html) · [Concept blueprint (PDF)](media/concept-blueprint.pdf) · [General arrangement WLS-DWG-001 (PDF)](cad/drawings/WLS-DWG-001.pdf) · [Sizing calculations](docs/04-calcs/01-sizing.md) · [Review note](docs/REVIEW.md)
+[Exploded render](media/render-exploded.png) · [Detail render](media/render-detail.png) · [Interactive 3D model](media/viewer.html) · [Concept blueprint (PDF)](media/concept-blueprint.pdf) · [General arrangement WLS-DWG-001 (PDF)](cad/drawings/WLS-DWG-001.pdf) · [Sizing calculations](docs/04-calcs/01-sizing.md) · [Prototype build plan](docs/05-build-plan.md) · [Design decisions register](docs/06-design-decisions.md) · [Review note](docs/REVIEW.md)
 
 ## Concept rationale
 
@@ -58,7 +58,7 @@ Groundwater is falling in many regions, yet most wells have no measurement, so o
 
 A well and borehole water level logger with a submersible pressure sensor and FieldNode telemetry, showing seasonal drawdown so communities can manage shared groundwater. A vented 4 to 20 mA transducer hangs in its own access tube beside the pump, a sealed wellhead plate keeps the well clean, and the lab's FieldNode core reads it every 15 minutes and sends the level over LoRaWAN to an open dashboard.
 
-TRL 3 calculations ([WLS-CAL-001](docs/04-calcs/01-sizing.md)): 0.52 mm resolution; 12.5 mm accuracy by root sum square after a two-point tape calibration with a 0.25 % class probe, 27.1 mm worst case, so the ±20 mm target is at risk; a 24 V boost on the interface board, because FieldNode's 12 V rail cannot drive the loop; 38.2 mWh a day of sensor energy, 1.6 % of FieldNode's allowance; a 22 mm probe with 2.3 mm radial clearance in the 1 in access tube; and $197.60 in WellSense parts at a 30 m probe depth including a galvanized conduit over the surface cable, within the $200 budget ($323.60 with the FieldNode core). Eight of sixteen requirements are met on paper, including cost (R12); drinking water evidence (R9) is not. See the [design precis](docs/02-concept.md), [requirements](docs/03-requirements.md) and decision records [WLS-DDR-001](docs/decisions/0001-trl2-review-decisions.md), [WLS-DDR-002](docs/decisions/0002-recommendations-accepted.md) and [WLS-DDR-003](docs/decisions/0003-panel-tilt-direction.md).
+TRL 3 calculations ([WLS-CAL-001](docs/04-calcs/01-sizing.md)): 0.52 mm resolution; 12.5 mm accuracy by root sum square after a two-point tape calibration with a 0.25 % class probe, 27.1 mm worst case, so the ±20 mm target is at risk; a 24 V boost on the interface board, because FieldNode's 12 V rail cannot drive the loop; 38.2 mWh a day of sensor energy, 1.6 % of FieldNode's allowance; a 22 mm probe with 2.3 mm radial clearance in the 1 in access tube; and $244.40 in WellSense parts at a 30 m probe depth for the constructable design, against a $200 value-engineering target, a hypothetical control target ($383.40 with the FieldNode core). Seven of sixteen requirements are met on paper; drinking water evidence (R9) is not. See the [design precis](docs/02-concept.md), [requirements](docs/03-requirements.md) and decision records [WLS-DDR-001](docs/decisions/0001-trl2-review-decisions.md), [WLS-DDR-002](docs/decisions/0002-recommendations-accepted.md) [WLS-DDR-003](docs/decisions/0003-panel-tilt-direction.md) and [WLS-DDR-004](docs/decisions/0004-design-for-construction.md).
 
 Full design precis: [docs/02-concept.md](docs/02-concept.md)
 
@@ -66,14 +66,21 @@ Full design precis: [docs/02-concept.md](docs/02-concept.md)
 
 - Vented submersible pressure transducer, 4 to 20 mA, 0 to 10 m, 0.25 % class, 22 mm diameter or less
 - Vented cable with desiccant breather
-- 25 mm PVC access tube, tube cap and cable hanger
-- Wellhead seal plate with glands
-- Galvanized conduit over the surface cable from the tube cap to the junction box
+- 25 mm PVC access tube, drilled at the bottom, with a tube cap, cross bolt and cable support grip
+- Split HDPE seal plate with spigot rings, EPDM gasket and wraps, rim band and tube collar
+- Galvanized conduit with a flexible tail over the surface cable from the tube cap to the junction box
 - 4 to 20 mA interface board with 24 V boost, and barometric reference sensor
-- FieldNode core (shared lab node) on a mounting post set in a concrete footing, with FieldNode's sun shield at hot sites
+- Junction box on an aluminium plate with V-blocks and band clamps
+- FieldNode core (shared lab node, built to its own build plan) on a mounting post set in a concrete footing, with FieldNode's sun shield at hot sites
 - Open community dashboard, plus a shared manual water level tape for checks
 
 The priced bill of materials is in [bom/bom.csv](bom/bom.csv). The parametric model is `cad/src/model.py`, with STEP and STL exports in `cad/step/` and `cad/stl/`.
+
+## Building the prototype
+
+![Every component of the WellSense prototype, pulled apart and numbered in build order](docs/05-build-plan/overview.png)
+
+The [prototype build plan](docs/05-build-plan.md) (WLS-BLD-001, plan, not yet built) shows how to make each component and fit it to the next, in 9 making sketches, 9 joint close-ups and 17 assembly steps drawn from the model. The post, junction box plate, V-blocks and conduit are sawn, drilled and bent from steel and aluminium stock; the seal plate is cut from HDPE sheet with a jigsaw; the access tube and its cap are drilled PVC; the junction box's internal plate is 3D printed; the FieldNode core is built to its own plan. Writing the plan made the design constructable: eleven changes, such as a split seal plate that fits round an installed riser, a tube collar, a cross bolt and support grip that carry the probe, a flexible conduit tail so the cap can lift for calibration, and a junction box plate on V-blocks, are recorded in [WLS-DDR-004](docs/decisions/0004-design-for-construction.md). The parts now cost about $244, $44 over the $200 value-engineering target, a hypothetical control target; the [design decisions register](docs/06-design-decisions.md) lists the savings worth trying.
 
 ## Safety
 
