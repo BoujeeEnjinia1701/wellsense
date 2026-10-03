@@ -297,9 +297,9 @@ The model now runs 99 constructability checks (`python cad/src/model.py --check`
 
 All open items are in the design decisions register, `docs/06-design-decisions.md`: review of WLS-DDR-004 (P1 to P11); locking of the wellhead and box (R16; recommendation: security screw on the rim band, padlock through the cross bolt, hasp kit on the box); first partner and region (O1); battery-only FieldNode (O2); FieldNode port pinout and 55 °C rating (FieldNode decisions); keeping the vendored FieldNode geometry up to date; render items 1 and 5.
 
-### Stale items (made on Amish's Mac)
+### Render items (made on Amish's Mac)
 
-The design changed visibly at the wellhead, the junction box mounting and the FieldNode core, so `media/render-hero.png`, `media/render-exploded.png`, `media/render-detail.png`, `media/card.png`, `media/social-preview.png` and the appearance model `cad/src/product_model.py` are stale and need regenerating with Blender.
+The photoreal renders and storefront images need regenerating with Blender from the appearance model; see the 2026-10-02 section "Approved follow-ups carried out", which brings the appearance model and render scenes up to date.
 
 ### Safety
 
@@ -308,3 +308,102 @@ Unchanged hazards (drinking water contamination, mains-powered pumps, open wells
 ### Recommended next step
 
 Amish reviews WLS-DDR-004 and the register. TRL 4 remains on hold; if approved, TRL 4 would build this plan and record the first checks of WLS-BLD-001 section 5 in a test report.
+
+## Session 2026-10-02: open decisions decided
+
+Amish, 2026-10-02: "APPROVED: The open decisions from the last wave (TremorTrace to ZeerBox) came in after the review and aren't on the page either." This approves the recommendation written for each open decision in the design decisions register (WLS-DEC-001), as he did for the other 555 open decisions ("i approve your recommendations for all 555 open decisions."). trl stays 3; no build or test work was done, and the model, BOM quantities and prices, and pictures are unchanged.
+
+### Decisions recorded
+
+Nine decisions, all moved to Decisions made in WLS-DEC-001, dated 2026-10-02:
+
+1. Design for construction accepted: the changes P1 to P11 of WLS-DDR-004, as made.
+2. Locking (R16): option (a) is fitted on the prototype from the start: a security-head screw on the rim band, a padlock through the cross bolt's head and a padlockable hasp kit on the junction box; the lockable steel wellhead cover is used at sites where the first site visit shows open access or livestock.
+3. First partner and region: a participatory groundwater management group in India that works with farmer groups on shared aquifers; the first candidate to approach is ACWADAM in Pune, with its well sizes setting the design well and the FieldNode core at its sites on the IN865 band.
+4. Battery-only FieldNode variant: the standard FieldNode core with its panel is kept; no battery-only variant is asked of FieldNode until a site shows the panel cannot be placed.
+5. FieldNode sensor port pinout: FieldNode's proposed standard pinout is signed off for port A (pin 1 switched rail, pin 2 data A, pin 3 ground, pin 4 data B, pin 5 analog), with data A and B carrying I2C; the switched rail voltage is confirmed against the boost module input.
+6. FieldNode core above 45 °C: R15 stays at 55 °C, as decided on 2026-09-25 (WLS-DDR-002, A12); the FieldNode project is asked to confirm the shielded core at 55 °C ambient, and until it does WellSense is not sited where the design maximum exceeds 45 °C.
+7. FieldNode geometry in `cad/vendor/`: kept as a copy and re-exported whenever FieldNode's general arrangement is revised, as a line in the review checklist.
+8. Photoreal render layout: the post drawn closer to the well and lower than installed is accepted, for renders only.
+9. Exploded render: grouping the post, tube and cable together is accepted.
+
+### Documents changed
+
+- `docs/06-design-decisions.md` (WLS-DEC-001 v0.2): open decisions moved to Decisions made.
+- `docs/decisions/0004-design-for-construction.md` (WLS-DDR-004 v0.2): acceptance recorded in the status line; A1 and A2 decided (record stays Draft).
+- `docs/decisions/0001-trl2-review-decisions.md` (WLS-DDR-001 v0.3) and `docs/decisions/0002-recommendations-accepted.md` (WLS-DDR-002 v0.3): O1 and O2 recorded as decided.
+- `docs/01-problem.md` (WLS-PRB-001 v0.6): partner and region answered.
+- `docs/02-concept.md` (WLS-PRC-001 v0.7): pinout, battery-only, hot-site, locking and partner points.
+- `docs/03-requirements.md` (WLS-REQ-001 v0.7): R15 and R16 notes; no status changed.
+
+### Follow-up actions to carry approved decisions into the design
+
+1. Decision 2 (model): Model the security-head screw on the rim band, the padlock through the tube cap's cross bolt and the padlockable hasp kit on the junction box, with clearance checks.
+2. Decision 2 (BOM): Add the security-head screw and bit, two padlocks and the hasp kit to the BOM with a price basis.
+3. Decision 2 (calculations): Re-run the cost (R12) and restate R16's status in WLS-CAL-001 once the locking parts are priced and modelled.
+4. Decision 2 (pictures): Show the locks in the general arrangement, the wellhead and junction box build plan pictures and a locking step in the build plan.
+5. Decision 5 (pictures): Redraw the FieldNode lead wiring (build plan section 3.5.1) to FieldNode's standard pinout, with I2C on pins 2 and 4 and the rail on pin 1.
+6. Decision 3 (docs): Approach ACWADAM in Pune for the design well sizes and the first sites; record IN865 for the FieldNode core at those sites as a cross-repo note to FieldNode.
+7. Decisions 5 and 6 (docs): Cross-repo: send WellSense's sign-off of the standard pinout to FieldNode, with the request to confirm the switched rail voltage and the shielded core at 55 °C ambient.
+
+### Points found in the review
+
+- Item 5 is no longer only a FieldNode decision: FieldNode decided its proposed standard pinout on 2026-10-02 and is waiting for adopting projects to sign it off.
+- Item 3 puts the first WellSense site outside North America, so the FieldNode core there uses IN865 rather than FieldNode's default US915 (a cross-repo point for FieldNode).
+- Item 6 overlaps a decision already made: on 2026-09-25 Amish kept R15 at 55 °C with FieldNode's sun shield at hot sites (WLS-DDR-002, A12); the open point is only FieldNode's confirmation at 55 °C.
+- BOM line 8 prices the FieldNode core at USD 139.00 (its constructable design) while other repos still quote USD 126.00.
+
+## Session 2026-10-02: approved follow-ups carried out
+
+Amish, 2026-10-02: "497 follow-up actions that need CAD, drawing, picture, BOM or calculation work ... APPROVED CHANGES, COMPLETE THESE", and the product renders are to be redone afterwards. trl stays 3; nothing was built or tested.
+
+### Follow-ups
+
+| # | Follow-up | Result |
+| --- | --- | --- |
+| 1 | Model the locks, with clearance checks | Done. `cad/src/model.py`: security-head screw on the rim band housing; the cross bolt is now an M5 eye bolt with a padlock hung through its eye; hasp tabs on the box body and lid with a padlock through both holes. 19 checks added (118 of 118 pass), including that each shackle passes through its eye or holes and stays clear of every neighbour. STEP and STL regenerated. |
+| 2 | Add the locks to the BOM with a price basis | Done. Line 16 added at $16.50 (screw $1.00, bit $2.50, two padlocks $9.00, hasp kit $4.00, marketplace listing prices) and line 5 repriced to $11.50 for the eye bolt (+$1.50). |
+| 3 | Re-run R12 and restate R16 | Done. WLS-CAL-001 v0.5: R12 over the target by $62.40 (was $44.40); R16 restated from At risk to Met on design review, with the limit that the cap can still be lifted off the tube and the steel wellhead cover is what stops that at exposed sites; installation estimate 125 min (5 min over the R11 limit), new check [D7]. |
+| 4 | Show the locks in the general arrangement, build plan pictures and a locking step | Done. WLS-DWG-001 Rev P6; WLS-DWG-109 Rev P2; new joint pictures 10 (cap padlock) and 11 (hasp) and step 18 (fit the padlocks); overview, step 14 and step 16 redrawn; build plan WLS-BLD-001 v0.2. |
+| 5 | Redraw the FieldNode lead wiring to FieldNode's standard pinout | Done. The wiring picture names port A pins 1 (rail), 2 (data A, SDA), 3 (ground), 4 (data B, SCL) and 5 (analog, not used); build plan section 3.5.1 and the lead's parts line match. |
+| 6 | Approach ACWADAM in Pune; record IN865 for the FieldNode core as a cross-repo note | Not done: outreach by Amish. The IN865 note for FieldNode is listed under Cross-repo actions. |
+| 7 | Send the pinout sign-off to FieldNode with the 55 degC and rail-voltage requests | The WellSense side is done (the wiring is drawn to the standard pinout, and the 12 V switched rail feeds the boost module's 12 to 24 V input in WLS-CAL-001 [B1]); sending it is a cross-repo action, listed below. |
+
+### Key results
+
+- Value-engineering target: USD 200. Estimated cost of the constructable design: USD 262.40 (USD 62.40 over the target); USD 401.40 with the FieldNode core. `budget_usd` is unchanged. The repo records no mass figure, so none was updated.
+- Requirement status: R16 At risk to Met (design review); R12 still over its target, now by $62.40; R11 still not verifiable, estimate 125 min. Counts: 1 not met, 3 at risk, 3 not verifiable at TRL 3, 8 met, R12 over its target.
+- Honest limit of the cap lock: the padlock hung through the eye of the cross bolt stops the bolt being unscrewed, so the grip and probe cannot be freed, but a slip cap that lifts off for calibration can still be lifted. At sites with open access or livestock the lockable steel wellhead cover (decision 2) is what closes that.
+
+### Pictures and models regenerated
+
+- General arrangement WLS-DWG-001 Rev P6; making sketch WLS-DWG-109 Rev P2.
+- Build plan: overview, step 14, step 16, step 18 (new), joint 10 and joint 11 (new), wiring.
+- Concept media (hero, blueprint, cutaway, exploded, flow, model.glb and viewer) from the model.
+- Appearance model `cad/src/product_model.py` brought into line with the constructable design: the plate, V-blocks, bands, lugs, hasp, padlocks, split seal plate with rim band, security screw and collar, slip cap with eye bolt, flexible tail, conduit hub, saddles, barometric housing on the plate, drilled tube with slip end cap and the lead come from the constructable parts in `cad/src/model.py`. Render scenes exported to `/home/claude/renders/wellsense`: hero, exploded and detail (one .npz and .json each, and `wellsense__jobs.json`). Photoreal renders, `media/card.png` and `media/social-preview.png` are for Amish's Mac.
+
+### Proposed, awaiting Amish
+
+- The rigid conduit in the render scene uses a 70 mm bend radius instead of 100 mm, because the junction box is drawn 350 mm lower than installed (decision 8 accepts the post layout for renders only). Appearance deviation for renders only.
+
+### Documents changed
+
+WLS-BLD-001 v0.2, WLS-CAL-001 v0.5, WLS-REQ-001 v0.8, WLS-PRC-001 v0.8, WLS-DEC-001 v0.3, WLS-DDR-004 v0.3; `bom/bom.csv`, `bom/bom-notes.md`, `README.md`.
+
+### Cross-repo actions
+
+- FieldNode: WellSense signs off the standard sensor port A pinout (pin 1 switched rail, 2 data A, 3 ground, 4 data B, 5 analog), with data A and B carrying I2C. Asked of FieldNode: confirm the switched rail voltage against the boost module input (12 V assumed in WLS-CAL-001 [B1]) and confirm the shielded core at 55 degC ambient (R15).
+- FieldNode: record IN865 for the FieldNode core at the first sites, if ACWADAM (Pune) is approached.
+- Any repo that quotes WellSense at $244.40 or $383.40 (parts or with the FieldNode core) should quote $262.40 and $401.40.
+
+### Safety
+
+No new hazard. The padlocks and security-head screw keep people out of the wellhead and the box; they do not make an open well safe, and the pump isolation and lock-off stops S1 to S8 are unchanged.
+
+### Recommended next step
+
+Amish reviews the cap lock limit (the cap can be lifted) and renders the scenes on his Mac. TRL 4 remains on hold.
+
+## 2026-10-02: photoreal renders redone on the constructable design
+
+Rendered with Blender Cycles on Amish's Mac from the updated appearance model; captioned with `.kit/photo_caption.py`; `media/card.png` and `media/social-preview.png` regenerated with `.kit/cards.py`. Views: hero, exploded, detail. image_qc passes. Appearance deviations are those logged above as proposed, awaiting Amish.

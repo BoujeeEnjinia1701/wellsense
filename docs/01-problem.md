@@ -3,9 +3,9 @@ doc_id: WLS-PRB-001
 title: WellSense problem statement
 project: WellSense
 doc_type: Problem statement
-version: "0.5"
+version: "0.6"
 status: Draft
-date: '2026-09-26'
+date: '2026-10-02'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -29,6 +29,10 @@ revisions:
   date: '2026-09-26'
   author: Amish Chadha
   change: Budget approved by Amish; constraint now $200
+- version: "0.6"
+  date: '2026-10-02'
+  author: Amish Chadha
+  change: Partner and region answered by Amish's decision of 2026-10-02 (WLS-DEC-001)
 ---
 
 # WellSense problem statement
@@ -79,7 +83,7 @@ Typical wells are 100 to 200 mm (4 to 8 in) boreholes 20 to 150 m deep with a su
 
 ## Open questions
 
-- First partner and region for co-design: an Indian farmer group, an African handpump programme or a US groundwater agency? Proposed, awaiting Amish (WLS-DDR-001, O1).
+- First partner and region for co-design: an Indian farmer group, an African handpump programme or a US groundwater agency? Decided by Amish, 2026-10-02 (WLS-DEC-001): a participatory groundwater management group in India that works with farmer groups on shared aquifers; the first candidate to approach is ACWADAM in Pune, with its well sizes setting the design well and the FieldNode core at its sites on the IN865 band; not yet approached.
 - How much access to the wellhead can a community give: can an access tube be added without pulling the pump? WLS-CAL-001 shows a 1 in tube fits beside the riser of a 150 mm well in plan, but only an installation trial can show whether it can be lowered past an installed pump's riser and cable.
 - Who holds and publishes the data, and in what language and form do users want the dashboard?
 

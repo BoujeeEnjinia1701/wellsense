@@ -3,7 +3,7 @@ doc_id: WLS-DEC-001
 title: WellSense design decisions register
 project: WellSense
 doc_type: Design decisions register
-version: "0.1"
+version: "0.3"
 status: Draft
 date: '2026-10-02'
 author: Amish Chadha
@@ -13,6 +13,14 @@ revisions:
     date: '2026-10-02'
     author: Amish Chadha
     change: Register opened with the build plan; budget treated as a value-engineering target
+  - version: "0.2"
+    date: '2026-10-02'
+    author: Amish Chadha
+    change: Amish approved the recommendations for open items 1 to 9 on 2026-10-02 (WLS-DDR-004 accepted with A1 and A2, ACWADAM as first candidate partner, standard FieldNode core and pinout, R15 kept with hot sites held, render items); moved to decisions made
+  - version: "0.3"
+    date: '2026-10-02'
+    author: Amish Chadha
+    change: Locks modelled and priced (BOM line 16); value-engineering cost restated at USD 262.40
 ---
 
 # WellSense design decisions register
@@ -21,19 +29,7 @@ Every design decision still to be made, and every decision made, in one place. E
 
 ## Open decisions
 
-| # | Decision needed | Options | Recommendation | Affects in the build | Source |
-| --- | --- | --- | --- | --- | --- |
-| 1 | Review the design-for-construction changes P1 to P11 (split seal plate, collar, drilled tube, tube cap with cross bolt and grip, flexible tail, bent conduit on saddles, junction box plate with V-blocks, box entries and internal plate, barometric housing, FieldNode lead, post cap) | Accept as made; or ask for changes | Accept | The whole build plan | WLS-DDR-004, made under Amish's 2026-09-30 instruction; open for his review |
-| 2 | Locking of the wellhead and junction box (R16) | (a) security-head screw on the rim band, padlock through the cross bolt's head, padlockable hasp kit on the box; (b) lockable steel cover over the wellhead | (a), decided after the first site visit | Seal plate, tube cap, junction box | WLS-DDR-004, A1; WLS-PRC-001 open questions |
-| 3 | First partner and region for co-design | An Indian farmer group, an African handpump programme or a US groundwater agency | None yet | Design well (casing, riser and pump cable sizes); LoRaWAN band of the FieldNode core | WLS-DDR-001, O1 |
-| 4 | Battery-only FieldNode variant without the panel | Keep the standard core; or a battery-only core | None (for the FieldNode project) | FieldNode core | WLS-DDR-001, O2 |
-| 5 | FieldNode sensor port pin assignment | Pinout of port A agreed with the FieldNode project; WellSense assumes 12 V rail, ground and I2C | None yet (FieldNode decision) | FieldNode lead wiring (build plan section 3.5.1) | FND-DDR-001, O2 |
-| 6 | FieldNode core above 45 °C ambient (R15 asks for 55 °C) | FieldNode confirms the shielded core at 55 °C; or R15 restated to FieldNode's range | None yet (FieldNode decision) | FieldNode sun shield at hot sites | REVIEW.md, cross-repo actions |
-| 7 | How the FieldNode geometry in `cad/vendor/` is kept up to date | (a) re-export it whenever FieldNode's general arrangement is revised; (b) a shared library repo | (a) | Model, drawings and pictures of the FieldNode core | WLS-DDR-004, A2 |
-| 8 | Photoreal render layout: post drawn 330 mm from the well and 350 mm lower than installed | Accept for renders only; or render the installed layout | Accept for renders only | Renders only; not the build | REVIEW.md, 2026-09-26, render item 1 |
-| 9 | Render grouping of the post, tube and cable for the exploded render | Accept; or group as the BOM | Accept | Renders only | REVIEW.md, 2026-09-26, render item 5 |
-
-Render items 3 (conduit route at the tube cap) and 4 (seal plate gasket) of the 2026-09-26 review are overtaken by WLS-DDR-004: the conduit now ends in a flexible tail and the gasket is a separate ring under the plate. The renders need redoing on Amish's Mac in any case.
+None. All open decisions were decided on 2026-10-02.
 
 ## To confirm when parts are bought
 
@@ -49,10 +45,11 @@ Render items 3 (conduit route at the tube cap) and 4 (seal plate gasket) of the 
 
 ## Value engineering
 
-Value-engineering target: USD 200 (a hypothetical control target, not a limit). Estimated cost of the constructable design: USD 244.40 for the WellSense parts at the 30 m design depth (USD 44.40 over the target); USD 383.40 with the FieldNode core, which is costed in the FieldNode repo. Main cost drivers and savings worth trying:
+Value-engineering target: USD 200 (a hypothetical control target, not a limit). Estimated cost of the constructable design: USD 262.40 for the WellSense parts at the 30 m design depth (USD 62.40 over the target); USD 401.40 with the FieldNode core, which is costed in the FieldNode repo. Main cost drivers and savings worth trying:
 
 - The largest lines are the transducer (USD 50), the access tube (USD 31 at 30 m), the post with its plate, V-blocks and bands (USD 32), the vented cable (USD 26.40 at 30 m), the seal plate set (USD 23) and the conduit set (USD 20). Cable and tube scale with depth at USD 1.80 a metre.
 - Making the design constructable added USD 46.80: the seal plate set (+8), tube cap and grip (+4), junction box lugs, glands and internal plate (+6), terminal strip (+1), junction box plate and V-blocks (+10), flexible tail, saddles and hub (+10), the FieldNode lead (+7) and 1 m more cable (+0.80).
+- The locks decided on 2026-10-02 added USD 18.00: line 16 (security-head screw and bit USD 3.50, two padlocks USD 9.00, hasp kit USD 4.00) and USD 1.50 for the eye bolt in line 5. The lockable steel wellhead cover is priced only when a site visit calls for it.
 - Savings worth trying: fit the conduit set only where livestock or tampering is likely (USD 20); leave the access tube out where no pump shares the casing (USD 31 at 30 m, already the rule); mount the barometric module inside the junction box, which breathes through its desiccant, instead of in its own housing (about USD 4); buy the junction box with a pole-mount kit if one is offered at less than the plate, V-blocks and bands (up to USD 10); cut the seal plate from offcuts shared across several wells.
 
 ## Decisions made
@@ -65,3 +62,12 @@ Value-engineering target: USD 200 (a hypothetical control target, not a limit). 
 | 2026-09-27 | FieldNode panel tilt corrected to face the way the node faces | Amish: "resolve the challenges for ConePro, BridgePulse, Grainguard and WellSense." | WLS-DDR-003 |
 | 2026-09-30 | Make the design physically buildable while drawing the build plan | Amish: "If you are realising that the design cannot be built as per concept - fix the design assumptions to match and be physically feasible as you draw the illustrations." Changes made under this instruction; open for his review (open decision 1) | WLS-DDR-004 |
 | 2026-10-01 | `budget_usd` is a value-engineering target, not a limit | Amish: "the budgets are a hypothethical control target to ensure we are thinking along a value engineering lens. its ok to ensure wording reflects that the hypothesis budget was x - the real cost being accrued is y" | STANDARDS section 18; this register |
+| 2026-10-02 | Design for construction accepted: the changes P1 to P11 of WLS-DDR-004, as made | Amish: "APPROVED: The open decisions from the last wave (TremorTrace to ZeerBox) came in after the review and aren't on the page either." | WLS-DDR-004 |
+| 2026-10-02 | Locking (R16): option (a) is fitted on the prototype from the start: a security-head screw on the rim band, a padlock through the cross bolt's head and a padlockable hasp kit on the junction box; the lockable steel wellhead cover is used at sites where the first site visit shows open access or livestock | Amish: "APPROVED: The open decisions from the last wave (TremorTrace to ZeerBox) came in after the review and aren't on the page either." | WLS-DDR-004, A1; WLS-PRC-001 open questions |
+| 2026-10-02 | First partner and region: a participatory groundwater management group in India that works with farmer groups on shared aquifers; the first candidate to approach is ACWADAM in Pune, with its well sizes setting the design well and the FieldNode core at its sites on the IN865 band | Amish: "APPROVED: The open decisions from the last wave (TremorTrace to ZeerBox) came in after the review and aren't on the page either." | WLS-DDR-001, O1 |
+| 2026-10-02 | Battery-only FieldNode variant: the standard FieldNode core with its panel is kept; no battery-only variant is asked of FieldNode until a site shows the panel cannot be placed | Amish: "APPROVED: The open decisions from the last wave (TremorTrace to ZeerBox) came in after the review and aren't on the page either." | WLS-DDR-001, O2 |
+| 2026-10-02 | FieldNode sensor port pinout: FieldNode's proposed standard pinout is signed off for port A (pin 1 switched rail, pin 2 data A, pin 3 ground, pin 4 data B, pin 5 analog), with data A and B carrying I2C; the switched rail voltage is confirmed against the boost module input | Amish: "APPROVED: The open decisions from the last wave (TremorTrace to ZeerBox) came in after the review and aren't on the page either." | FND-DDR-001, O2; FND-DEC-001 |
+| 2026-10-02 | FieldNode core above 45 °C: R15 stays at 55 °C, as decided on 2026-09-25 (WLS-DDR-002, A12); the FieldNode project is asked to confirm the shielded core at 55 °C ambient, and until it does WellSense is not sited where the design maximum exceeds 45 °C | Amish: "APPROVED: The open decisions from the last wave (TremorTrace to ZeerBox) came in after the review and aren't on the page either." | REVIEW.md, cross-repo actions; WLS-DDR-002, A12 |
+| 2026-10-02 | FieldNode geometry in `cad/vendor/`: kept as a copy and re-exported whenever FieldNode's general arrangement is revised, as a line in the review checklist | Amish: "APPROVED: The open decisions from the last wave (TremorTrace to ZeerBox) came in after the review and aren't on the page either." | WLS-DDR-004, A2 |
+| 2026-10-02 | Photoreal render layout: the post drawn closer to the well and lower than installed is accepted, for renders only | Amish: "APPROVED: The open decisions from the last wave (TremorTrace to ZeerBox) came in after the review and aren't on the page either." | REVIEW.md, 2026-09-26, render item 1 |
+| 2026-10-02 | Exploded render: grouping the post, tube and cable together is accepted | Amish: "APPROVED: The open decisions from the last wave (TremorTrace to ZeerBox) came in after the review and aren't on the page either." | REVIEW.md, 2026-09-26, render item 5 |

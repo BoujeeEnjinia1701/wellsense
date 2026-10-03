@@ -3,9 +3,9 @@ doc_id: WLS-DDR-001
 title: WellSense TRL 2 review decisions
 project: WellSense
 doc_type: Design decision record
-version: "0.2"
+version: "0.3"
 status: Draft
-date: '2026-09-25'
+date: '2026-10-02'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -17,12 +17,16 @@ revisions:
   date: '2026-09-25'
   author: Amish Chadha
   change: Recommendations accepted by Amish (DDR-002)
+- version: "0.3"
+  date: '2026-10-02'
+  author: Amish Chadha
+  change: O1 and O2 recorded as decided by Amish on 2026-10-02
 ---
 
 # 0001: TRL 2 review decisions
 
 - **Date:** 2026-09-25
-- **Status:** accepted for D1 to D8. On 2026-09-25 Amish accepted all recommendations, so items D1 to D8 are "Decided by Amish, 2026-09-25: go with recommendation" (see WLS-DDR-002). Items O1 and O2 carry no recommendation and remain "Proposed, awaiting Amish".
+- **Status:** accepted for D1 to D8. On 2026-09-25 Amish accepted all recommendations, so items D1 to D8 are "Decided by Amish, 2026-09-25: go with recommendation" (see WLS-DDR-002). Items O1 and O2 carried no recommendation on 2026-09-25; Amish decided both on 2026-10-02 (WLS-DEC-001).
 
 ## Context
 
@@ -49,12 +53,12 @@ The options for each item are those listed in `docs/REVIEW.md` (session 2026-09-
 
 No rewording of the pitch or problem line was recommended at TRL 2, so both stay as they are in `project.yaml` and `README.md`.
 
-*Table 2. Items that remain open.*
+*Table 2. Items left open on 2026-09-25, decided by Amish on 2026-10-02 (WLS-DEC-001).*
 
 | # | Item | Status |
 | --- | --- | --- |
-| O1 | First partner and region for co-design (an Indian farmer group, an African handpump programme or a US groundwater agency). No preference stated and no recommendation made. | Proposed, awaiting Amish |
-| O2 | Battery-only FieldNode variant without the panel (review item 9). Raised for discussion with the FieldNode project, with no recommendation to adopt; the baseline keeps the standard FieldNode core. | Proposed, awaiting Amish and the FieldNode project |
+| O1 | First partner and region for co-design (an Indian farmer group, an African handpump programme or a US groundwater agency). No preference stated and no recommendation made on 2026-09-25. | Decided by Amish, 2026-10-02: a participatory groundwater management group in India that works with farmer groups on shared aquifers; the first candidate to approach is ACWADAM in Pune, with its well sizes setting the design well and the FieldNode core at its sites on the IN865 band |
+| O2 | Battery-only FieldNode variant without the panel (review item 9). Raised for discussion with the FieldNode project, with no recommendation to adopt; the baseline keeps the standard FieldNode core. | Decided by Amish, 2026-10-02: the standard FieldNode core with its panel is kept; no battery-only variant is asked of FieldNode until a site shows the panel cannot be placed |
 
 ## Consequences
 

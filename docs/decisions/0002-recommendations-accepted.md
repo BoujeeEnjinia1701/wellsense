@@ -3,9 +3,9 @@ doc_id: WLS-DDR-002
 title: WellSense recommendations accepted
 project: WellSense
 doc_type: Design decision record
-version: "0.2"
+version: "0.3"
 status: Draft
-date: '2026-09-26'
+date: '2026-10-02'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -17,12 +17,16 @@ revisions:
   date: '2026-09-26'
   author: Amish Chadha
   change: "Budget set to $200 to cover the priced BOM: decided by Amish, 2026-09-26 (N1 closed)"
+- version: "0.3"
+  date: '2026-10-02'
+  author: Amish Chadha
+  change: O1 and O2 recorded as decided by Amish on 2026-10-02
 ---
 
 # 0002: Recommendations accepted
 
 - **Date:** 2026-09-25
-- **Status:** accepted. Every item below is "Decided by Amish, 2026-09-25: go with recommendation". Items without a recommendation remain "Proposed, awaiting Amish", except N1 (cost with the conduit), decided by Amish on 2026-09-26.
+- **Status:** accepted. Every item below is "Decided by Amish, 2026-09-25: go with recommendation". Items without a recommendation were decided later: N1 (cost with the conduit) by Amish on 2026-09-26, and O1 and O2 by Amish on 2026-10-02 (WLS-DEC-001).
 
 ## Context
 
@@ -54,12 +58,12 @@ The options for each item are those listed in `docs/REVIEW.md` (sessions 2026-09
 
 No rewording of the pitch or problem line was recommended, so both are unchanged.
 
-*Table 2. Items still open (no recommendation).*
+*Table 2. Items open on 2026-09-25 (no recommendation); O1 and O2 decided by Amish on 2026-10-02 (WLS-DEC-001).*
 
 | # | Item | Status |
 | --- | --- | --- |
-| O1 | First partner and region for co-design (WLS-DDR-001, O1). No preference stated. | Proposed, awaiting Amish |
-| O2 | Battery-only FieldNode variant (WLS-DDR-001, O2). No recommendation to adopt. | Proposed, awaiting Amish and the FieldNode project |
+| O1 | First partner and region for co-design (WLS-DDR-001, O1). No preference stated. | Decided 2026-10-02: ACWADAM in Pune, India, as the first candidate to approach |
+| O2 | Battery-only FieldNode variant (WLS-DDR-001, O2). No recommendation to adopt. | Decided 2026-10-02: keep the standard core with its panel |
 | N1 | New: cost with the conduit. A9 and A11 together give $197.60 at 30 m against $190. Options: (a) raise `budget_usd` to $200; (b) keep $190 and state R12 at a 25 m design depth; (c) keep $190 and fit the conduit only where livestock or tampering is likely. | Decided by Amish, 2026-09-26: budget set to $200 (see below) |
 
 ### Budget approved, 2026-09-26

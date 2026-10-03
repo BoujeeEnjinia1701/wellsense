@@ -9,6 +9,9 @@ cross bolt and a cable support grip; flexible conduit tail; bent rigid conduit o
 junction box plate with V-blocks and band clamps; lugs, entries and an internal plate in the
 junction box; barometric housing on the plate; FieldNode lead with an M12 plug; the FieldNode
 core as built to FND-BLD-001 (geometry vendored from the FieldNode model).
+Locking (decided 2026-10-02, WLS-DEC-001): a security-head screw on the rim band, an M5 eye bolt for the
+cap's cross bolt with a padlock hung through its eye, and a padlock hasp kit on the junction box with
+its own padlock (BOM line 16; the eye bolt is part of line 5).
 
 Run from the repo root:
     python cad/src/model.py            export STEP and STL into cad/step and cad/stl
@@ -96,6 +99,12 @@ PARAMS = {
     "fnd_port_bot": 1728.0, "fnd_ant_x": 30.0, "fnd_whip": (10.0, 190.0),
     # 15 FieldNode lead: cable diameter, M12 plug (dia, length)
     "lead": (6.0, (20.0, 45.0)),
+    # 16 locking (WLS-DEC-001, 2026-10-02): security-head screw on the rim band (head radius, head length);
+    #   eye on the cross bolt (ring radius, wire radius); padlock body (x, y, z), shackle (wire radius, leg
+    #   length, half span); hasp kit on the junction box (ear thickness, ear reach, tab height, gap to the
+    #   split, hole radius, base plate reach along the split), padlock hung from the ears
+    "lock_screw": (4.2, 5.0), "eye": (5.5, 1.75), "padlock": (30.0, 12.0, 24.0), "shackle": (2.0, 16.0, 8.0),
+    "hasp": (3.0, 22.0, 20.0, 2.0, 3.5, (24.0, 10.0)),
     # kept for cad/src/product_model.py (appearance model, stale until re-rendered)
     "slot": (3.0, 60.0), "slot_rows": 4, "clamp_z": (880.0, 1370.0), "breather": (15.0, 45.0),
 }
@@ -138,7 +147,7 @@ class Comp:
     name: str
     shape: object
     bom: int | None
-    kind: str          # "made", "bought", "fixing" or "context"
+    kind: str          # "made", "bought", "fixing", "context" or "void" (a hole a shackle must pass through; not exported)
     group: str | None  # key in BOM or CONTEXT (build_parts groups components by it)
 
 
@@ -435,6 +444,32 @@ def build_components(p=PARAMS):
             + Pos(tx + bxo, 0, p["tube_top"] - 2) * Sphere(1.2) + tube((tx + bxo, 0, p["tube_top"] - 2), (tx + bxo, 0, zcb - 2.53), 1.2))
     add("grip", "Cable support grip", grip + bail, 5, "bought", "cap")
 
+    # ---------------- 16 locking: eye on the cross bolt with a padlock; padlock hung through the eye
+    er, ew = p["eye"]
+    xe = tx + bxo
+    ye = cod / 2 + 4.0 + er + ew - 0.2           # eye ring pressed 0.2 mm into the bolt's washer (one forging)
+    ring_ = Pos(xe, ye, zcb) * Rot(0, 90, 0) * Torus(er, ew)
+    C["cross_bolt"].shape = C["cross_bolt"].shape + ring_
+    C["cross_bolt"].name = "M5 eye bolt (cross bolt with an eye)"
+    pw, pwy, pwz = p["padlock"]
+    sr_, sleg, sspan = p["shackle"]
+    zbar = zcb - 1.5
+
+    def padlock(xc, yc, zbar_, key, name, group):
+        bar = xcyl(sr_, xc - sspan, xc + sspan, yc, zbar_)
+        legs = [cyl(sr_, zbar_ - sleg, zbar_, x=xc + s * sspan, y=yc) + Pos(xc + s * sspan, yc, zbar_) * Sphere(sr_) for s in (+1, -1)]
+        shackle = bar + legs[0] + legs[1]
+        body = bx(xc - pw / 2, xc + pw / 2, yc - pwy / 2, yc + pwy / 2, zbar_ - sleg - pwz, zbar_ - sleg)
+        add(key + "_shackle", name + " shackle", shackle, 16, "bought", group)
+        add(key, name + " body", body, 16, "bought", group)
+
+    padlock(xe, ye, zbar, "padlock_cap", "Padlock on the cross bolt", "cap")
+    C["eye_void"] = Comp("eye hole (void)", xcyl(er - ew, xe - 12, xe + 12, ye, zcb), None, "void", None)
+    sx, sh_ = p["lock_screw"]
+    zrb = (sb + stp) / 2
+    yrb = -sr - rbt - 4.5
+    add("sec_screw", "Security-head screw on the rim band", xcyl(sx, 9.0, 9.0 + sh_, yrb, zrb), 16, "bought", "seal")
+
     # ---------------- 14 conduit: connector on the cap, flexible tail, rigid conduit, saddles, hub
     ct = D["cap_top"]
     conn = cyl(p["cap_hole"] / 2, ct - ctop, ct, x=tx) + cyl(13.0, ct, ct + 20, x=tx) + cyl(13.0, ct - ctop - 3, ct - ctop, x=tx)
@@ -537,6 +572,24 @@ def build_components(p=PARAMS):
     add("hub", "Conduit hub", ents["hub"], 14, "bought", "conduit")
     add("glands", "Cable glands, M16 and M12", ents["lead_gland"] + ents["baro_gland"], 6, "bought", "jbox")
     add("breather", "Desiccant breather", ents["breather"], 6, "bought", "jbox")
+    # 16 hasp kit across the split between the body and the lid, on the +Y side wall, with its padlock
+    et, ereach, eh, egap, hr_, (bbase_b, bbase_l) = p["hasp"]
+    xs = xfr - jl
+    yw = jw / 2
+    zh = jzc
+    yh = yw + ereach - 11.0                       # hole centre, 11 mm from the tip
+    hb = (bx(xs - bbase_b, xs - egap, yw, yw + 2, zh - eh / 2, zh + eh / 2)
+          + bx(xs - egap - et, xs - egap, yw, yw + ereach, zh - eh / 2, zh + eh / 2))
+    hl = (bx(xs + egap, xs + bbase_l, yw, yw + 2, zh - eh / 2, zh + eh / 2)
+          + bx(xs + egap, xs + egap + et, yw, yw + ereach, zh - eh / 2, zh + eh / 2))
+    hb = hb - xcyl(hr_, xs - egap - et - 1, xs - egap + 1, yh, zh)
+    hl = hl - xcyl(hr_, xs + egap - 1, xs + egap + et + 1, yh, zh)
+    add("hasp_body", "Hasp tab on the box body", hb, 16, "bought", "jbox")
+    add("hasp_lid", "Hasp tab on the lid", hl, 16, "bought", "jbox")
+    sr2, sleg2, sspan2 = p["shackle"]
+    zbar2 = zh - 1.0
+    padlock(xs, yh, zbar2, "padlock_box", "Padlock on the hasp", "jbox")
+    C["hasp_void"] = Comp("hasp holes (void)", xcyl(hr_, xs - egap - et, xs + egap + et, yh, zh), None, "void", None)
     iw, ih, itk = p["iplate"]
     xi = xb + jwall + ib[2]
     ipl = bx(xi, xi + itk, -iw / 2, iw / 2, jzc - ih / 2, jzc + ih / 2)
@@ -603,7 +656,7 @@ def build_parts(p=PARAMS):
 def assembly(p=PARAMS, context=True):
     from build123d import Compound
     C = build_components(p)
-    keys = [k for k, c in C.items() if (context or c.kind != "context") and k != "water"]
+    keys = [k for k, c in C.items() if (context or c.kind != "context") and c.kind != "void" and k != "water"]
     return Compound(children=[C[k].shape for k in keys])
 
 
@@ -730,6 +783,32 @@ def checks(p=PARAMS):
     chk("Lead clear of the box and barometric parts", S("lead"), S("jbody", "jlid", "jlugs", "baro", "breather", "hub", "conduit"), 2.0)
     chk("Lead clear of the FieldNode bands", S("lead"), S("fnd_bands"), 2.0)
     chk("Post top cap clear of the FieldNode core", S("post_cap"), S("fieldnode"), 1.0)
+    # locking (WLS-DEC-001, 2026-10-02)
+    def through(desc, shackle, void, parts, clear=0.2):
+        v = _vol(shackle, void)
+        gp = shackle.distance_to(parts)
+        ov = _vol(shackle, parts)
+        rows.append((desc, v, gp, "through", v > 1.0 and ov < 1e-2 and gp >= clear - 1e-6))
+
+    chk("Security screw head on the rim band housing", S("sec_screw"), S("rim_band"), "touch")
+    chk("Security screw head clear of the seal plate halves", S("sec_screw"), S("seal_a", "seal_b"), 0.5)
+    chk("Security screw head clear of the pump, tube and collar", S("sec_screw"), S("pump", "tube", "collar"), 50.0)
+    chk("Cross bolt and its eye on the cap", S("cross_bolt"), S("cap"), "touch")
+    through("Padlock shackle through the eye of the cross bolt", S("padlock_cap_shackle"), C["eye_void"].shape, S("cross_bolt"))
+    chk("Padlock legs into its body", S("padlock_cap_shackle"), S("padlock_cap"), "touch")
+    chk("Padlock on the cap clear of the cap", S("padlock_cap", "padlock_cap_shackle"), S("cap"), 5.0)
+    chk("Padlock on the cap clear of the grip, cable and connector", S("padlock_cap", "padlock_cap_shackle"), S("grip", "cable", "connector", "flex"), 10.0)
+    chk("Padlock on the cap clear of the tube", S("padlock_cap", "padlock_cap_shackle"), S("tube"), 5.0)
+    chk("Padlock on the cap clear of the collar and seal plate", S("padlock_cap", "padlock_cap_shackle"), S("collar", "seal_a", "seal_b"), 30.0)
+    chk("Padlock on the cap clear of the pump and discharge", S("padlock_cap", "padlock_cap_shackle"), S("pump"), 20.0)
+    chk("Hasp tab on the box body", S("hasp_body"), S("jbody"), "touch")
+    chk("Hasp tab on the lid", S("hasp_lid"), S("jlid"), "touch")
+    chk("Hasp tabs apart across the split", S("hasp_body"), S("hasp_lid"), 2.0)
+    through("Padlock shackle through both hasp tab holes", S("padlock_box_shackle"), C["hasp_void"].shape, S("hasp_body", "hasp_lid"), clear=0.5)
+    chk("Padlock legs into its body", S("padlock_box_shackle"), S("padlock_box"), "touch")
+    chk("Padlock on the box clear of the box, lugs and tabs", S("padlock_box", "padlock_box_shackle"), S("jbody", "jlid", "jlugs"), 5.0)
+    chk("Padlock on the box clear of the plate, bands and V-blocks", S("padlock_box", "padlock_box_shackle"), S("jplate", "jbands", "vblock_low", "vblock_up"), 30.0)
+    chk("Padlock on the box clear of the lead, conduit and barometric parts", S("padlock_box", "padlock_box_shackle"), S("lead", "conduit", "saddles", "baro", "fieldnode"), 30.0)
     return rows
 
 
@@ -737,7 +816,7 @@ def print_checks(p=PARAMS):
     rows = checks(p)
     bad = 0
     for desc, v, gp, exp, ok in rows:
-        e = "touch" if exp == "touch" else f">= {exp:g} mm"
+        e = exp if isinstance(exp, str) else f">= {exp:g} mm"
         print(f"  {'ok ' if ok else 'BAD'}  {desc:62s} overlap {v:9.3f} mm3  gap {gp:8.2f} mm  ({e})")
         bad += not ok
     print(f"constructability checks: {len(rows) - bad} of {len(rows)} pass")
@@ -753,12 +832,12 @@ if __name__ == "__main__":
     (out / "step").mkdir(exist_ok=True); (out / "stl").mkdir(exist_ok=True)
     C = build_components()
     head = ["seal_a", "seal_b", "spigot_a", "spigot_b", "gasket", "wraps", "rim_band", "collar", "cap", "cross_bolt",
-            "grip", "connector", "flex", "coupling"]
+            "grip", "connector", "flex", "coupling", "sec_screw", "padlock_cap", "padlock_cap_shackle"]
     head_clip = box(P["tube_x"] / 2, 0, (P["stickup"] - 300 + D["conn_top"]) / 2 + 10, 300, 300, D["conn_top"] - P["stickup"] + 340)
     probe_clip = box(P["tube_x"], 0, P["tube_bot"] + 350, 80, 80, 720)
     post_keys = ["post", "post_cap", "footing", "jplate", "vblock_low", "vblock_up", "jbands", "jbody", "jlid", "jlugs",
                  "jlug_screws", "hub", "glands", "breather", "iplate", "mod_boost", "mod_adc", "mod_reg", "mod_strip", "baro",
-                 "conduit", "saddles", "lead", "fieldnode", "fnd_bands"]
+                 "conduit", "saddles", "lead", "fieldnode", "fnd_bands", "hasp_body", "hasp_lid", "padlock_box", "padlock_box_shackle"]
     sets = {
         "wellsense-assembly": assembly(),
         "wellsense-wellhead": Compound(children=[s for s in (C[k].shape & head_clip for k in head + ["tube"]) if s is not None and s.volume > 1e-6]),

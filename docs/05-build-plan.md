@@ -3,7 +3,7 @@ doc_id: WLS-BLD-001
 title: WellSense prototype build plan
 project: WellSense
 doc_type: Build plan
-version: "0.1"
+version: "0.2"
 status: Draft
 date: '2026-10-02'
 author: Amish Chadha
@@ -13,11 +13,15 @@ revisions:
     date: '2026-10-02'
     author: Amish Chadha
     change: First build plan, with pictures by component and step; design made constructable (WLS-DDR-004)
+  - version: "0.2"
+    date: '2026-10-02'
+    author: Amish Chadha
+    change: Locks added as decided on 2026-10-02 (security-head screw, eye bolt and padlock, hasp and padlock, Figures 9a and 23a, step 18); wiring redrawn to FieldNode's standard port pinout
 ---
 
 # WellSense prototype build plan
 
-**Plan, not yet built.** How to build the first proof-of-concept prototype, component by component. Building and testing to it is TRL 4 work. Decisions still to be made are kept in the design decisions register ([docs/06-design-decisions.md](06-design-decisions.md)), not here.
+**Plan, not yet built.** How to build the first proof-of-concept prototype, component by component. Building and testing to it is TRL 4 work. The decisions behind the design are recorded in the design decisions register ([docs/06-design-decisions.md](06-design-decisions.md)).
 
 ## 1. What you are building
 
@@ -25,7 +29,7 @@ revisions:
 
 *Figure 1. Every component pulled apart and numbered in build order. The access tube, cable and probe are drawn with the middle of the borehole left out.*
 
-The prototype is one complete WellSense on a mock-up well: a short length of 150 mm casing standing in for the well, with a stand-in 1-1/4 in riser and pump cable, and the post set in the ground beside it. At a real well the steps are the same; only the access tube and cable are made to the well's depth. A vented pressure probe hangs on its cable inside a 1 in plastic access tube beside the riser. A split plastic seal plate closes the top of the casing round the riser, the pump cable and the tube. The cable leaves the tube through a cap, runs in a short flexible tail and a bent steel conduit to a junction box on the post, and the junction box feeds a FieldNode core higher up the same post. Figure 1 shows the 24 components in the order you make or fit them. Nine are made or worked in a small workshop: the post, the junction box plate, two V-blocks, the drilled junction box, the printed internal plate, the bent conduit, the seal plate with its spigot rings, the drilled access tube and the drilled tube cap. Everything else is bought and fitted, and the FieldNode core is built to its own plan. The work is sawing, drilling and filing aluminium, plastic and steel pipe, bending one length of conduit, one 3D print, cutting rubber sheet, and wiring bought modules with screw terminals. The WellSense parts cost about $244 at a 30 m probe depth, from the bill of materials.
+The prototype is one complete WellSense on a mock-up well: a short length of 150 mm casing standing in for the well, with a stand-in 1-1/4 in riser and pump cable, and the post set in the ground beside it. At a real well the steps are the same; only the access tube and cable are made to the well's depth. A vented pressure probe hangs on its cable inside a 1 in plastic access tube beside the riser. A split plastic seal plate closes the top of the casing round the riser, the pump cable and the tube. The cable leaves the tube through a cap, runs in a short flexible tail and a bent steel conduit to a junction box on the post, and the junction box feeds a FieldNode core higher up the same post. Figure 1 shows the 26 components in the order you make or fit them. Nine are made or worked in a small workshop: the post, the junction box plate, two V-blocks, the drilled junction box, the printed internal plate, the bent conduit, the seal plate with its spigot rings, the drilled access tube and the drilled tube cap. Everything else is bought and fitted, and the FieldNode core is built to its own plan. The work is sawing, drilling and filing aluminium, plastic and steel pipe, bending one length of conduit, one 3D print, cutting rubber sheet, and wiring bought modules with screw terminals. The WellSense parts cost about $262 at a 30 m probe depth, from the bill of materials.
 
 > **Safety:** A real well is drinking water and often has a mains-powered pump. Before any work at a real well, isolate and lock off the pump supply, disinfect everything that goes into the well, and never leave the wellhead open. WellSense itself runs at 24 V or less. The FieldNode core holds a lithium iron phosphate cell of about 19 Wh: follow its build plan's safety stops. Cut aluminium and steel edges are sharp; printing ASA gives off fumes; concrete is caustic on skin.
 
@@ -44,9 +48,10 @@ The concept showed what WellSense does; some of its parts could not be made or f
 | Conduit | A solid rod round the cable with sharp corners, fixed hard to the tube cap | One bend of 100 mm radius, a hub under the box, two saddles, and a flexible tail to the cap (Figures 14, 15 and 23) | A hand bender makes it; the cap lifts off for calibration |
 | Seal plate | One solid disc with two gland bosses; no way round an installed riser, no fixing, no hole for the pump cable | Two HDPE halves with spigot rings, an EPDM gasket and wraps, and a band round the rim (Figures 16 to 19) | It fits round the riser and pump cable without pulling the pump |
 | Tube support | Not drawn, although 264 N of tube hangs from it at 60 m | A split collar on the tube resting on the seal plate (Figure 18) | A bought part that sets the tube height |
-| Tube cap | A cap with a "hanger" boss, nothing carrying the probe | A slip cap with a cross bolt; a cable support grip hangs from the bolt (Figure 23) | It holds the recorded probe depth and lifts off with the probe |
+| Tube cap | A cap with a "hanger" boss, nothing carrying the probe | A slip cap with an eye bolt as the cross bolt; a cable support grip hangs from the bolt (Figure 23) | It holds the recorded probe depth and lifts off with the probe |
 | Access tube bottom | 3 x 60 mm lengthwise slots and a plug made as part of the tube | Rings of 8 mm drilled holes and a bought end cap (Figures 20 and 21) | A hand drill does it |
 | FieldNode lead | A cable into the top of the box with no plug | A lead with an M12 plug through a gland in the box floor, with a drip loop (step 10) | No entry on the top of a box outdoors |
+| Locks | Nothing locked; the lockable parts were not specified | A security-head screw on the rim band, an eye bolt on the tube cap with a padlock, and a padlock hasp on the junction box, all fitted from the start (Figures 9a and 23a, step 18) | Keeps passers-by and livestock from opening the wellhead or the box |
 | Surface cable | 2 m, no slack | 2.7 m with a 1.1 m service loop in the box (step 17) | The probe is lifted 1 m to calibrate it |
 
 ## 3. Making the components
@@ -146,6 +151,7 @@ The back face sits flat on the back of the plate, held by two M4 countersunk scr
 4. Open each hole with a step drill, light pressure, low speed: 22 for the hub, 20 for the breather, 16 and 12 for the glands. Check each size against the part's datasheet before the last step.
 5. Deburr inside and out, peel the tape, and clean with water and mild soap only; solvents craze polycarbonate.
 6. Fit the four lugs to the box's back corners as the lug kit's maker describes.
+7. Fit the hasp kit on the right-hand side wall, as you face the lid, at the middle of the box's height. One stainless tab goes on the body just behind the split between body and lid and one on the lid just in front of it, each on two M3 screws with the kit's sealing washers through 3.2 mm holes. The tabs stand out from the wall 22 mm, 4 mm apart across the split, and each has a 7 mm hole for the padlock.
 
 **How it fits the parts next to it.**
 
@@ -159,7 +165,11 @@ Each entry goes in from below with its seal outside and its nut inside (step 3).
 
 *Figure 9. Each lug lies flat on the plate beside the box and is held by one M5 button-head screw from behind the plate, nyloc nut in front.*
 
-**Check before moving on.** No crack runs out from any hole under a bright lamp; the box sits flat on the plate with all four lug holes lined up.
+![Figure 9a. Joint 11: hasp kit and padlock across the split of the junction box](05-build-plan/joint-11.png)
+
+*Figure 9a. The two tabs line up across the split between the body and the lid; one padlock shackle goes through both holes, so the lid cannot be opened while the padlock is shut.*
+
+**Check before moving on.** No crack runs out from any hole under a bright lamp; the box sits flat on the plate with all four lug holes lined up; the two hasp tab holes line up with the lid shut and a 4 mm rod passes through both.
 
 ### 3.5 Internal plate and the interface modules on it
 
@@ -193,7 +203,7 @@ Each entry goes in from below with its seal outside and its nut inside (step 3).
 
 ![Figure 13. Block-level wiring](05-build-plan/wiring.png)
 
-*Figure 13. Block-level wiring with wire sizes. No circuit board is laid out at this stage; bought modules make up the interface board.*
+*Figure 13. Block-level wiring with wire sizes, with the pins of FieldNode sensor port A named. No circuit board is laid out at this stage; bought modules make up the interface board.*
 
 Buy modules that meet this specification:
 
@@ -210,14 +220,14 @@ Buy modules that meet this specification:
 
 Wire it like this, with stranded copper and a ferrule on every screw terminal:
 
-1. FieldNode lead, 12 V and ground, to the terminal strip, then to the surge and reverse board: 0.2 mm² in the lead, 0.5 mm² on the plate.
+1. FieldNode lead to the terminal strip: pin 1 (the switched 12 V rail) and pin 3 (ground), then on to the surge and reverse board: 0.2 mm² in the lead, 0.5 mm² on the plate. This is FieldNode's standard sensor port pinout.
 2. Surge board to the boost module input: 0.5 mm².
 3. Boost module output (24 V) to the loop + terminal: 0.5 mm².
 4. Vented cable cores to the loop + and loop - terminals.
 5. Loop - terminal through the 150 Ω shunt to ground: 0.5 mm².
 6. Shunt to the ADC input through the series resistor: 0.25 mm², twisted.
 7. 12 V to the 3.3 V regulator; regulator to the ADC and to the barometric lead: 0.25 mm².
-8. ADC and barometric sensor I2C lines to the terminal strip and back up the FieldNode lead: 0.25 mm².
+8. ADC and barometric sensor I2C lines to the terminal strip and back up the FieldNode lead: data A (pin 2) carries SDA and data B (pin 4) carries SCL, 0.25 mm². Pin 5 (analog) is not used and is left unconnected.
 9. Leave the vent tube in the vented cable open inside the box; do not crimp or seal it.
 
 **Check before moving on.** Every wire continues end to end; with no supply, the 24 V output and the 12 V input read open to ground; every wire is labelled.
@@ -268,6 +278,7 @@ The short leg stands upright 22 mm in front of the plate and screws into the hub
 5. Screw each half ring under its plate half, centred, with three stainless 4 x 16 screws in 3 mm pilot holes.
 6. Cut the gasket from 3 mm EPDM, 184 mm outside and 150 mm inside, and cut it once so it can go round the riser.
 7. Cut three wraps from 2 mm EPDM, 20 mm wide, each one turn long for the riser, the pump cable and the tube.
+8. Take the hex screw out of the rim band clamp and fit the security-head screw in its place, so the band can only be undone with the matching bit.
 
 **How it fits the parts next to it.**
 
@@ -279,7 +290,7 @@ The short leg stands upright 22 mm in front of the plate and screws into the hub
 
 *Figure 19. Both halves close round the wrapped riser, pump cable and tube; the band round the rim pulls them together.*
 
-The gasket lies on the casing rim and the plate halves lie on the gasket, their spigots 1 mm inside the casing bore. Each wrap fills the gap between its part and the plate, so tightening the rim band squeezes all three. The tube collar sits on top of the plate.
+The gasket lies on the casing rim and the plate halves lie on the gasket, their spigots 1 mm inside the casing bore. Each wrap fills the gap between its part and the plate, so tightening the rim band squeezes all three. The tube collar sits on top of the plate. The rim band's security-head screw sits on the band's housing, on the side of the plate away from the riser, with its head clear of the plate rim.
 
 **Check before moving on.** On a trial fit round a short length of riser, the halves meet with no daylight at the split.
 
@@ -309,19 +320,19 @@ The tube hangs beside the riser, 32 mm clear of it and 18 mm from the casing wal
 
 **Check before moving on.** A 22 mm rod drops through the whole tube freely.
 
-### 3.9 Tube cap with cross bolt and support grip
+### 3.9 Tube cap with eye bolt and support grip
 
 ![Figure 22. Making sketch of the tube cap](../cad/drawings/WLS-DWG-109.png)
 
 *Figure 22. Tube cap making sketch (WLS-DWG-109).*
 
-**What it is and what it is made from.** The cap on the top of the access tube; the probe hangs from it and the conduit's flexible tail plugs into it. A 1 in Sch 40 PVC slip cap, a stainless M5 x 50 bolt with a nyloc nut, and a stainless single-eye cable support grip for 6 to 8 mm cable.
+**What it is and what it is made from.** The cap on the top of the access tube; the probe hangs from it and the conduit's flexible tail plugs into it. A 1 in Sch 40 PVC slip cap, a stainless M5 x 50 eye bolt (a bolt with a swing eye in place of the head) with a nyloc nut, and a stainless single-eye cable support grip for 6 to 8 mm cable.
 
 **How to make it.**
 
 1. Do not glue the cap: it must lift off.
 2. Drill 22.5 mm in the centre of the top for the conduit connector.
-3. Drill 5 mm straight across the cap, 9 mm above the shoulder the tube end stops against and 9 mm off the centre line, for the cross bolt.
+3. Drill 5 mm straight across the cap, 9 mm above the shoulder the tube end stops against and 9 mm off the centre line, for the eye bolt, which acts as the cross bolt.
 
 **How it fits the parts next to it.**
 
@@ -329,9 +340,13 @@ The tube hangs beside the riser, 32 mm clear of it and 18 mm from the casing wal
 
 *Figure 23. The grip's eye hangs on the cross bolt; the cap rests on the tube end; the connector's locknut is inside the cap.*
 
-The connector goes through the top with its locknut inside. The support grip is pushed onto the cable at the mark for the probe depth, and its eye goes over the cross bolt, which carries the probe and cable. The bolt passes beside the cable, 3 mm clear of it.
+![Figure 23a. Joint 10: padlock on the eye bolt of the tube cap](05-build-plan/joint-10.png)
 
-**Check before moving on.** With the bolt in, the cap still slides on and off the tube by hand.
+*Figure 23a. The eye of the eye bolt stands out on the right-hand side of the cap, and the padlock's shackle passes through it.*
+
+The connector goes through the top with its locknut inside. The support grip is pushed onto the cable at the mark for the probe depth, and its eye goes over the cross bolt, which carries the probe and cable. The bolt passes beside the cable, 3 mm clear of it. Its swing eye stands out of the cap on one side, with the nyloc nut on the other, and takes the padlock (step 18). The padlock stops the eye bolt being unscrewed, so the grip and the probe cannot be freed; it does not stop the cap being lifted off the tube, which is the job of the lockable steel wellhead cover at sites where the first visit shows open access or livestock.
+
+**Check before moving on.** With the bolt in, the cap still slides on and off the tube by hand, and a 4 mm rod passes through the eye.
 
 ### 3.10 FieldNode core
 
@@ -344,19 +359,20 @@ Buy to specification, not brand. Line numbers are those of the bill of materials
 - **Pressure transducer (line 1).** Vented (gauge), 0 to 10 m of water, 4 to 20 mA two-wire, 12 to 30 V supply, 0.25 % of full scale class, 316 stainless body 22 mm diameter or less, IP68, with a drinking-water certificate.
 - **Vented cable (line 2).** Polyurethane or polyethylene jacket, two cores of 0.2 mm² or more, aramid strain member of 400 N or more, vent capillary, about 7 mm; the probe depth plus 2.7 m.
 - **Access tube and end cap (line 3).** As section 3.8.
-- **Seal plate parts (line 4).** HDPE and EPDM sheet as section 3.7; a stainless worm-drive band clamp for 180 to 210 mm; a split aluminium shaft collar for 1-5/16 in (33.4 mm) pipe; six stainless 4 x 16 screws.
-- **Tube cap parts (line 5).** As section 3.9.
+- **Seal plate parts (line 4).** HDPE and EPDM sheet as section 3.7; a stainless worm-drive band clamp for 180 to 210 mm (its hex screw is swapped for the security-head screw of line 16); a split aluminium shaft collar for 1-5/16 in (33.4 mm) pipe; six stainless 4 x 16 screws.
+- **Tube cap parts (line 5).** As section 3.9, with an M5 x 50 stainless eye bolt.
 - **Junction box (line 6).** As section 3.4, with an M16 gland for 4 to 8 mm cable, an M12 gland for 3 to 6.5 mm cable, a replaceable silica gel breather in an M20 thread, and four M5 x 16 button-head screws with nyloc nuts.
 - **Interface modules (line 7).** As Table 2, with M3 screws and 6 mm nylon standoffs.
 - **Barometric sensor (line 9).** BMP390 or BME280 class module in a louvred housing about 36 mm across with a flat two-screw flange, and a 0.3 m lead.
 - **Post set (line 10).** The pipe and cap of section 3.1, the plate and V-blocks of sections 3.2 and 3.3, two 12 mm stainless worm-drive band clamps, four M4 x 12 countersunk screws.
 - **Footing (line 13).** One 25 kg bag of premixed concrete and a bucket of gravel.
 - **Conduit set (line 14).** The rigid conduit of section 3.6; 0.3 m of 1/2 in liquid-tight flexible conduit with two straight connectors; two 1/2 in spacer saddles with M5 screws and nyloc nuts; one 1/2 in conduit hub.
-- **FieldNode lead (line 15).** 1.5 m of four-core screened cable, about 0.2 mm², with an M12 A-coded 5-pin plug, IP67; cable ties.
+- **FieldNode lead (line 15).** 1.5 m of four-core screened cable, about 0.2 mm², with an M12 A-coded 5-pin plug, IP67, wired to pins 1 to 4 and leaving pin 5 unconnected; cable ties.
+- **Locks (line 16).** One stainless security-head screw and its bit; two keyed-alike 20 mm stainless padlocks with a 4 mm shackle; one padlockable stainless hasp kit with two M3 screws and sealing washers for each tab.
 
 ## 4. Putting it together
 
-In each picture the parts already fitted are grey and the part being fitted is in colour, with an arrow showing the way it goes in. Steps 1 to 11 build the surface unit; steps 12 to 17 fit the wellhead.
+In each picture the parts already fitted are grey and the part being fitted is in colour, with an arrow showing the way it goes in. Steps 1 to 11 build the surface unit; steps 12 to 18 fit the wellhead and lock it.
 
 ### Step 1: post into its footing
 
@@ -440,7 +456,7 @@ Lay the gasket on the casing rim. Wrap one turn of EPDM round the riser, the pum
 
 ![Step 14](05-build-plan/step-14.png)
 
-Put the band round the rim and tighten it until the halves meet. Set the tube so its top is 110 mm above the casing top, clamp the collar on the tube and let it rest on the plate.
+Put the band round the rim and tighten it with the security-head bit until the halves meet. Set the tube so its top is 110 mm above the casing top, clamp the collar on the tube and let it rest on the plate.
 
 ### Step 15: thread the cable
 
@@ -452,13 +468,19 @@ Fit the conduit connector through the cap and tighten its locknut. Push the cabl
 
 ![Step 16](05-build-plan/step-16.png)
 
-Disinfect the probe and the cable. Mark the cable at the probe depth from the measuring point (the casing top). Lower the probe hand over hand down the tube, feeding cable from the box end, until the mark is at the cap. Push the support grip onto the cable at the mark, put its eye over the cross bolt, fit the bolt's nut and seat the cap on the tube.
+Disinfect the probe and the cable. Mark the cable at the probe depth from the measuring point (the casing top). Lower the probe hand over hand down the tube, feeding cable from the box end, until the mark is at the cap. Push the support grip onto the cable at the mark, put its eye over the eye bolt, fit the bolt's nut and seat the cap on the tube.
 
 ### Step 17: service loop, terminals and lid
 
 ![Step 17](05-build-plan/step-17.png)
 
 Coil 1.1 m of cable in the box in front of the internal plate, cut the rest, strip the cores to the terminal strip and leave the vent tube open. Put a fresh charge in the breather. Check the lid gasket is clean and seated with no wire across it, and tighten the lid screws in a cross pattern.
+
+### Step 18: fit the padlocks
+
+![Step 18](05-build-plan/step-18.png)
+
+Hang the first padlock through the eye of the eye bolt on the tube cap and close it. Close the second padlock through the holes of both hasp tabs with the lid shut. Check that the one key opens and closes both, and that the security-head screw on the rim band is tight. Take the key with you.
 
 ## 5. First checks
 
@@ -477,7 +499,8 @@ These are the checks a TRL 4 test report would record; this plan only lists them
 | Barometric sensor | R15 | Read it over I2C with the box shut | Within 1 hPa of a reference barometer |
 | Two-point calibration lift | R4 | Undo the tail's connector at the cap, lift cap and probe 1 m, read, lower, reconnect | The service loop feeds the 1 m without pulling on the terminals |
 | Fixings | R16 | Push on the box, conduit and FieldNode core by hand | Nothing moves at any joint; the conduit does not touch the riser |
-| Installation time | R11 | Time steps 12 to 17 with two people | 2 h or less at a well with the tube already in place |
+| Locks | R16 | With both padlocks shut, try to lift the lid, turn the eye bolt and undo the rim band screw with ordinary tools | None of the three can be undone; the one key opens both padlocks |
+| Installation time | R11 | Time steps 12 to 18 with two people | 2 h or less at a well with the tube already in place |
 
 ## 6. Safety stops
 
@@ -490,11 +513,11 @@ Stop at each point. Carry on only when everything listed is true.
 - **S5. Before any work at a real well (outside this plan).** The pump supply is isolated and locked off, with the key held by the person at the wellhead; the well owner or water authority agrees; a second person is present; the open casing is covered whenever nobody is working at it.
 - **S6. Before anything goes into a real well.** The probe, cable, tube, wraps and gasket are disinfected as the local water authority advises, and every wetted part has its drinking-water certificate.
 - **S7. Before lowering the tube or the probe.** Two people; the cable or tube is fed hand over hand and never allowed to run; the cable never carries more than its strain member's rating.
-- **S8. Before leaving the site.** The seal plate band is tight, the cap is seated, the junction box is shut, and the FieldNode core's own final checks are done.
+- **S8. Before leaving the site.** The seal plate band is tight, the cap is seated, the junction box is shut, both padlocks are closed, and the FieldNode core's own final checks are done.
 
 ## 7. Tools, skills and workspace
 
-**Tools.** Hacksaw with a 24 teeth per inch blade; pipe cutter; 1/2 in hand conduit bender; bench vice with soft jaws; bench drill or a drill in a stand; drills 2.5 to 12 mm; step drill to 22 mm; hole saws 38 and 46 mm; countersink; M4 tap and tap drill; jigsaw with metal and plastic blades and a circle jig; flat, half-round and round files; deburring tool; scriber, engineer's square, 45° square, steel rule and calipers; V-block for drilling tube; 3D printer with an enclosure and a bed of at least 100 x 130 mm that prints ASA; soldering iron; ferrule crimper and wire strippers; multimeter; bench power supply with an adjustable current limit; 4 to 20 mA loop calibrator; torque screwdriver; spirit level; spade, post-hole digger and bucket.
+**Tools.** Hacksaw with a 24 teeth per inch blade; pipe cutter; 1/2 in hand conduit bender; bench vice with soft jaws; bench drill or a drill in a stand; drills 2.5 to 12 mm; step drill to 22 mm; hole saws 38 and 46 mm; countersink; M4 tap and tap drill; jigsaw with metal and plastic blades and a circle jig; flat, half-round and round files; deburring tool; scriber, engineer's square, 45° square, steel rule and calipers; V-block for drilling tube; 3D printer with an enclosure and a bed of at least 100 x 130 mm that prints ASA; soldering iron; ferrule crimper and wire strippers; multimeter; bench power supply with an adjustable current limit; 4 to 20 mA loop calibrator; torque screwdriver; the security-head bit for the rim band screw; spirit level; spade, post-hole digger and bucket.
 
 **Skills.** No certified trade is needed. Basic metalwork and plastic work (marking out, sawing, drilling, filing, tapping, bending conduit), through-hole soldering and crimping, safe use of a bench power supply, and mixing concrete. All circuits are extra-low voltage: 12 V from FieldNode and 24 V in the loop. Working at a real well with a mains-powered pump needs the owner's or water authority's agreement and a person who can isolate the pump safely.
 
@@ -504,11 +527,11 @@ Stop at each point. Carry on only when everything listed is true.
 
 ## 8. Where the numbers come from
 
-- Model and constructability checks: `cad/src/model.py` (`python cad/src/model.py --check`, 99 checks); STEP and STL exports in `cad/step/` and `cad/stl/`; FieldNode geometry in `cad/vendor/`.
+- Model and constructability checks: `cad/src/model.py` (`python cad/src/model.py --check`, 118 checks); STEP and STL exports in `cad/step/` and `cad/stl/`; FieldNode geometry in `cad/vendor/`.
 - Pictures: `cad/src/build_plan_media.py`, using `.kit/build_views.py`; written to `docs/05-build-plan/` and `cad/drawings/WLS-DWG-101` to `WLS-DWG-109`.
-- General arrangement: `cad/drawings/WLS-DWG-001.pdf`, Rev P5.
-- Calculations: `docs/04-calcs/01-sizing.md` (WLS-CAL-001 v0.4) and `docs/04-calcs/sizing.py`; loop supply [B1], loads [D3] to [D6], cost [H1] to [H3].
+- General arrangement: `cad/drawings/WLS-DWG-001.pdf`, Rev P6.
+- Calculations: `docs/04-calcs/01-sizing.md` (WLS-CAL-001 v0.5) and `docs/04-calcs/sizing.py`; loop supply [B1], loads [D3] to [D7], cost [H1] to [H3].
 - Bill of materials: `bom/bom.csv`.
 - Decisions: `docs/decisions/0004-design-for-construction.md` (WLS-DDR-004), with WLS-DDR-001 to WLS-DDR-003.
-- Requirements: `docs/03-requirements.md` (WLS-REQ-001 v0.6).
+- Requirements: `docs/03-requirements.md` (WLS-REQ-001 v0.8).
 - FieldNode core: the FieldNode build plan FND-BLD-001 and drawing FND-DWG-001.

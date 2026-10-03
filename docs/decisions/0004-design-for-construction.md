@@ -3,7 +3,7 @@ doc_id: WLS-DDR-004
 title: WellSense design for construction
 project: WellSense
 doc_type: Design decision record
-version: "0.1"
+version: "0.3"
 status: Draft
 date: '2026-10-02'
 author: Amish Chadha
@@ -13,12 +13,20 @@ revisions:
   date: '2026-10-02'
   author: Amish Chadha
   change: Changes that make the concept physically buildable, with the reason for each; made under Amish's 2026-09-30 instruction to make the design physically buildable; open for his review
+- version: "0.2"
+  date: '2026-10-02'
+  author: Amish Chadha
+  change: Accepted by Amish on 2026-10-02, with A1 (locking fitted from the start) and A2 (vendor copy re-exported) decided
+- version: "0.3"
+  date: '2026-10-02'
+  author: Amish Chadha
+  change: A1 carried into the design, with the locks modelled, priced and drawn; cost and document versions updated
 ---
 
 # 0004: Design for construction
 
 - **Date:** 2026-10-02
-- **Status:** draft. Every change in Tables 1 and 2 was made under Amish's 2026-09-30 instruction to make the design physically buildable; open for his review. The items in Table 3 are **proposed, awaiting Amish** and are carried in the design decisions register (WLS-DEC-001).
+- **Status:** draft; accepted. Amish, 2026-10-02: "APPROVED: The open decisions from the last wave (TremorTrace to ZeerBox) came in after the review and aren't on the page either." This approves the recommendation written for each open decision in the design decisions register (WLS-DEC-001 v0.1): every change in Tables 1 and 2 is accepted as made, and A1 and A2 in Table 3 are decided as recorded there.
 
 ## Context
 
@@ -48,18 +56,18 @@ The changes keep what WellSense does: the same vented 4 to 20 mA probe hung in i
 
 | Item | Change | Reason |
 | --- | --- | --- |
-| Cost | Lines 4, 5, 6, 7, 10 and 14 repriced and line 15 added. Value-engineering target: USD 200. Estimated cost of the constructable design: USD 244.40 (USD 44.40 over the target); the concept was USD 197.60 [H2], [H2c]. Line 8, the FieldNode core, is now FieldNode's constructable base node, $139.00 (was $126.00), outside the target. | Parts added for construction. `budget_usd` is unchanged. |
+| Cost | Lines 4, 5, 6, 7, 10 and 14 repriced and line 15 added. Value-engineering target: USD 200. Estimated cost of the constructable design: USD 244.40 (USD 44.40 over the target) before the locks of A1; with them USD 262.40 (USD 62.40 over the target); the concept was USD 197.60 [H2], [H2c], [H2d]. Line 8, the FieldNode core, is now FieldNode's constructable base node, $139.00 (was $126.00), outside the target. | Parts added for construction. `budget_usd` is unchanged. |
 | Cable | 33 m at the 30 m design depth (was 32 m); surface run 2.7 m including the 1.1 m service loop; loop supply at 60 m still leaves 8.16 V of margin [B1]. | P5. |
-| Drawing | WLS-DWG-001 Rev P5; making sketches WLS-DWG-101 to 109 added. | Follows the model. |
-| Documents | WLS-CAL-001 v0.4, WLS-REQ-001 v0.6, WLS-PRC-001 v0.6, `bom/bom.csv`, `bom/bom-notes.md`. R12 is now reported against the value-engineering target. No other requirement changed status. | Follows the model. |
-| Media | Concept media regenerated from the model. The photoreal renders (`media/render-*.png`), `media/card.png`, `media/social-preview.png` and the appearance model `cad/src/product_model.py` still show the concept wellhead, junction box mounting and FieldNode massing and need updating on Amish's Mac. | They are made with Blender. |
+| Drawing | WLS-DWG-001 Rev P6 (locks added); WLS-DWG-109 Rev P2; making sketches WLS-DWG-101 to 109 added. | Follows the model. |
+| Documents | WLS-CAL-001 v0.5, WLS-REQ-001 v0.8, WLS-PRC-001 v0.8, `bom/bom.csv`, `bom/bom-notes.md`. R12 is now reported against the value-engineering target. No other requirement changed status. | Follows the model. |
+| Media | Concept media regenerated from the model. The photoreal renders (`media/render-*.png`), `media/card.png`, `media/social-preview.png` and the appearance model `cad/src/product_model.py` need re-rendering on Amish's Mac. The appearance model `cad/src/product_model.py` was brought into line with the constructable design on 2026-10-02 and the render scenes exported. | They are made with Blender. |
 
-*Table 3. Proposed, awaiting Amish.*
+*Table 3. Decided by Amish, 2026-10-02.*
 
 | # | Question | Options | Recommendation |
 | --- | --- | --- | --- |
-| A1 | Locking (R16). The rim band, tube cap and junction box lid can now be undone with a screwdriver or by hand, which the concept did not address either. | (a) a security-head screw on the rim band, a padlock through the cross bolt's head, and a padlockable hasp kit on the box; (b) a lockable steel cover over the whole wellhead. | (a): small, cheap parts that fit the present design; decide after the first site visit. |
-| A2 | The FieldNode core's geometry is copied from the FieldNode model into `cad/vendor/`, so a FieldNode change does not reach WellSense until it is exported again. | (a) keep the copy and re-export it whenever FieldNode's general arrangement is revised; (b) share it through a common library repo. | (a), noted in the review checklist. |
+| A1 | Locking (R16). The rim band, tube cap and junction box lid can now be undone with a screwdriver or by hand, which the concept did not address either. | (a) a security-head screw on the rim band, a padlock through the cross bolt's head, and a padlockable hasp kit on the box; (b) a lockable steel cover over the whole wellhead. | (a): small, cheap parts that fit the present design; decide after the first site visit. **Decided by Amish, 2026-10-02:** (a) is fitted on the prototype from the start; (b) at sites where the first site visit shows open access or livestock. The locking parts are now in the model, the BOM (line 16, and an eye bolt in line 5) and the drawings; the padlock on the cap is hung through the eye of an M5 eye bolt, which stops the bolt being unscrewed but not the cap being lifted (the steel cover does that). |
+| A2 | The FieldNode core's geometry is copied from the FieldNode model into `cad/vendor/`, so a FieldNode change does not reach WellSense until it is exported again. | (a) keep the copy and re-export it whenever FieldNode's general arrangement is revised; (b) share it through a common library repo. | (a), noted in the review checklist. **Decided by Amish, 2026-10-02: (a).** |
 
 ## Consequences
 

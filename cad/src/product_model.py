@@ -4,30 +4,30 @@ Finished-product look for photoreal renders. Surface logger: the FieldNode core 
 light grey enclosure, side ribs, a lid parting line, lid screws, a clear lid window over the
 controller board with a lit green status light, a lid label, M12 sensor ports (port 1 with the
 lead plugged in, port 2 capped), the whip antenna, the 6 W panel with its frame and cell grid on
-flat-bar legs, and the back plate with V-blocks and band clamps; the junction box with a clear lid
+flat-bar legs, and the back plate with V-blocks and band clamps; the junction box on its aluminium plate (V-blocks, band clamps, four lugs, padlock hasp with its padlock) with a clear lid
 window over the 4 to 20 mA interface board (shunt, ADC, 24 V boost, terminal block, lit power
 light), lid screws, a WellSense label, a top cable gland, the conduit hub and the clear desiccant
-breather with orange silica gel; the louvered barometric sensor housing. Wellhead: the teal split
-seal plate with its gasket line, bolts and EPDM glands; the PVC tube cap with its stainless cable
-grip hanger; the galvanized conduit with swept bends and a compression gland. In the well: the
-slotted PVC access tube with its end plug and the 22 mm stainless vented transducer with a black
+breather with orange silica gel; the louvered barometric sensor housing on the plate below the box. Wellhead: the teal split
+seal plate (two HDPE halves) with its gasket, EPDM wraps, rim band with a security-head screw and tube collar; the PVC slip cap with its
+stainless M5 eye bolt and padlock; the flexible tail and the galvanized conduit bent to the hub. In the well: the
+drilled PVC access tube with its slip end cap and the 22 mm stainless vented transducer with a black
 nose guard and a teal band, on its vented cable. Context is a compact block of ground cut open on
 the viewer's side: dry soil over the saturated aquifer, a small concrete apron, the steel casing
 in section with the existing pump riser and the well water (clear).
 APPEARANCE MODEL ONLY: no tolerances, no fabrication detail. CONCEPT, NOT FOR FABRICATION.
 
-Every part size, the wellhead, the tube and probe positions in plan, the post, junction box,
+Every part size (the plate, V-blocks, bands, lugs, hasp, padlocks, seal plate, rim band, collar, cap, eye bolt, conduit connectors and lead are the constructable parts themselves, taken from build_components() in model.py), the wellhead, the tube and probe positions in plan, the post, junction box,
 barometric sensor and FieldNode offsets relative to the post, and the conduit route come from
 PARAMS, derived() and build_parts() in model.py, with the same axes: the well axis is the Z axis,
 Z is up with the ground at z = 0, the post stands on -X and the FieldNode core faces -Y.
 Render layout (not the installed layout), see the constants below and docs/REVIEW.md, session
-2026-09-26: the post is drawn 330 mm from the well instead of 750 mm and everything on it 350 mm
+2026-09-26: the post is drawn 330 mm from the well instead of 750 mm (the rigid conduit uses a tighter bend) and everything on it 350 mm
 lower (FieldNode base 1.40 m instead of 1.75 m, junction box center 0.90 m instead of 1.25 m);
 the borehole is shortened further, with the probe tip 0.58 m below the ground and the water 0.15 m
 below the ground. The panel tilt comes from derived()["panel_rot_x"] in model.py (cells toward -Y).
 The post, the access tube and the vented cable are each drawn in two parts: the lower post and
 footing, the upper access tube and the upper cable are in the "context" group, so the exploded view
-shows the logger on the upper post, the wellhead parts and the probe on the slotted tube section
+shows the logger on the upper post, the wellhead parts and the probe on the drilled tube section
 side by side.
 
     from product_model import product_parts
@@ -41,7 +41,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from build123d import (Align, Axis, Box, Circle, Cone, Cylinder, FilletPolyline, Plane, Pos,
                        RegularPolygon, Rot, Solid, Sphere, Text, Vector, extrude, fillet, sweep)
-from model import PARAMS, derived, build_parts
+from model import PARAMS, derived, build_parts, build_components
 
 _FONT = Path(__file__).resolve().parents[2] / ".kit" / "fonts" / "IBMPlexSans-SemiBold.ttf"
 
@@ -51,13 +51,13 @@ RENDER_VIEWS = [
     {"name": "hero", "groups": ["shell", "internal", "accessory", "context"], "explode": False, "el": 30, "az": -40,
      "note": "Product render from the front right and above (about 30 deg elevation); ground cut open to show "
              "the casing, access tube and submersible probe below the water line, teal wellhead seal and "
-             "conduit to the junction box and FieldNode logger on the post. Post drawn closer and lower "
+             "padlocked eye bolt on the cap, conduit to the junction box on its plate and FieldNode logger on the post. Post drawn closer and lower "
              "than installed; borehole shortened (design probe depth 30 m)"},
     {"name": "exploded", "groups": ["shell", "internal", "accessory"], "explode": True, "el": 28, "az": -55,
      "note": "Exploded view from the front right and above (about 28 deg elevation): FieldNode panel, lid, "
              "controller board and ports, barometric sensor, junction box lid, interface board and breather on "
-             "the upper post (left); seal plate, gasket, glands, tube cap, hanger and conduit (center); slotted "
-             "access tube, end plug and the pressure transducer on its vented cable (right)"},
+             "the upper post (left); seal plate halves, gasket, rim band, collar, tube cap, eye bolt, padlock and conduit (center); drilled "
+             "access tube, end cap and the pressure transducer on its vented cable (right)"},
     {"name": "detail", "groups": ["shell", "internal"], "explode": False, "el": 14, "az": -35,
      "note": "Detail from the front right, slightly above (about 14 deg elevation), without the well and "
              "ground: FieldNode core with its panel, lit status light and M12 ports; junction box with the "
@@ -74,7 +74,7 @@ DISP_TUBE_BOT = -630.0      # bottom of the access tube shown (model.py display:
 BLOCK = (-560.0, 460.0, -400.0, 400.0)   # ground block x0, x1, y0, y1
 APRON_D = 640.0             # concrete apron drawn smaller than the existing 1.2 m apron
 POST_SPLIT_Z = 760.0        # post drawn in two parts: upper (logger detail) and lower
-TUBE_SPLIT_Z = -100.0       # access tube drawn in two parts: slotted bottom (exploded view) and upper
+TUBE_SPLIT_Z = -100.0       # access tube drawn in two parts: drilled bottom (exploded view) and upper
 E_LOGGER = (-300.0, 0.0, -300.0)   # exploded view: logger group offset, added to its parts' own offsets
 CABLE_STUB = 180.0          # length of vented cable drawn with the probe in the exploded view
 
@@ -236,7 +236,13 @@ def product_parts(P=PARAMS):
     seal_top = D["seal_top"]
     cap_top = D["cap_top"]
     jx, jy, jz = P["jbox"]
-    jcx = px + po + jx / 2
+    shift = px - P["post_x"]                    # render shift of everything on the post (x)
+    jcx = px + P["jplate_x0"] + P["jplate"][2] + jx / 2     # box centre: on the junction box plate, not on the post
+    CC = build_components(P)                     # constructable parts, reused where they only move with the post
+
+    def mdl(key, name, color, material, bom, group, explode, moved=True):
+        sh = CC[key].shape
+        add(name, (Pos(shift, 0, dz) * sh) if moved else sh, color, material, bom, group, explode)
     jcz = P["jbox_z"] + dz
     jb0, jb1 = jcz - jz / 2, jcz + jz / 2
     z0 = P["fnd_z0"] + dz
@@ -332,18 +338,19 @@ def product_parts(P=PARAMS):
     # ports underneath: M12 port 1 with the WellSense lead plug, port 2 capped; whip antenna
     E_DOWN = e(E_FND, (0, 0, -70))
     yp = D["enc_yc"]
+    ypp = P["fnd_port_y"]                       # sensor ports sit where the vendored FieldNode geometry puts them
     socks, ins = [], []
     for dxp in P["fnd_port_x"]:
         x = px + dxp
-        s = _hex_z(x, yp, z0 - 2.0, 18.0, 4.0) + _zc(x, yp, z0 - 20, z0 - 4, 8.0)
+        s = _hex_z(x, ypp, z0 - 2.0, 18.0, 4.0) + _zc(x, ypp, z0 - 20, z0 - 4, 8.0)
         socks.append(s)
     add("FieldNode M12 sensor sockets", _union(socks), C_STEEL, "metal", 8, "shell", E_DOWN)
     x2 = px + P["fnd_port_x"][1]
-    cap = _zc(x2, yp, z0 - 34, z0 - 18, 9.5)
+    cap = _zc(x2, ypp, z0 - 34, z0 - 18, 9.5)
     cap = _fillet_try(cap, _fmin(cap, Axis.Z), [2.0, 1.0])
     for k in range(12):
         a = 2 * math.pi * k / 12
-        cap -= _box(x2 + 9.5 * math.cos(a), yp + 9.5 * math.sin(a), z0 - 24, 1.2, 1.2, 12.0)
+        cap -= _box(x2 + 9.5 * math.cos(a), ypp + 9.5 * math.sin(a), z0 - 24, 1.2, 1.2, 12.0)
     add("FieldNode port 2 sealing cap", cap, C_DARK, "rubber", 8, "shell", e(E_DOWN, (0, 0, -40)))
     ax_, whl = px + P["fnd_ant_x"], P["fnd_whip"][1]
     base = _hex_z(ax_, yp, z0 - 2.5, 16.0, 5.0) + _zc(ax_, yp, z0 - 20, z0 - 5, 7.5)
@@ -430,9 +437,9 @@ def product_parts(P=PARAMS):
     add("Post footing (concrete), cut away", footing, C_CONCRETE, "plastic", 13, "context", (0, 0, 0))
 
     # ============================================================ junction box (BOM 6) and board (BOM 7)
-    xb = px + po                     # back face on the post
+    xb = jcx - jx / 2                # back face on the plate front
     xl = xb + jx                     # lid face (+X)
-    lid_t = 14.0
+    lid_t = P["jlid"]
     xs = xl - lid_t                  # parting line
     jouter = _bx(xb, xl, -jy / 2, jy / 2, jb0, jb1)
     jouter = _fillet_try(jouter, jouter.edges().filter_by(Axis.X), [8.0, 6.0, 4.0])
@@ -442,9 +449,8 @@ def product_parts(P=PARAMS):
     for sy in (-1, 1):                                  # side ribs
         for k in range(4):
             jbody -= _box(xb + 16 + 12 * k, sy * jy / 2, jcz, 3.0, 1.6, jz - 44)
-    jbody -= _zc(jcx + 20, 0, jb0 - 1, jb0 + wt + 1, P["conduit_od"] / 2)
-    jbody -= _zc(jcx, -20, jb1 - wt - 1, jb1 + 1, 6.5)
-    jbody -= _zc(jcx - 20, 35, jb0 - 1, jb0 + wt + 1, 6.0)
+    for u_, v_, hd_, od_, ln_ in P["jentries"].values():            # four entries in the floor
+        jbody -= _zc(xb + u_, v_, jb0 - 1, jb0 + wt + 1, hd_ / 2)
     add("Junction box body (IP66)", jbody, C_SHELL, "plastic", 6, "shell", E_JB)
 
     E_JLID = e(E_JB, (170, 0, 0))
@@ -509,14 +515,26 @@ def product_parts(P=PARAMS):
     add("Interface board power light (lit)", _bx(xf, xf + 1.4, 26, 30, bzc + 30, bzc + 34), C_LED_G,
         "emissive", 7, "internal", E_BRD)
 
-    # glands, conduit hub and desiccant breather
-    tg = _hex_z(jcx, -20, jb1 + 3.0, 19.0, 6.0) + _zc(jcx, -20, jb1 + 6, jb1 + 16, 8.5)
-    tg = _fillet_try(tg, _fmax(tg, Axis.Z), [2.5, 1.5])
-    add("Junction box cable gland", tg, C_BLACK, "plastic", 6, "shell", e(E_JB, (0, 0, 70)))
-    hub = _hex_z(jcx + 20, 0, jb0 - 5.0, 30.0, 10.0) - _zc(jcx + 20, 0, jb0 - 12, jb0 + 1, P["conduit_od"] / 2)
-    add("Conduit hub (galvanized)", hub, C_GALV, "metal", 14, "shell", e(E_JB, (0, 0, -60)))
+    # plate, V-blocks, bands, lugs, hub, glands, saddles, hasp and padlock (the constructable parts, moved with the post)
+    E_PLT = e(E_JB, (-60, 0, 0))
+    mdl("jplate", "Junction box plate (aluminum)", C_ALU, "metal", 10, "shell", E_PLT)
+    mdl("vblock_low", "Lower V-block (aluminum)", C_ALU2, "metal", 10, "shell", e(E_PLT, (-40, 0, 0)))
+    mdl("vblock_up", "Upper V-block (aluminum)", C_ALU2, "metal", 10, "shell", e(E_PLT, (-40, 0, 0)))
+    mdl("jbands", "Stainless band clamps (2)", C_STEEL, "metal", 10, "shell", (0, 0, 0))
+    mdl("jlugs", "Junction box lugs (4)", C_DARK, "plastic", 6, "shell", e(E_JB, (-30, 0, 0)))
+    mdl("jlug_screws", "Lug screws and nyloc nuts", C_STEEL, "metal", 6, "shell", e(E_JB, (-30, 0, 0)))
+    mdl("hub", "Conduit hub (galvanized)", C_GALV, "metal", 14, "shell", e(E_JB, (0, 0, -60)))
+    mdl("glands", "Junction box cable glands (M16 and M12)", C_BLACK, "plastic", 6, "shell", e(E_JB, (0, 0, -80)))
+    mdl("saddles", "Conduit spacer saddles (2)", C_STEEL, "metal", 14, "shell", e(E_PLT, (0, 0, -40)))
+    mdl("hasp_body", "Hasp tab on the box body (stainless)", C_STEEL, "metal", 16, "shell", E_JB)
+    mdl("hasp_lid", "Hasp tab on the lid (stainless)", C_STEEL, "metal", 16, "shell", E_JLID)
+    pad_c = "#B08D3C"
+    mdl("padlock_box", "Padlock on the box hasp, body", pad_c, "metal", 16, "shell", E_JLID)
+    mdl("padlock_box_shackle", "Padlock on the box hasp, shackle", C_STEEL, "metal", 16, "shell", E_JLID)
+
+    # desiccant breather in its floor entry
     br, bl = P["breather"]
-    bxx, byy = jcx - 20, 35.0
+    bxx, byy = xb + P["jentries"]["breather"][0], P["jentries"]["breather"][1]
     E_BR = e(E_JB, (0, 0, -110))
     bfit = _hex_z(bxx, byy, jb0 - 4, 16.0, 8.0) + _zc(bxx, byy, jb0 - 12, jb0 - 8, br)
     add("Breather fitting", bfit, C_BLACK, "plastic", 6, "shell", E_BR)
@@ -531,130 +549,64 @@ def product_parts(P=PARAMS):
         bend -= _box(bxx + (br - 1) * math.cos(a), byy + (br - 1) * math.sin(a), jb0 - bl + 5, 2.5, 2.5, 4.0)
     add("Breather end cap", bend, C_BLACK, "plastic", 6, "shell", E_BR)
 
-    # junction box band clamp and barometric sensor clamp (model.py clamp heights, render layout)
-    cl = []
-    for zc_ in P["clamp_z"]:
-        z = zc_ + dz
-        band = _zc(px, 0, z - 6, z + 6, po + 3) - _zc(px, 0, z - 7, z + 7, po)
-        band += _bx(px - 8, px + 8, -po - 10, -po + 2, z - 7, z + 7)
-        cl.append(band)
-    add("Stainless band clamps", _union(cl), C_STEEL, "metal", 10, "shell", (0, 0, 0))
-
-    # ============================================================ barometric sensor (BOM 9)
-    brr, bll, bzz = P["baro"]
-    bzz += dz
-    bxc = px - po - brr - 4
-    E_BARO = (-120, 0, 0)
-    stack = []
-    n = 4
-    pitch = (bll - 12) / n
-    for k in range(n):
-        zk = bzz - bll / 2 + 4 + k * pitch
-        stack.append(_zc(bxc, 0, zk, zk + 2.6, brr))
-    core = _zc(bxc, 0, bzz - bll / 2, bzz + bll / 2 - 8, brr - 7)
-    top = _zc(bxc, 0, bzz + bll / 2 - 8, bzz + bll / 2, brr)
-    top = _fillet_try(top, _fmax(top, Axis.Z), [3.0, 2.0])
-    add("Barometric sensor housing (louvered)", _union(stack + [core, top]), C_WHITE, "plastic", 9, "shell",
-        E_BARO)
-    arm = _bx(bxc + brr - 2, px - po + 1, -6, 6, bzz + bll / 2 - 8, bzz + bll / 2 - 2)
-    arm += _bx(px - po - 3, px - po + 1, -10, 10, bzz + 4, bzz + bll / 2 - 2)
-    add("Barometric sensor bracket", arm, C_ALU2, "metal", 9, "shell", E_BARO)
-    add("Barometric sensor accent ring", _zc(bxc, 0, bzz - bll / 2 + 0.8, bzz - bll / 2 + 2.2, brr + 0.3)
-        - _zc(bxc, 0, bzz - bll / 2, bzz - bll / 2 + 3, brr - 1), C_ACCENT, "painted", 9, "shell", E_BARO)
+    # ============================================================ barometric sensor (BOM 9), on the plate below the box
+    mdl("baro", "Barometric sensor housing (louvered) with lead", C_WHITE, "plastic", 9, "shell", (-120, 0, 0))
 
     # ============================================================ lead: junction box to FieldNode port 1
     x1 = px + P["fnd_port_x"][0]
-    lead = _swept([(jcx, -20, jb1 + 14), (jcx, -20, jb1 + 60), (jcx, -45, z0 - 150),
-                   (x1, yp, z0 - 90), (x1, yp, z0 - 56)], 3.0, 18.0)
-    add("Sensor lead to FieldNode port 1", lead, C_CABLE, "rubber", 2, "shell", (0, -40, 150))
-    plug = _zc(x1, yp, z0 - 58, z0 - 22, 8.0)
-    plug = _fillet_try(plug, _fmin(plug, Axis.Z), [3.0, 2.0])
-    for k in range(10):
-        a = 2 * math.pi * k / 10
-        plug -= _box(x1 + 8 * math.cos(a), yp + 8 * math.sin(a), z0 - 30, 1.2, 1.2, 12.0)
-    add("M12 plug, port 1", plug, C_BLACK, "plastic", 2, "shell", e(E_DOWN, (0, 0, -40)))
+    mdl("lead", "Sensor lead to FieldNode port 1, with M12 plug", C_CABLE, "rubber", 15, "shell", (0, -40, 150))
 
-    # ============================================================ wellhead: seal plate (BOM 4)
-    sr = D["seal_d"] / 2
+    # ============================================================ wellhead: split seal plate, rim band, collar (BOM 4)
     E_SEAL = (0, 0, 160)
-    halves = []
-    plate_ = _zc(0, 0, st + 2.5, seal_top, sr)
-    plate_ = _fillet_try(plate_, _fmax(plate_, Axis.Z), [4.0, 2.5])
-    plate_ -= _zc(rx, 0, st, seal_top + 1, rr + 1)
-    plate_ -= _zc(tx, 0, st, seal_top + 1, to + 0.5)
-    plate_ -= _box(0, 0, (st + seal_top) / 2, 2 * sr + 4, 1.2, 60)             # split line
-    for k in range(4):
-        a = math.radians(45 + 90 * k)
-        plate_ -= _zc(sr * 0.78 * math.cos(a), sr * 0.78 * math.sin(a), seal_top - 1.5, seal_top + 1, 6.5)
-    add("Wellhead seal plate (split)", plate_, C_ACCENT, "painted", 4, "accessory", E_SEAL)
-    sgk = _zc(0, 0, st, st + 2.5, sr - 1.5) - _zc(0, 0, st - 1, st + 3.5, P["casing_id"] / 2 - 2)
-    sgk -= _zc(rx, 0, st - 1, st + 4, rr + 1)
-    sgk -= _zc(tx, 0, st - 1, st + 4, to + 0.5)
-    add("Seal plate gasket (EPDM)", sgk, C_BLACK, "rubber", 4, "accessory", e(E_SEAL, (0, 0, -60)))
-    bolts = []
-    for k in range(4):
-        a = math.radians(45 + 90 * k)
-        x, y = sr * 0.78 * math.cos(a), sr * 0.78 * math.sin(a)
-        b = _hex_z(x, y, seal_top + 1.5, 10.0, 5.0) + _zc(x, y, seal_top - 1.5, seal_top - 0.5, 8.0)
-        bolts.append(b)
-    add("Seal plate bolts (stainless)", _union(bolts), C_STEEL, "metal", 4, "accessory", e(E_SEAL, (0, 0, 90)))
-    gl = []
-    for (gx, r_in, r_out) in ((rx, rr + 1, rr + 8), (tx, to + 0.5, to + 7)):
-        g = _zc(gx, 0, seal_top, seal_top + 12, r_out) - _zc(gx, 0, seal_top - 1, seal_top + 13, r_in)
-        g = _fillet_try(g, _fmax(g, Axis.Z), [1.5, 1.0])
-        nut = (_hex_z(gx, 0, seal_top + 16, 2 * r_out + 2, 8.0)
-               - _zc(gx, 0, seal_top + 10, seal_top + 22, r_in))
-        gl.append(g)
-        gl.append(nut)
-    add("Seal plate glands", _union(gl), C_BLACK, "rubber", 4, "accessory", e(E_SEAL, (0, 0, 60)))
+    for h_, nm in (("a", "A"), ("b", "B")):
+        mdl(f"seal_{h_}", f"Wellhead seal plate half {nm} (HDPE, teal)", C_ACCENT, "painted", 4, "accessory", E_SEAL, moved=False)
+        mdl(f"spigot_{h_}", f"Seal plate spigot half ring {nm}", C_ACCENT, "painted", 4, "accessory", E_SEAL, moved=False)
+    mdl("gasket", "Seal plate gasket (EPDM)", C_BLACK, "rubber", 4, "accessory", e(E_SEAL, (0, 0, -60)), moved=False)
+    mdl("wraps", "EPDM wraps round the riser, pump cable and tube", C_BLACK, "rubber", 4, "accessory", e(E_SEAL, (0, 0, 60)), moved=False)
+    mdl("rim_band", "Rim band clamp (stainless)", C_STEEL, "metal", 4, "accessory", e(E_SEAL, (0, 0, 110)), moved=False)
+    mdl("sec_screw", "Security-head screw on the rim band", C_STEEL, "metal", 16, "accessory", e(E_SEAL, (0, 0, 110)), moved=False)
+    mdl("collar", "Tube collar (split shaft collar)", C_ALU2, "metal", 4, "accessory", e(E_SEAL, (0, 0, 170)), moved=False)
 
-    # ============================================================ tube cap and cable-grip hanger (BOM 5)
-    cod, ch, god, gh = P["cap"]
+    # ============================================================ tube cap, eye bolt, padlock and flexible tail (BOM 5, 16, 14)
     E_CAP = (0, 0, 250)
-    tcap = _zc(tx, 0, P["tube_top"], P["tube_top"] + ch, cod / 2)
-    tcap = _fillet_try(tcap, _fmax(tcap, Axis.Z), [4.0, 2.5])
-    tcap -= _zc(tx, 0, P["tube_top"] - 1, P["tube_top"] + ch - 6, to)
-    tcap -= _zc(tx, 0, P["tube_top"] + ch - 8, P["tube_top"] + ch + 1, god / 2 - 2)
-    for k in range(12):
-        a = 2 * math.pi * k / 12
-        tcap -= _box(tx + cod / 2 * math.cos(a), cod / 2 * math.sin(a), P["tube_top"] + 18, 1.4, 1.4, 22)
-    add("Tube cap (PVC)", tcap, C_PVC_CAP, "plastic", 5, "accessory", E_CAP)
-    zg = P["tube_top"] + ch
-    hang = _hex_z(tx, 0, zg + 5, 19.0, 10.0) + _zc(tx, 0, zg + 10, cap_top, god / 2)
-    hang = _fillet_try(hang, _fmax(hang, Axis.Z), [2.0, 1.2])
-    add("Cable-grip hanger (stainless)", hang, C_STEEL, "metal", 5, "accessory", e(E_CAP, (0, 0, 60)))
+    mdl("cap", "Tube cap (PVC slip cap)", C_PVC_CAP, "plastic", 5, "accessory", E_CAP, moved=False)
+    mdl("cross_bolt", "M5 eye bolt (cross bolt, stainless)", C_STEEL, "metal", 5, "accessory", E_CAP, moved=False)
+    mdl("padlock_cap", "Padlock on the eye bolt, body", pad_c, "metal", 16, "accessory", E_CAP, moved=False)
+    mdl("padlock_cap_shackle", "Padlock on the eye bolt, shackle", C_STEEL, "metal", 16, "accessory", E_CAP, moved=False)
+    mdl("connector", "Flexible conduit connector on the cap", C_GALV, "metal", 14, "accessory", e(E_CAP, (0, 0, 60)), moved=False)
 
-    # ============================================================ galvanized conduit (BOM 14)
+    # ============================================================ conduit (BOM 14): flexible tail, rigid conduit bent to the hub
     E_CON = (0, -180, 230)
     cr_ = P["conduit_od"] / 2
     cz = P["cable_z"]
-    conduit = _swept([(tx, 0, cap_top + 16), (tx, 0, cz), (jcx + 20, 0, cz), (jcx + 20, 0, jb0 - 10)],
-                     cr_, 42.0)
-    add("Surface cable conduit (galvanized)", conduit, C_GALV, "metal", 14, "accessory", E_CON)
-    cgl = _hex_z(tx, 0, cap_top + 6, 26.0, 12.0) - _zc(tx, 0, cap_top - 1, cap_top + 13, god / 2 - 1)
-    cgl += _zc(tx, 0, cap_top + 12, cap_top + 20, cr_ + 2.5) - _zc(tx, 0, cap_top + 11, cap_top + 21, cr_ - 0.5)
-    add("Conduit compression gland", cgl, C_GALV, "metal", 14, "accessory", e(E_CON, (0, 0, -60)))
+    mdl("flex", "Flexible conduit tail", C_DARK, "rubber", 14, "accessory", E_CON, moved=False)
+    mdl("coupling", "Flex-to-rigid connector", C_GALV, "metal", 14, "accessory", e(E_CON, (0, 0, -60)), moved=False)
+    hub_x = D["hub_x"] + shift
+    z_hub = jb0 - P["jentries"]["hub"][4]
+    r_b = min(P["bend_r"], (z_hub - cz) - 10.0, (P["rigid_x0"] - hub_x) - 5.0)    # render layout: the box is lower, so a tighter bend
+    conduit = _swept([(P["rigid_x0"], 0, cz), (hub_x, 0, cz), (hub_x, 0, z_hub)], cr_, r_b)
+    add("Rigid conduit (galvanized)", conduit, C_GALV, "metal", 14, "accessory", E_CON)
 
     # ============================================================ access tube (BOM 3), end plug, probe (BOM 1)
     tb = DISP_TUBE_BOT
     tube = _zc(tx, 0, tb, P["tube_top"], to) - _zc(tx, 0, tb + 10, P["tube_top"] + 1, ti)
-    sw, sl = P["slot"]
-    nrow = P["slot_rows"]
-    pitch = (P["slot_zone"] - 40) / nrow
-    for k in range(nrow):
-        zc_ = tb + 40 + pitch * (k + 0.5)
+    hd, hp, h0 = P["holes"]
+    for k in range(int((P["slot_zone"] - h0) // hp) + 1):
+        zc_ = tb + h0 + hp * k
         for ang in (0, 90):
-            tube -= Pos(tx, 0, zc_) * Rot(0, 0, ang + 45 * (k % 2)) * Box(2 * to + 4, sw, sl)
+            tube -= Pos(tx, 0, zc_) * Rot(0, 0, ang + 45 * (k % 2)) * Rot(0, 90, 0) * Cylinder(hd / 2, 2 * to + 4)
     tube -= notch
     E_TUBE = (230, 0, 1330)
-    add("Access tube (PVC), slotted bottom section, cut away", tube & _bx(-2000, 2000, -2000, 2000, tb - 1, TUBE_SPLIT_Z),
+    add("Access tube (PVC), drilled bottom section, cut away", tube & _bx(-2000, 2000, -2000, 2000, tb - 1, TUBE_SPLIT_Z),
         C_PVC, "plastic", 3, "accessory", E_TUBE)
     add("Access tube (PVC), upper section, cut away", tube & _bx(-2000, 2000, -2000, 2000, TUBE_SPLIT_Z, 2000),
         C_PVC, "plastic", 3, "context", (0, 0, 0))
-    plug_ = _zc(tx, 0, tb - 12, tb + 26, to + 2.5) - _zc(tx, 0, tb, tb + 27, to)
+    eod, esock, eend = P["endcap"]
+    plug_ = _zc(tx, 0, tb - eend, tb + esock, eod / 2) - _zc(tx, 0, tb, tb + esock + 1, to)
+    plug_ -= _zc(tx, 0, tb - eend - 1, tb + 1, hd / 2)
     plug_ = _fillet_try(plug_, _fmin(plug_, Axis.Z), [4.0, 2.0])
     plug_ -= notch
-    add("Access tube end plug", plug_, C_PVC_CAP, "plastic", 3, "accessory", (230, 0, 1180))
+    add("Access tube end cap (slip cap with drain hole)", plug_, C_PVC_CAP, "plastic", 3, "accessory", (230, 0, 1180))
 
     pr, pl = P["probe"][0] / 2, P["probe"][1]
     pb = tb + P["probe_gap"]
@@ -674,7 +626,7 @@ def product_parts(P=PARAMS):
     add("Transducer cable strain relief", relief, C_DARK, "rubber", 1, "accessory", E_PRB)
     add("Vented cable (in the access tube), lower", _zc(tx, 0, ptp - 1, ptp + CABLE_STUB, P["cable_d"] / 2),
         C_CABLE, "rubber", 2, "accessory", E_PRB)
-    add("Vented cable (in the access tube), upper", _zc(tx, 0, ptp + CABLE_STUB, P["tube_top"] + ch - 6, P["cable_d"] / 2),
+    add("Vented cable (in the access tube), upper", _zc(tx, 0, ptp + CABLE_STUB, P["tube_top"] + P["cap"][2] - 6, P["cable_d"] / 2),
         C_CABLE, "rubber", 2, "context", (0, 0, 0))
 
     # ============================================================ context: ground, apron, casing, riser, water

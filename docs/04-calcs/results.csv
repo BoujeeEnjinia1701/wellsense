@@ -28,25 +28,27 @@ D2 1-1/4 in (DN32),"bore 35.1 mm takes probes up to 28 mm with 2 mm radial clear
 D3,Cable and probe hanging in air at 60 m: 35 N against a 400 N strain member (factor 11.5)
 D4,"Access tube 320 mm2, 0.45 kg/m; 60 m hanging dry: 264 N, stress 0.82 MPa against 48 MPa (factor 58); the tube collar carries 264 N onto the seal plate"
 D5,"Collar on the HDPE seal plate: 264 N on 1087 mm2, 0.24 MPa bearing against about 20 MPa for HDPE (factor 82); the collar's friction grip on the tube is the maker's rating, to confirm at purchase"
-D6,"Probe and cable (35 N at 60 m) hang from the support grip on the M5 cross bolt: bearing on the two 4.4 mm cap walls 0.79 MPa against about 50 MPa for PVC; the cap sits on the tube end, so the load reaches the collar through the tube"
+D6,"Probe and cable (35 N at 60 m) hang from the support grip on the M5 eye bolt (the cross bolt): bearing on the two 4.4 mm cap walls 0.79 MPa against about 50 MPa for PVC; the cap sits on the tube end, so the load reaches the collar through the tube"
+D7,"Locking (WLS-DEC-001): the padlock hangs from the eye bolt with 1.0 N, so the cap walls carry 36 N instead of 35 N (0.81 MPa); the cap still lifts off the tube once the padlock is open, so the padlock stops the eye bolt being unscrewed and the grip and probe being freed, and the lockable steel wellhead cover is what stops the cap being lifted at exposed sites"
 E1,"One year at 15 min: 35,040 readings x 32 B = 1.12 MB, 6.7 % of the 16 MB flash"
 E2,"A 7-day pumping test at 1 min adds 10,080 readings, 0.32 MB"
 E3,"Airtime at SF9: 20-byte uplink 246.8 ms, 23.7 s/day at 15 min (FieldNode figure); pumping test batch of 15 readings (38 bytes) 328.7 ms, 31.6 s/day, over the 30 s/day fair use on a public network; fits a private TwinKit gateway"
 E4,"Rule (WLS-DDR-002): on a public network a pumping test sends every 30 min, a batch of 30 readings (68 bytes) 472.1 ms, 22.7 s/day, within 30 s/day; on a private TwinKit gateway the 15 min batch is kept"
 F1,"Vent capillary 111 mL at 62.7 m; box and vent breathe 0.15 L/day at a 30 K swing, carrying 3.6 mg of water at worst; 10 g of gel lasts about 552 days if the whole box breathes through it (quarterly change: factor 6.1)"
-G1,Estimated 120 min for two people (9 steps) against 120 min; post footing set and cured on an earlier visit
-H1,"BOM 15 lines, 15 priced; cable 33 m and tube 30.61 m (BOM 31 m) at 30 m probe depth"
-H2,"WellSense parts (lines 1 to 7, 9, 10, 13 to 15): $244.40 against the $200 value-engineering target (budget_usd, a hypothetical control target, not a limit): $44.40 over the target; with the FieldNode core $383.40; with FieldNode's hot-site shield (+$9.00, FND-DDR-002) $392.40"
-H2c,"Lines repriced or added for construction (WLS-DDR-004): 4 $23.00, 5 $10.00, 6 $18.00, 7 $13.00, 10 $32.00, 14 $20.00, 15 $7.00; the concept total was $197.60"
-H2b,"Without the conduit (line 14, $20.00) the parts would be $224.40, $24.40 over the target"
-H3,Depth-dependent $1.80/m; the target is met to a probe depth of 5.3 m; at 60 m $298.40; without an access tube (no pump in the casing) $213.40
+G1,"Estimated 125 min for two people (10 steps) against 120 min, 5 min over the limit with the locks fitted; post footing set and cured on an earlier visit"
+H1,"BOM 16 lines, 16 priced; cable 33 m and tube 30.61 m (BOM 31 m) at 30 m probe depth"
+H2,"WellSense parts (lines 1 to 7, 9, 10, 13 to 16): $262.40 against the $200 value-engineering target (budget_usd, a hypothetical control target, not a limit): $62.40 over the target; with the FieldNode core $401.40; with FieldNode's hot-site shield (+$9.00, FND-DDR-002) $410.40"
+H2c,"Lines repriced or added for construction (WLS-DDR-004): 4 $23.00, 5 $11.50, 6 $18.00, 7 $13.00, 10 $32.00, 14 $20.00, 15 $7.00; the concept total was $197.60"
+H2d,"Locking (WLS-DEC-001, decision 2): line 16 $16.50 (security-head screw and bit, two padlocks, hasp kit) and $1.50 more in line 5 for an eye bolt, $18.00 in all; without the locking parts the cost would be $244.40"
+H2b,"Without the conduit (line 14, $20.00) the parts would be $242.40, $42.40 over the target"
+H3,"Depth-dependent $1.80/m; the fixed parts alone are $208.40, over the target even at zero depth; at 60 m $316.40; without an access tube (no pump in the casing) $231.40"
 L R9,"Not met: No drinking water certificate in hand for low-cost cable, seal or probe"
 L R4,"At risk: RSS 12.5 mm, sum 27.1 mm (0.25 % class, calibrated)"
 L R10,At risk: 2.3 mm radial clearance with a 22 mm probe; tube may need the pump pulled
 L R15,At risk: FieldNode shield at hot sites (48.5 to 52.2 degC inside at 45 degC); FieldNode rated to 45 degC ambient against 55 degC
-L R16,At risk: Cable in conduit from the tube cap to the box; locking of the wellhead parts not specified
+L R16,"Met: Cable in conduit from the tube cap to the box; by design review the seal plate, cross bolt and junction box are each lockable (security-head screw, padlock on the eye bolt, hasp and padlock); lifting the cap at exposed sites needs the steel cover"
 L R5,Not verifiable at TRL 3: Drift unknown; quarterly check leaves 5 mm
-L R11,Not verifiable at TRL 3: 120 min estimate
+L R11,Not verifiable at TRL 3: 125 min estimate
 L R13,Not verifiable at TRL 3: Dashboard not started
 L R1,"Met: 0 to 10 m, 98.07 kPa"
 L R2,"Met: Cable factor 11.5, tube factor 58 at 60 m"
@@ -54,6 +56,6 @@ L R3,Met: 0.52 mm
 L R6,"Met: 15 min; 1 min logged, sent every 30 min on a public network (22.7 s/day)"
 L R7,Met: 1.12 MB a year
 L R8,"Met: 38.2 mWh/day, 1.6 % of 100 mW"
-L R12,"Over the value-engineering target: $244.40 at 30 m against the $200 target, $44.40 over"
+L R12,"Over the value-engineering target: $262.40 at 30 m against the $200 target, $62.40 over"
 L R14,"Met: Levels, time and well ID only"
-L,"1 not met, 4 at risk, 3 not verifiable at TRL 3, 7 met, 1 over the value-engineering target"
+L,"1 not met, 3 at risk, 8 met, 3 not verifiable at TRL 3, 1 over the value-engineering target"

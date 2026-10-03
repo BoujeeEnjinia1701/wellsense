@@ -1,5 +1,5 @@
-"""WellSense general arrangement sheet WLS-DWG-001, Rev P5 (TRL 3; P2 applies WLS-DDR-002; P3 applies WLS-DDR-003;
-P5 shows the constructable design of WLS-DDR-004).
+"""WellSense general arrangement sheet WLS-DWG-001, Rev P6 (TRL 3; P2 applies WLS-DDR-002; P3 applies WLS-DDR-003;
+P5 shows the constructable design of WLS-DDR-004; P6 adds the locks decided on 2026-10-02, BOM line 16).
 
 Run from the repo root:  python cad/src/sheets.py
 Writes cad/drawings/WLS-DWG-001.svg, .pdf and .png from the parametric model in
@@ -21,6 +21,7 @@ from model import DESIGN as DS, PARAMS as P, box, build_parts, derived  # noqa: 
 DATE = "2026-09-25"
 DATE_P3 = "2026-09-27"
 DATE_P5 = "2026-10-02"
+DATE_P6 = "2026-10-02"
 Z_CUT = -700.0
 
 
@@ -109,14 +110,15 @@ def main():
     probe = Compound(children=[s_parts[k] & lo for k in ("tube", "probe")])
     pviews = safe_project_views(probe, work / "probe", names=("front",))
     bb = surf.bounding_box()
-    s = Sheet(project="WellSense", title="General arrangement", dwg_no="WLS-DWG-001", rev="P5",
-              author="Amish Chadha", date=DATE_P5, scale=None, theme="technical",
+    s = Sheet(project="WellSense", title="General arrangement", dwg_no="WLS-DWG-001", rev="P6",
+              author="Amish Chadha", date=DATE_P6, scale=None, theme="technical",
               material="Bought-in parts per bom/bom.csv; borehole not drawn below -700. PRELIMINARY, NOT FOR FABRICATION",
               revisions=[("P1", "Preliminary GA for TRL 3 (from cad/src/model.py)", DATE, "AC"),
                          ("P2", "22 mm probe; conduit 14 added (WLS-DDR-002)", DATE, "AC"),
                          ("P3", "FieldNode panel tilt corrected to face -Y (WLS-DDR-003)", DATE_P3, "AC"),
                          ("P4", "Layout and labels tidied", DATE_P3, "AC"),
-                         ("P5", "Constructable design (WLS-DDR-004)", DATE_P5, "AC")])
+                         ("P5", "Constructable design (WLS-DDR-004)", DATE_P5, "AC"),
+                         ("P6", "Locks added, line 16 (WLS-DEC-001)", DATE_P6, "AC")])
     s.add_ortho(views)
     k = s.scale
     c = ortho_cells(s, views)
@@ -152,6 +154,8 @@ def main():
     L += leader(X(-D["seal_d"] / 2 + 10), Z(D["seal_top"] - 10), X(-D["seal_d"] / 2) - 8, Z(D["seal_top"] + 110), "4 SEAL PLATE", "end")
     L += leader(X(px + 40), Z(D["enc_bot"] + 100), X(px) + 30, Z(D["enc_bot"] + 560), "8 FIELDNODE CORE (FND-BLD-001)")
     L += leader(X(-300), Z(P["cable_z"]), X(-300) + 6, Z(P["cable_z"] + 330), "14 CONDUIT AND TAIL")
+    zrim = (D["seal_bot"] + D["seal_top"]) / 2
+    L += leader(X(12), Z(zrim), X(-150), Z(zrim - 120), "16 SECURITY SCREW", "end")
 
     # top view (from +Z)
     x, y, w, h = c["top"]
@@ -167,6 +171,11 @@ def main():
     L += [ext(Yr(-D["seal_d"] / 2), Zr(D["seal_top"]), Yr(-D["seal_d"] / 2), Zr(D["seal_top"] + 340)),
           ext(Yr(D["seal_d"] / 2), Zr(D["seal_top"]), Yr(D["seal_d"] / 2), Zr(D["seal_top"] + 340))]
 
+    # locks, seen from +X (right view): padlock on the cap's eye bolt and padlock on the box hasp
+    zcb = P["tube_top"] + P["cross_bolt"][1]
+    yl = D["jbox_z"] if "jbox_z" in D else P["jbox_z"]
+    L += leader(Yr(34), Zr(zcb - 30), Yr(34) + 8, Zr(zcb - 110), "16 PADLOCK ON EYE BOLT")
+    L += leader(Yr(72), Zr(P["jbox_z"] - 30), Yr(72) + 8, Zr(P["jbox_z"] - 110), "16 HASP, PADLOCK")
     s._layers += L
     s.add_svg(views["iso"], 276, 47, 66, 90, label="Isometric view", sublabel="Not to scale")
     # probe detail at 1:6
@@ -191,7 +200,7 @@ def main():
         f"Junction box {P['jbox'][0]:.0f} x {P['jbox'][1]:.0f} x {P['jbox'][2]:.0f}, center {P['jbox_z']:.0f}, on a plate with V-blocks",
         f"FieldNode core per FND-DWG-001; base {D['enc_bot']:.0f}; sensor port A (I2C, 12 V rail)",
         "Loop 4 to 20 mA from a 24 V boost; 150 ohm shunt (WLS-CAL-001)",
-        f"Cable in 1/2 in galv. conduit ({P['conduit_od']} OD) and a flexible tail to the cap",
+        f"Cable in 1/2 in galv. conduit ({P['conduit_od']} OD) and a flexible tail; locks per line 16",
         "Third-angle; front view from -Y, FieldNode and panel face the equator; well on the Z axis",
     ], x=276, y=161, width=146)
     out = s.save(ROOT / "cad" / "drawings" / "WLS-DWG-001")

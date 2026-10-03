@@ -102,6 +102,7 @@ def made():
         "lugs": part("Box lugs (4) and M5 screws", S("jlugs", "jlug_screws"), COL["lugs"]),
         "iboard": part("Internal plate with the interface modules", S("iplate", "mod_boost", "mod_adc", "mod_reg", "mod_strip"), "#16A34A"),
         "jlid": part("Junction box lid", C["jlid"].shape, COL["jlid"]),
+        "hasp": part("Hasp kit (two tabs)", S("hasp_body", "hasp_lid"), "#B91C1C"),
         "baro": part("Barometric sensor housing and lead", C["baro"].shape, COL["baro"]),
         "jbands": part("Band clamps (2)", C["jbands"].shape, COL["band"]),
         "fieldnode": part("FieldNode core with its bands", S("fieldnode", "fnd_bands"), COL["fieldnode"]),
@@ -111,11 +112,13 @@ def made():
         "gasket": part("EPDM gasket ring", C["gasket"].shape, COL["gasket"]),
         "seal": part("Seal plate halves with spigot rings", S("seal_a", "seal_b", "spigot_a", "spigot_b"), COL["seal"]),
         "wraps": part("EPDM wraps", C["wraps"].shape, COL["wraps"]),
-        "rim": part("Rim band clamp", C["rim_band"].shape, COL["rim"]),
+        "rim": part("Rim band clamp with its security-head screw", S("rim_band", "sec_screw"), COL["rim"]),
         "collar": part("Tube collar", C["collar"].shape, COL["collar"]),
         "cable": part("Vented cable (shortened)", short(C["cable"].shape), COL["cable"]),
         "probe": part("Pressure transducer", short(C["probe"].shape), COL["probe"]),
-        "cap": part("Tube cap, cross bolt and support grip", S("cap", "cross_bolt", "grip"), COL["cap"]),
+        "cap": part("Tube cap, eye bolt and support grip", S("cap", "cross_bolt", "grip"), COL["cap"]),
+        "padlock_box": part("Padlock for the box hasp", S("padlock_box", "padlock_box_shackle"), "#DC2626"),
+        "padlock_cap": part("Padlock for the cap's eye bolt", S("padlock_cap", "padlock_cap_shackle"), "#DC2626"),
         "flex": part("Flexible tail and connectors", S("connector", "flex", "coupling"), COL["flex"]),
     }
 
@@ -133,11 +136,11 @@ def overview():
     up = -PB        # everything on the post moves down with the break
     off = {"post": (0, 0, 0), "footing": (0, 0, -150), "jplate": (230, 0, up), "vblocks": (-110, 0, up),
            "jbody": (420, 0, up), "entries": (420, 0, up - 170), "lugs": (330, 0, up + 150), "iboard": (580, 0, up + 40),
-           "jlid": (740, 0, up), "baro": (330, 0, up - 230), "jbands": (-260, 0, up), "fieldnode": (0, 0, up + 450),
+           "jlid": (740, 0, up), "hasp": (740, 260, up + 150), "padlock_box": (740, 420, up + 90), "baro": (330, 0, up - 230), "jbands": (-260, 0, up), "fieldnode": (0, 0, up + 450),
            "lead": (-200, 220, up), "conduit": (380, 0, up - 330),
            "tube": (500, 0, -150), "gasket": (500, 0, 450), "seal": (500, 0, 570), "wraps": (700, 0, 690),
            "rim": (500, 0, 790), "collar": (700, 0, 890), "cable": (900, 0, -150), "probe": (1050, 0, -150),
-           "cap": (500, 0, 990), "flex": (700, 0, 1090)}
+           "cap": (500, 0, 990), "flex": (700, 0, 1090), "padlock_cap": (640, 160, 1000)}
     parts = []
     for k, p in M.items():
         p.explode = off[k]
@@ -338,16 +341,18 @@ def sheets(only=None):
         out.append(bv.component_sheet(
             Part("Tube cap", cp, COL["cap"]), [part("Tube top", C["tube"].shape & bx(0, 80, -40, 40, 470, 600), COL["tube"]),
                                                part("Tail", S("connector", "flex") & bx(-30, 80, -40, 40, 560, 800), COL["flex"]), M["collar"]],
-            dwg_no="WLS-DWG-109", title="WellSense tube cap: making sketch", material="1 in Sch 40 PVC slip cap; stainless M5 x 50 bolt",
-            view_shape=b.Pos(-P["tube_x"], 0, -D["cap_bot"]) * cp, inset_view=(20, -50),
+            dwg_no="WLS-DWG-109", title="WellSense tube cap: making sketch", material="1 in Sch 40 PVC slip cap; stainless M5 x 50 eye bolt",
+            view_shape=b.Pos(-P["tube_x"], 0, -D["cap_bot"]) * cp, inset_view=(20, -50), rev="P2",
+            revisions=[("P1", "Making sketch for the prototype build plan", DATE, "AC"), ("P2", "Cross bolt is an eye bolt for the padlock (WLS-DEC-001)", DATE, "AC")],
             notes=["Do not glue the cap: it lifts off with the probe for calibration.",
                    "Top: drill 22.5 mm in the centre for the 1/2 in conduit connector.",
                    f"Side: drill 5 mm straight across, {P['cross_bolt'][1]:.0f} above the tube end (the cap's",
-                   f"  shoulder) and {P['cross_bolt'][0]:.0f} off the centre line, for the M5 cross bolt.",
+                   f"  shoulder) and {P['cross_bolt'][0]:.0f} off the centre line, for the M5 eye bolt (the cross bolt).",
                    "The bolt passes beside the cable, never through it.",
                    "Fit: the conduit connector goes through the top with its locknut",
                    "  inside. The cable support grip's eye goes over the cross bolt,",
-                   "  which then carries the probe and cable; nyloc nut outside.",
+                   "  which then carries the probe and cable; nyloc nut on the -Y side. The eye",
+                   "  on the +Y side takes the padlock (WLS-DEC-001).",
                    "The cap sits on the tube end by its own weight and the load.",
                    "Check: with the bolt in, the cap still slides on and off the tube."],
             **base))
@@ -476,6 +481,30 @@ def joints(only=None):
             subtitle="Seen from the front. The grip's eye hangs on the cross bolt; the cap rests on the tube end",
             elev=8, azim=-90, size=(8, 6.5)))
     out += sections({n for n in (6, 7, 8) if want(n)})
+    if want(10):
+        tx = P["tube_x"]
+        box_ = (tx - 45, tx + 45, -50, 60, P["tube_top"] - 60, D["conn_top"] + 20)
+        out.append(bv.joint([
+            part("Tube cap", win(C["cap"].shape, *box_), COL["cap"]),
+            part("Eye bolt (cross bolt with an eye)", win(C["cross_bolt"].shape, *box_), COL["bolt"]),
+            part("Padlock, shackle through the eye", win(S("padlock_cap", "padlock_cap_shackle"), *box_), "#DC2626"),
+            part("Conduit connector", win(C["connector"].shape, *box_), COL["conn"])],
+            OUT / "joint-10.png", "Joint 10: padlock on the eye bolt of the tube cap",
+            subtitle="Seen from the front right. The shackle passes through the eye; the eye turns only if the padlock is opened first",
+            elev=14, azim=-50, size=(8, 6.5)))
+    if want(11):
+        zc = P["jbox_z"]
+        xs = D["jbox_front"] - P["jlid"]
+        box_ = (xs - 60, xs + 45, 20, 100, zc - 60, zc + 40)
+        out.append(bv.joint([
+            part("Junction box body", win(C["jbody"].shape, *box_), COL["jbody"]),
+            part("Junction box lid", win(C["jlid"].shape, *box_), COL["jlid"]),
+            part("Hasp tab on the body", win(C["hasp_body"].shape, *box_), "#B91C1C"),
+            part("Hasp tab on the lid", win(C["hasp_lid"].shape, *box_), "#F59E0B"),
+            part("Padlock, shackle through both tabs", win(S("padlock_box", "padlock_box_shackle"), *box_), "#DC2626")],
+            OUT / "joint-11.png", "Joint 11: hasp kit and padlock across the split of the junction box",
+            subtitle="Seen from the front right, on the +Y side wall. The tabs line up across the split; one shackle holds both",
+            elev=12, azim=55, size=(8, 6.5)))
     if want(9):
         import build123d as b
         tx = P["tube_x"]
@@ -735,7 +764,7 @@ def steps(only=None):
        context=wctx, elev=25, azim=-60)
     seal_done = [tube_in, M["gasket"], M["wraps"], M["seal"]]
     st(14, seal_done, [mv(M["rim"], (0, 0, 120)), mv(M["collar"], (0, 0, 160))], "rim band and tube collar",
-       "Rim band tightened until the halves meet; tube top 110 mm above the casing; collar clamped on it, on the plate",
+       "Rim band with its security-head screw, tightened with the bit; tube top 110 mm above the casing; collar clamped on it",
        context=wctx, elev=25, azim=-60, label_done=False)
     seal_done = seal_done + [M["rim"], M["collar"]]
     head = surf + [M["conduit"]] + seal_done
@@ -750,8 +779,8 @@ def steps(only=None):
     lift = (P["tube_top"] - 150) - D["probe_top"]
     probe_up = b.Pos(0, 0, lift) * pr_shape
     st(16, seal_done, [mv(part("Pressure transducer on its cable (lowered down the tube)", probe_up, COL["probe"]), (0, 0, 480)),
-                       mv(part("Support grip and cross bolt", S("grip", "cross_bolt"), "#DC2626"), (0, 0, 200))],
-       "lower the probe and hang it", "Disinfected first. Lower it hand over hand to the recorded depth; grip on the cable at the mark, its eye on the cross bolt",
+                       mv(part("Support grip and eye bolt", S("grip", "cross_bolt"), "#DC2626"), (0, 0, 200))],
+       "lower the probe and hang it", "Disinfected first. Lower it hand over hand to the recorded depth; grip on the cable at the mark, its eye on the eye bolt",
        context=wctx, elev=16, azim=-60, label_done=False)
     clip17 = bx(-800, -550, -300, 300, 820, 1420)
     full17 = _clip_parts(head, clip17)
@@ -760,6 +789,11 @@ def steps(only=None):
                     mv(part("Junction box lid", C["jlid"].shape, "#0F766E"), (140, 0, 0))], "service loop, terminals and lid",
        "Coil 1.1 m of cable in the box; vent tube end left open inside; cores to the terminal strip; lid gasket clean, screws in a cross pattern",
        elev=16, azim=-30, label_done=False)
+    all_done = _clip_parts(head, bx(-800, 200, -300, 600, 380, 1400)) + [M["cap"], M["flex"], M["jlid"], M["hasp"]]
+    st(18, all_done, [mv(part("Padlock on the eye bolt", S("padlock_cap", "padlock_cap_shackle"), "#DC2626"), (0, 90, 60)),
+                      mv(part("Padlock on the box hasp", S("padlock_box", "padlock_box_shackle"), "#DC2626"), (0, 90, 0))],
+       "fit the padlocks", "Cap padlock through the eye bolt, box padlock through both hasp tabs; one key tries both",
+       elev=16, azim=-40, label_done=False)
     return out
 
 
@@ -956,7 +990,7 @@ def wiring():
     def lab(x, y, text, color, ha="left"):
         ax.text(x, y, text, fontsize=7.2, color=color, ha=ha, va="center", zorder=3, bbox=dict(boxstyle="round,pad=0.12", fc="white", ec="none"))
     RED, BLU, GRY, GRN = "#B91C1C", "#1D4ED8", "#6B7280", "#15803D"
-    blk(3, 42, 20, 15, "FieldNode core", "port A (M12, 5 pin):\n12 V switched rail,\nground, I2C", "#115E59")
+    blk(3, 42, 20, 15, "FieldNode core", "port A (M12, 5 pin), FieldNode\nstandard pinout: 1 rail,\n2 data A, 3 ground,\n4 data B, 5 analog", "#115E59")
     blk(3, 14, 20, 14, "Transducer", "4 to 20 mA, two wire,\n12 to 30 V; vent tube\nin the cable", "#0F766E")
     blk(36, 44, 18, 12, "Surge and reverse", "TVS on the 12 V in,\nSchottky diode", "#15803D")
     blk(60, 44, 16, 12, "Boost module", "12 V to 24 V,\nloop supply", "#16A34A")
@@ -966,7 +1000,7 @@ def wiring():
     blk(100, 24, 17, 12, "Barometric sensor", "in its housing on\nthe plate, 0.3 m lead", "#7C3AED")
     blk(36, 14, 18, 7, "Terminal strip", "", "#7C3AED")
     # 12 V in from FieldNode through the M12 lead
-    wire([(23, 50), (36, 50)], RED); lab(24, 52.5, "12 V and ground,\nFieldNode lead 0.2 mm²", RED)
+    wire([(23, 50), (36, 50)], RED); lab(24, 52.5, "pin 1 rail,\npin 3 ground,\n0.2 mm²", RED)
     wire([(54, 50), (60, 50)], RED); lab(57, 52.5, "0.5 mm²", RED, "center")
     wire([(76, 50), (80, 50)], RED)
     wire([(68, 44), (68, 40), (45, 40), (45, 21)], RED); lab(46, 38.5, "24 V loop +, 0.5 mm²", RED)
@@ -975,7 +1009,7 @@ def wiring():
     wire([(76, 30), (80, 30)], BLU); lab(78, 32.5, "shunt volts", BLU, "center")
     wire([(87, 44), (87, 36)], GRN); lab(87.6, 40, "3.3 V", GRN)
     wire([(94, 50), (108, 50), (108, 36)], GRN); lab(100, 52.5, "3.3 V", GRN)
-    wire([(87, 24), (87, 9), (1.3, 9), (1.3, 46), (3, 46)], BLU); lab(40, 7.2, "I2C (SDA, SCL), 0.25 mm², back up the FieldNode lead", BLU)
+    wire([(87, 24), (87, 9), (1.3, 9), (1.3, 46), (3, 46)], BLU); lab(40, 7.2, "I2C: pin 2 SDA (data A), pin 4 SCL (data B), 0.25 mm²; pin 5 not used", BLU)
     wire([(108, 24), (108, 9), (87, 9)], BLU)
     ax.text(2, 64, "Safety: extra-low voltage only (24 V highest). The pump's mains wiring stays outside this box.", fontsize=7.6,
             color="#B45309", fontweight="bold", ha="left", va="top")

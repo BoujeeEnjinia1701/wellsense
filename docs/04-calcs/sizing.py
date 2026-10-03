@@ -1,4 +1,4 @@
-"""WellSense sizing calculations, WLS-CAL-001 v0.4 (TRL 3, WLS-DDR-002 and WLS-DDR-004 applied).
+"""WellSense sizing calculations, WLS-CAL-001 v0.5 (TRL 3, WLS-DDR-002 and WLS-DDR-004 applied; locking added under WLS-DEC-001, 2026-10-02).
 
 Run from the repo root:  python docs/04-calcs/sizing.py
 Prints every number quoted in docs/04-calcs/01-sizing.md. Each line carries a tag such as
@@ -191,8 +191,14 @@ tag("D5", f"Collar on the HDPE seal plate: {w_tube:.0f} N on {a_collar:.0f} mm2,
     f"(factor {20 / (w_tube / a_collar):.0f}); the collar's friction grip on the tube is the maker's rating, to confirm at purchase")
 wall = (P["cap"][0] - P["tube_od"]) / 2
 a_bolt = 2 * 5.0 * wall
-tag("D6", f"Probe and cable ({w_cable:.0f} N at {DS['probe_depth_max_m']:.0f} m) hang from the support grip on the M5 cross bolt: bearing on the two "
+tag("D6", f"Probe and cable ({w_cable:.0f} N at {DS['probe_depth_max_m']:.0f} m) hang from the support grip on the M5 eye bolt (the cross bolt): bearing on the two "
     f"{wall:.1f} mm cap walls {w_cable / a_bolt:.2f} MPa against about 50 MPa for PVC; the cap sits on the tube end, so the load reaches the collar through the tube")
+
+PAD_KG = 0.10              # kg, a 20 mm padlock
+w_pad = PAD_KG * G0
+tag("D7", f"Locking (WLS-DEC-001): the padlock hangs from the eye bolt with {w_pad:.1f} N, so the cap walls carry {w_cable + w_pad:.0f} N instead of {w_cable:.0f} N "
+    f"({(w_cable + w_pad) / a_bolt:.2f} MPa); the cap still lifts off the tube once the padlock is open, so the padlock stops the eye bolt being unscrewed and the "
+    f"grip and probe being freed, and the lockable steel wellhead cover is what stops the cap being lifted at exposed sites")
 
 # ------------------------------------------------------------------ E. Storage and airtime (R6, R7)
 print("\nE. Storage and airtime")
@@ -221,9 +227,9 @@ steps_min = [("Isolate and lock off the pump, open the wellhead", 10), ("Disinfe
              ("Fit the split seal plate round the riser", 20), ("Lower the probe, set the hanger", 10),
              ("Tape datum at the measuring point", 10), ("Fit junction box and FieldNode on a set post", 20),
              ("Wire, seal glands, fit desiccant", 15), ("Two-point calibration (probe lifted 1 m)", 15),
-             ("Confirm an uplink", 5)]
+             ("Confirm an uplink", 5), ("Fit the two padlocks and check that one key opens both", 5)]
 t_inst = sum(m for _, m in steps_min)
-tag("G1", f"Estimated {t_inst} min for two people ({len(steps_min)} steps) against 120 min; post footing set and cured on an earlier visit")
+tag("G1", f"Estimated {t_inst} min for two people ({len(steps_min)} steps) against 120 min, {abs(t_inst - 120)} min {'over' if t_inst > 120 else 'under'} the limit with the locks fitted; post footing set and cured on an earlier visit")
 
 # ------------------------------------------------------------------ H. Cost (R12)
 print("\nH. Cost")
@@ -243,14 +249,17 @@ fixed = c_own - per_m * DS["probe_depth_m"]
 breakeven = (budget_usd - fixed) / per_m
 no_tube = c_own - sum(line(r) for r in rows if num(r) == 3)
 tag("H1", f"BOM {len(rows)} lines, {len(rows) - len(unpriced)} priced; cable {cable_len:.0f} m and tube {tube_len:.2f} m (BOM {math.ceil(tube_len)} m) at {DS['probe_depth_m']:.0f} m probe depth")
-tag("H2", f"WellSense parts (lines 1 to 7, 9, 10, 13 to 15): ${c_own:.2f} against the ${budget_usd:.0f} value-engineering target (budget_usd, a hypothetical control target, not a limit): "
+tag("H2", f"WellSense parts (lines 1 to 7, 9, 10, 13 to 16): ${c_own:.2f} against the ${budget_usd:.0f} value-engineering target (budget_usd, a hypothetical control target, not a limit): "
     f"${abs(c_own - budget_usd):.2f} {'over' if c_own > budget_usd else 'under'} the target; with the FieldNode core ${c_own + c_node:.2f}; with FieldNode's hot-site shield (+$9.00, FND-DDR-002) ${c_own + c_node + 9:.2f}")
 c_dfc = {n: sum(line(r) for r in rows if num(r) == n) for n in (4, 5, 6, 7, 10, 14, 15)}
+c_lock = sum(line(r) for r in rows if num(r) == 16) + 1.50     # line 16 plus the eye bolt over a plain bolt in line 5
 tag("H2c", "Lines repriced or added for construction (WLS-DDR-004): " + ", ".join(f"{n} ${v:.2f}" for n, v in c_dfc.items())
     + "; the concept total was $197.60")
 c_conduit = sum(line(r) for r in rows if num(r) == 14)
+tag("H2d", f"Locking (WLS-DEC-001, decision 2): line 16 ${sum(line(r) for r in rows if num(r) == 16):.2f} (security-head screw and bit, two padlocks, hasp kit) and $1.50 more in line 5 for an eye bolt, ${c_lock:.2f} in all; "
+    f"without the locking parts the cost would be ${c_own - c_lock:.2f}")
 tag("H2b", f"Without the conduit (line 14, ${c_conduit:.2f}) the parts would be ${c_own - c_conduit:.2f}, ${abs(c_own - c_conduit - budget_usd):.2f} {'over' if c_own - c_conduit > budget_usd else 'under'} the target")
-tag("H3", f"Depth-dependent ${per_m:.2f}/m; the target is met to a probe depth of {breakeven:.1f} m; at 60 m ${c_own + per_m * 30:.2f}; "
+tag("H3", f"Depth-dependent ${per_m:.2f}/m; {('the fixed parts alone are $' + format(fixed, '.2f') + ', over the target even at zero depth') if breakeven < 0 else 'the target is met to a probe depth of ' + format(breakeven, '.1f') + ' m'}; at 60 m ${c_own + per_m * 30:.2f}; "
     f"without an access tube (no pump in the casing) ${no_tube:.2f}")
 
 # ------------------------------------------------------------------ results table
@@ -259,7 +268,7 @@ results = [
     ("R4", "At risk", f"RSS {rss * 1000:.1f} mm, sum {tot * 1000:.1f} mm (0.25 % class, calibrated)"),
     ("R10", "At risk", f"{D['probe_clear_radial']:.1f} mm radial clearance with a 22 mm probe; tube may need the pump pulled"),
     ("R15", "At risk", "FieldNode shield at hot sites (48.5 to 52.2 degC inside at 45 degC); FieldNode rated to 45 degC ambient against 55 degC"),
-    ("R16", "At risk", "Cable in conduit from the tube cap to the box; locking of the wellhead parts not specified"),
+    ("R16", "Met", "Cable in conduit from the tube cap to the box; by design review the seal plate, cross bolt and junction box are each lockable (security-head screw, padlock on the eye bolt, hasp and padlock); lifting the cap at exposed sites needs the steel cover"),
     ("R5", "Not verifiable at TRL 3", "Drift unknown; quarterly check leaves 5 mm"),
     ("R11", "Not verifiable at TRL 3", f"{t_inst} min estimate"),
     ("R13", "Not verifiable at TRL 3", "Dashboard not started"),

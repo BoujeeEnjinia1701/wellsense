@@ -3,7 +3,7 @@ doc_id: WLS-CAL-001
 title: WellSense sizing calculations
 project: WellSense
 doc_type: Calculation
-version: "0.4"
+version: "0.5"
 status: Draft
 date: '2026-10-02'
 author: Amish Chadha
@@ -25,11 +25,15 @@ revisions:
   date: '2026-10-02'
   author: Amish Chadha
   change: Constructable design (WLS-DDR-004); surface cable run, wellhead load paths and cost recomputed; budget treated as a value-engineering target
+- version: "0.5"
+  date: '2026-10-02'
+  author: Amish Chadha
+  change: Locks added under WLS-DEC-001 decision 2; cost, R16 status and installation time recomputed; new check [D7]
 ---
 
 # WellSense sizing calculations
 
-On paper, WellSense meets seven of its sixteen requirements, has four at risk, misses one, leaves three that only field work can settle and is over its value-engineering target on cost. The miss is water safety. With the decisions of WLS-DDR-002 applied (a 22 mm probe in the 1 in tube, a galvanized conduit over the surface cable and a 30 min uplink rule for pumping tests on public networks) and the design made constructable under WLS-DDR-004, the WellSense parts cost $244.40 at the 30 m design depth. Value-engineering target: USD 200 (`budget_usd`, a hypothetical control target, not a limit). Estimated cost of the constructable design: USD 244.40 (USD 44.40 over the target). No drinking water certificate is in hand for the low-cost cable, seal or probe (R9). The calculations changed the interface: the FieldNode 12 V rail cannot drive a 4 to 20 mA loop through a 150 Ω shunt and 62 m of cable to the transducer's 12 V minimum (it delivers 7.56 V), so the interface board gains a 24 V boost. That doubles the sensor energy of the TRL 2 estimate to 38.2 mWh a day, still only 1.6 % of the FieldNode allowance. Accuracy (R4) is at risk rather than not met: a 0.25 % class probe after a two-point field calibration against a manual tape gives 12.5 mm by root sum square against the ±20 mm target, but 27.1 mm if every term adds. Every number in this note is printed by `docs/04-calcs/sizing.py`; the tag in brackets, for example [B3], is the line of that script's output that carries it.
+On paper, WellSense meets eight of its sixteen requirements, has three at risk, misses one, leaves three that only field work can settle and is over its value-engineering target on cost. The miss is water safety. With the decisions of WLS-DDR-002 applied (a 22 mm probe in the 1 in tube, a galvanized conduit over the surface cable and a 30 min uplink rule for pumping tests on public networks) and the design made constructable under WLS-DDR-004, the WellSense parts cost $262.40 at the 30 m design depth, locks included. Value-engineering target: USD 200 (`budget_usd`, a hypothetical control target, not a limit). Estimated cost of the constructable design: USD 262.40 (USD 62.40 over the target). No drinking water certificate is in hand for the low-cost cable, seal or probe (R9). The calculations changed the interface: the FieldNode 12 V rail cannot drive a 4 to 20 mA loop through a 150 Ω shunt and 62 m of cable to the transducer's 12 V minimum (it delivers 7.56 V), so the interface board gains a 24 V boost. That doubles the sensor energy of the TRL 2 estimate to 38.2 mWh a day, still only 1.6 % of the FieldNode allowance. Accuracy (R4) is at risk rather than not met: a 0.25 % class probe after a two-point field calibration against a manual tape gives 12.5 mm by root sum square against the ±20 mm target, but 27.1 mm if every term adds. Every number in this note is printed by `docs/04-calcs/sizing.py`; the tag in brackets, for example [B3], is the line of that script's output that carries it.
 
 > **Safety:** These are first-principles estimates for a paper proof of concept. They do not show that anything lowered into a well is safe for drinking water, that the wellhead is sealed, or that work at a well with a mains-powered pump is safe. See WLS-PRC-001, Safety.
 
@@ -93,7 +97,7 @@ The design case is a 150 mm (6 in) borehole with a 4 in submersible pump on a 1-
 - **Tube size.** The 1 in tube takes probes up to 22 mm with 2 mm of radial clearance and fits beside a centered riser in 150 and 200 mm casings, and beside a riser against the wall in all four sizes checked. A 1-1/4 in tube takes probes up to 28 mm but fits beside a centered riser only in 200 mm casing [D2]. The tube ends above the pump, so the pump body does not limit the fit.
 - **R10 is at risk.** The tube and a 22 mm probe fit the design well, but lowering a tube past the riser, cable ties and pump cable of an installed pump may snag them or need the pump pulled. Only an installation trial can settle it.
 - **Loads.** Cable and probe hanging 60 m in air weigh 35 N against a 400 N strain member, a factor of 11.5 [D3]. Sixty metres of tube hanging dry weigh 264 N, a stress of 0.82 MPa against 48 MPa, a factor of 58; a split collar on the tube carries the 264 N onto the seal plate [D4]. **R2 is met.**
-- **Load paths of the constructable wellhead (WLS-DDR-004).** The collar bears on the 20 mm HDPE seal plate at 0.24 MPa, about a factor of 82 under HDPE's compressive strength; the collar's grip on the tube is its maker's rating, to be confirmed at purchase [D5]. The probe and cable (35 N at 60 m) hang from a cable support grip on an M5 cross bolt through the tube cap; the bolt bears on the two 4.4 mm cap walls at 0.79 MPa against about 50 MPa for PVC, and the cap sits on the tube end, so the load reaches the collar through the tube [D6].
+- **Load paths of the constructable wellhead (WLS-DDR-004).** The collar bears on the 20 mm HDPE seal plate at 0.24 MPa, about a factor of 82 under HDPE's compressive strength; the collar's grip on the tube is its maker's rating, to be confirmed at purchase [D5]. The probe and cable (35 N at 60 m) hang from a cable support grip on an M5 eye bolt (the cross bolt) through the tube cap; the bolt bears on the two 4.4 mm cap walls at 0.79 MPa against about 50 MPa for PVC, and the cap sits on the tube end, so the load reaches the collar through the tube [D6]. The padlock hung on the eye adds 1.0 N (0.81 MPa on the cap walls); it stops the eye bolt being unscrewed but not the cap being lifted off the tube, so exposed sites need the lockable steel wellhead cover [D7].
 
 ## E. Storage and airtime (R6, R7)
 
@@ -106,12 +110,12 @@ The vent capillary holds 111 mL at 62.7 m. With the box and vent breathing 0.15 
 
 ## G. Installation (R11)
 
-With an access tube already in place, nine steps from isolating the pump to confirming an uplink are estimated at 120 min for two people, exactly the R11 limit, with the post footing set and cured on an earlier visit [G1]. **R11 cannot be verified at TRL 3**; only a timed installation can.
+With an access tube already in place, ten steps from isolating the pump to fitting the padlocks are estimated at 125 min for two people, 5 min over the R11 limit once the locks are fitted, with the post footing set and cured on an earlier visit [G1]. **R11 cannot be verified at TRL 3**; only a timed installation can.
 
 ## H. Cost (R12)
 
-- **BOM.** All 15 lines are priced. The design case uses 33 m of cable (30 m down the well and a 2.7 m surface run that includes a 1.1 m service loop in the junction box for the 1 m calibration lift) and 30.61 m of tube (31 m in the BOM) [H1].
-- **R12, over the value-engineering target.** Value-engineering target: USD 200 (`budget_usd`, a hypothetical control target, not a limit). Estimated cost of the constructable design: USD 244.40 for lines 1 to 7, 9, 10 and 13 to 15 (USD 44.40 over the target); with the $139.00 FieldNode core (FND-CAL-001 v0.3) the complete logger is $383.40, and $392.40 at a hot site with FieldNode's $9.00 sun shield [H2]. Making the design constructable (WLS-DDR-004) repriced lines 4, 5, 6, 7, 10 and 14 and added line 15, the FieldNode lead; the concept total was $197.60 [H2c]. Without the $20.00 conduit set (line 14) the parts would be $224.40 [H2b]. Cable and tube add $1.80 per metre of depth; at 60 m the parts cost $298.40, and without an access tube (no pump in the casing) $213.40 [H3]. Savings worth trying are listed in the design decisions register (WLS-DEC-001).
+- **BOM.** All 16 lines are priced. The design case uses 33 m of cable (30 m down the well and a 2.7 m surface run that includes a 1.1 m service loop in the junction box for the 1 m calibration lift) and 30.61 m of tube (31 m in the BOM) [H1].
+- **R12, over the value-engineering target.** Value-engineering target: USD 200 (`budget_usd`, a hypothetical control target, not a limit). Estimated cost of the constructable design: USD 262.40 for lines 1 to 7, 9, 10 and 13 to 16 (USD 62.40 over the target); with the $139.00 FieldNode core (FND-CAL-001 v0.3) the complete logger is $401.40, and $410.40 at a hot site with FieldNode's $9.00 sun shield [H2]. Making the design constructable (WLS-DDR-004) repriced lines 4, 5, 6, 7, 10 and 14 and added line 15, the FieldNode lead; the concept total was $197.60 [H2c]. The locks decided on 2026-10-02 add $18.00: line 16 at $16.50 and $1.50 for the eye bolt in line 5 [H2d]. Without the $20.00 conduit set (line 14) the parts would be $242.40 [H2b]. The fixed parts alone are $208.40, so the target is not met at any depth. Cable and tube add $1.80 per metre of depth; at 60 m the parts cost $316.40, and without an access tube (no pump in the casing) $231.40 [H3]. Savings worth trying are listed in the design decisions register (WLS-DEC-001).
 
 ## L. Results against every requirement
 
@@ -123,9 +127,9 @@ With an access tube already in place, nine steps from isolating the pump to conf
 | R4 | Accuracy after field calibration | 12.5 mm RSS, 27.1 mm worst case (0.25 % class) | ±20 mm | **At risk** |
 | R10 | Pump compatibility | 2.3 mm radial clearance with a 22 mm probe; tube may need the pump pulled | Own tube, no contact with pump, riser or cable | **At risk** |
 | R15 | Environment | Probe IP68 on datasheet; FieldNode shield at hot sites gives 48.5 to 52.2 °C inside at 45 °C; FieldNode rated to 45 °C ambient | Above-ground parts IP65, -10 to 55 °C; FieldNode shield at hot sites | **At risk** |
-| R16 | Tamper resistance | Cable in galvanized conduit from the tube cap to the box; locking of the wellhead parts not yet specified | Lockable; no exposed cable at reachable height | **At risk** |
+| R16 | Tamper resistance | Cable in galvanized conduit from the tube cap to the box; by design review the seal plate (security-head screw), cross bolt (padlock on its eye) and junction box (hasp and padlock) are each lockable; lifting the cap at exposed sites needs the steel cover [D7] | Lockable; no exposed cable at reachable height | **Met** (design review) |
 | R5 | Long-term drift | Unknown; a quarterly check leaves at most 5 mm | 20 mm a year or less | Not verifiable at TRL 3 |
-| R11 | Installation | 120 min estimate | 2 h or less with a tube in place | Not verifiable at TRL 3 |
+| R11 | Installation | 125 min estimate with the locks fitted [G1] | 2 h or less with a tube in place | Not verifiable at TRL 3 |
 | R13 | Data use | Dashboard not started | Level, drawdown, year-on-year, CSV | Not verifiable at TRL 3 |
 | R1 | Range | 0 to 10 m, 98.07 kPa | 0 to 10 m; 0 to 20 m option | Met |
 | R2 | Installation depth | Cable factor 11.5, tube factor 58 at 60 m | 60 m or more | Met |
@@ -133,10 +137,10 @@ With an access tube already in place, nine steps from isolating the pump to conf
 | R6 | Reading interval | 15 min; 1 min logged, sent every 30 min on a public network (22.7 s/day) | 15 min; 1 min in tests | Met |
 | R7 | Local storage | 1.12 MB a year, 6.7 % of flash | 1 year | Met |
 | R8 | Energy | 38.2 mWh/day, 1.6 % of 100 mW | 5 % or less | Met |
-| R12 | Cost | $244.40 at 30 m; $383.40 with FieldNode | Value-engineering target $200 for WellSense parts at 30 m | Over the target by $44.40 |
+| R12 | Cost | $262.40 at 30 m; $401.40 with FieldNode | Value-engineering target $200 for WellSense parts at 30 m | Over the target by $62.40 |
 | R14 | Data ownership | Levels, time and well ID only | Community controls sharing | Met (by design) |
 
-Counts: 1 not met, 4 at risk, 3 not verifiable at TRL 3, 7 met, and R12 over the value-engineering target.
+Counts: 1 not met, 3 at risk, 3 not verifiable at TRL 3, 8 met, and R12 over the value-engineering target.
 
 ## Checks against the TRL 2 figures
 
@@ -172,3 +176,13 @@ Counts: 1 not met, 4 at risk, 3 not verifiable at TRL 3, 7 met, and R12 over the
 | BOM | 14 lines, $197.60 | 15 lines, $244.40; lines 4, 5, 6, 7, 10 and 14 repriced, line 15 added [H2], [H2c] |
 | FieldNode core | $126.00, shield $8.00 | $139.00 and $9.00 (FND-CAL-001 v0.3) [H2] |
 | R12 | Met against the $200 budget | Over the $200 value-engineering target by $44.40 |
+
+## Changes in v0.5 (locking, WLS-DEC-001)
+
+| Item | v0.4 | v0.5 |
+| --- | --- | --- |
+| Locks | Not specified | Security-head screw on the rim band, padlock on the eye of the cross bolt, hasp and padlock on the box; BOM line 16 [H2d], load check [D7] |
+| BOM | 15 lines, $244.40 | 16 lines, $262.40; line 16 added and line 5 repriced to $11.50 for the eye bolt |
+| R16 | At risk | Met on design review; the cap itself can still be lifted, so exposed sites use the steel cover |
+| R11 estimate | 120 min | 125 min, 5 min over the limit, with the locks fitted [G1] |
+| R12 | Over the target by $44.40 | Over the target by $62.40 |
