@@ -1,4 +1,17 @@
-"""WellSense parametric model (build123d), TRL 3, constructable design (WLS-DDR-004).
+"""WellSense parametric model (build123d), TRL 3, constructable design (WLS-DDR-004), kit 1.9 interface.
+
+Kit 1.9 (STANDARDS section 24, Amish 2026-10-24: "Detail every option"): PARAMS, OPTIONS, PRINCIPLES,
+CHOSEN = "A", OPTION_VIEWS, ALLOWED_CONTACTS and components(option), which returns cad_parts.part() dicts
+for every concept option of WLS-OPT-001 at detail level D3:
+    A  vented 4 to 20 mA pressure transducer in its own access tube (the current design, unchanged)
+    B  bubbler: a pump in the junction box purges a PE air line in the same tube; a gauge sensor reads the
+       back-pressure
+    C  acoustic sounder: a loudspeaker and microphone in a head on the tube time the echo from the water
+Option A is the design below (build_components); B and C reuse its wellhead, post and junction box and
+replace the sensing chain. Every bolt, nut, washer, pin and screw is modelled with its hole; the interface
+modules are boards on standoffs. Run `python .kit/cad_check.py --export` for the fidelity check and STEP files.
+Fix rule (Amish's standing instruction of 2026-10-23, WLS-DEC-001 D-S1): a 5 mm stainless clevis pin through
+the access tube, resting on the collar, holds the tube string if the collar's friction grip creeps (STM S14).
 
 WLS-DDR-002 (2026-09-25): probe body 22 mm or less for the 1 in access tube, and a galvanized
 conduit (BOM line 14) over the surface cable from the tube cap to the junction box.
@@ -40,6 +53,10 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 VENDOR = HERE.parents[0] / "vendor"
+for _p in (str(HERE), str(HERE.parents[1] / ".kit")):
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
+TITLE = "WellSense"
 
 # Top-level parameters (mm). Edit these, not the geometry below.
 PARAMS = {
@@ -71,6 +88,7 @@ PARAMS = {
     "wrap": 2.0, "seal_holes": (46.2, 16.0, 37.4),
     "rim_band": (12.0, 0.8),                   # worm-drive band round the plate rim: width, thickness
     "collar": (50.0, 14.0),                    # split shaft collar on the tube above the plate: OD, width
+    "tube_pin": (5.0, 9.0),                    # stainless clevis pin through the tube on the collar: dia, offset of its chord from the tube axis (WLS-DEC-001 D-S1)
     # 5 tube cap (1 in slip cap OD, socket depth, head space, top thickness); conduit connector hole;
     #   cross bolt offset from the tube axis and height above the tube end
     "cap": (42.2, 22.0, 18.0, 5.0), "cap_hole": 22.5, "cross_bolt": (9.0, 9.0),
@@ -147,7 +165,8 @@ class Comp:
     name: str
     shape: object
     bom: int | None
-    kind: str          # "made", "bought", "fixing", "context" or "void" (a hole a shackle must pass through; not exported)
+    kind: str          # "made", "bought", "fixing", "context", "void" (a hole a shackle must pass through; not exported)
+                       # or "view" (a fused envelope of several parts, kept for the build plan pictures only)
     group: str | None  # key in BOM or CONTEXT (build_parts groups components by it)
 
 
@@ -351,6 +370,118 @@ def vblock(p, zc):
     return blk
 
 
+# ------------------------------------------------------------------ interface boards in the junction box
+# key: (name, y centre, z centre, board width along Y, height along Z, overall depth, components, BOM line)
+# components: (kind, args, (local y, local z)); a board's two mounting holes sit 3 mm in from opposite corners.
+BOARDS_A = {
+    "boost": ("12 to 24 V boost module", -25.0, 1290.0, 21.0, 43.0, 20.0,
+              [("inductor", (8.0, 5.0), (0.0, 4.0)), ("cap", (3.0, 8.0), (4.0, -9.0)), ("ic", (3.0, 3.0, 1.0), (-4.0, -9.0)),
+               ("box", (4.5, 4.5, 4.0), (-5.0, 12.0))]),
+    "adc": ("ADC and shunt module", 25.0, 1295.0, 18.0, 28.0, 14.0,
+            [("ic", (3.0, 3.0, 1.1), (0.0, -1.0)), ("box", (6.4, 3.2, 0.6), (0.0, -6.0)), ("header", (4, 6.0), (0.0, 5.0))]),
+    "reg": ("3.3 V regulator and surge module", 25.0, 1255.0, 20.0, 30.0, 16.0,
+            [("ic", (6.5, 3.5, 1.6), (0.0, 3.0)), ("box", (4.0, 2.5, 2.0), (0.0, -4.0)), ("cap", (2.5, 5.0), (-4.0, 9.0))]),
+    "strip": ("Terminal strip", 0.0, 1215.0, 80.0, 12.0, 17.0, "strip"),
+}
+STANDOFF_H = 5.0
+
+
+def _comp_shape(kind, args):
+    import wls_parts as wp
+    from build123d import Box, Pos
+    if kind == "inductor":
+        return wp.inductor(*args)
+    if kind == "cap":
+        return wp.can_cap(*args)
+    if kind == "ic":
+        return wp.ic(*args)
+    if kind == "header":
+        return wp.header(args[0], h=args[1])
+    if kind == "box":
+        import cad_parts as cp
+        w, h, t = args
+        return cp.break_edges(Pos(0, 0, t / 2) * Box(w, h, t), min(w, h, t) * 0.15)
+    raise ValueError(kind)
+
+
+def board_parts(p, D, key, spec, bom=None):
+    """The parts of one interface board on the internal plate: PCB, components, two M-F standoffs with nuts
+    behind the plate and two M3 screws (or, for the terminal strip, a base with two screws and nuts).
+    Returns (list of (key, name, shape, kind, material, color), list of plate holes (y, z, r))."""
+    import wls_parts as wp
+    import cad_parts as cp
+    name, yc, zc, wy, hz, dx, comps = spec
+    jwall, ib, itk = p["jwall"], p["iboss"], p["iplate"][2]
+    xi = D["jbox_back"] + jwall + ib[2]
+    xm = xi + itk
+    out, holes = [], []
+    X = (1, 0, 0)
+    if comps == "strip":
+        base = cp.break_edges(wp.pcb(wy, hz, 3.0, holes=[(-wy / 2 + 3, 0, 3.4), (wy / 2 - 3, 0, 3.4)], r=1.5), 0.4)
+        out.append((f"{key}_base", f"{name}, mounting base", wp.on_axis(base, (xm, yc, zc), X), "bought", "hdpe_natural", "#2E7D32"))
+        out.append((f"{key}_block", f"{name}, 8-way screw terminal block", wp.on_axis(wp.terminal_block(8, 7.5, hz, dx - 3.0), (xm + 3.0, yc, zc), X),
+                    "bought", "hdpe_natural", "#2E7D32"))
+        for i, ly in enumerate((-wy / 2 + 3, wy / 2 - 3)):
+            holes.append((yc + ly, zc, 1.7))
+            out.append((f"{key}_screw{i}", f"M3x10 pan head screw (ISO 7045), {name.lower()}", wp.on_axis(wp.pan_screw(3, 10), (xm + 3.0, yc + ly, zc), X), "fastener", "zinc_plated", None))
+            out.append((f"{key}_nut{i}", f"M3 hex nut (ISO 4032), {name.lower()}", wp.on_axis(wp.nut(3), (xi, yc + ly, zc), (-1, 0, 0)), "fastener", "zinc_plated", None))
+        return out, holes
+    pts = [(-wy / 2 + 3, -hz / 2 + 3), (wy / 2 - 3, hz / 2 - 3)]
+    board = wp.pcb(wy, hz, 1.6, holes=[(a, b, 3.2) for a, b in pts])
+    xp = xm + STANDOFF_H
+    out.append((f"{key}_pcb", f"{name}, circuit board", wp.on_axis(board, (xp, yc, zc), X), "bought", "hdpe_recycled", "#1F5F3A"))
+    for i, (kind, args, (ly, lz)) in enumerate(comps):
+        mat, col = {"cap": ("aluminium", "#B8BEC4"), "header": ("matte_black", None)}.get(kind, ("matte_black", None))
+        out.append((f"{key}_c{i}", f"{name}, {'capacitor' if kind == 'cap' else kind}", wp.on_axis(_comp_shape(kind, args), (xp + 1.6, yc + ly, zc + lz), X), "bought", mat, col))
+    for i, (ly, lz) in enumerate(pts):
+        holes.append((yc + ly, zc + lz, 1.7))
+        out.append((f"{key}_so{i}", f"M3 x {STANDOFF_H:.0f} hex standoff, M-F, {name.lower()}", wp.on_axis(wp.standoff(STANDOFF_H), (xm, yc + ly, zc + lz), X), "fastener", "brass", None))
+        out.append((f"{key}_nut{i}", f"M3 hex nut (ISO 4032), {name.lower()}", wp.on_axis(wp.nut(3), (xi, yc + ly, zc + lz), (-1, 0, 0)), "fastener", "zinc_plated", None))
+        out.append((f"{key}_screw{i}", f"M3x5 pan head screw (ISO 7045), {name.lower()}", wp.on_axis(wp.pan_screw(3, 5), (xp + 1.6, yc + ly, zc + lz), X), "fastener", "zinc_plated", None))
+    return out, holes
+
+
+def internal_plate(p, D, holes):
+    """The printed internal plate on the box's four bosses, with the boards' mounting holes."""
+    import cad_parts as cp
+    iw, ih, itk = p["iplate"]
+    ib, jzc = p["iboss"], p["jbox_z"]
+    xi = D["jbox_back"] + p["jwall"] + ib[2]
+    ipl = cp.break_edges(bx(xi, xi + itk, -iw / 2, iw / 2, jzc - ih / 2, jzc + ih / 2), 1.0)
+    for sy in (+1, -1):
+        for sz in (+1, -1):
+            ipl = ipl - xcyl(2.25, xi - 1, xi + itk + 1, sy * ib[0], jzc + sz * ib[1])
+    for y, z, r in holes:
+        ipl = ipl - xcyl(r, xi - 1, xi + itk + 1, y, z)
+    return ipl
+
+
+def plate_screws(p, D):
+    """Four M3x8 pan head screws holding the internal plate to the bosses."""
+    import wls_parts as wp
+    ib, jzc = p["iboss"], p["jbox_z"]
+    xm = D["jbox_back"] + p["jwall"] + ib[2] + p["iplate"][2]
+    return [wp.on_axis(wp.pan_screw(3, 8), (xm, sy * ib[0], jzc + sz * ib[1]), (1, 0, 0)) for sy in (1, -1) for sz in (1, -1)]
+
+
+BOARD_MAT = {}     # key -> (material, colour) for the parts add_boards creates
+
+
+def add_boards(C, p, D, boards, bom=7):
+    """Add the internal plate, its four screws and every board's parts to C (option A layout)."""
+    holes = []
+    for key, spec in boards.items():
+        parts, h = board_parts(p, D, key, spec, bom)
+        holes += h
+        for k, nm, shp, kind, mat, col in parts:
+            C[f"mod_{k}"] = Comp(nm, shp, bom, "fixing" if kind == "fastener" else "bought", "board")
+            BOARD_MAT[f"mod_{k}"] = (mat, col)
+        C[f"mod_{key}"] = Comp(spec[0], fuse([q[2] for q in parts]), bom, "view", None)
+    C["iplate"] = Comp("Internal plate", internal_plate(p, D, holes), bom, "made", "board")
+    for i, s in enumerate(plate_screws(p, D), 1):
+        C[f"iplate_screw_{i}"] = Comp("M3x8 pan head screw (ISO 7045), internal plate", s, bom, "fixing", "board")
+
+
 # ------------------------------------------------------------------ components
 def build_components(p=PARAMS):
     """Return {key: Comp} for every made, bought and fixing component, plus the grey context."""
@@ -392,6 +523,11 @@ def build_components(p=PARAMS):
         for ang in (0, 90):
             a = ang + 45 * (k % 2)
             t = t - Pos(tx, 0, zc) * Rot(0, 0, a) * Rot(0, 90, 0) * cyl(hd / 2, -to - 2, to + 2)
+    # WLS-DEC-001 D-S1 (fix rule): 5.2 mm hole on a chord 9 mm off the axis, just above the collar, for the
+    # stainless clevis pin that holds the string if the collar's grip creeps (clear of the cable and grip)
+    pin_d, pin_e = p["tube_pin"]
+    zpin = D["collar_top"] + 4.2
+    t = t - ycyl(pin_d / 2 + 0.1, -to - 2, to + 2, tx + pin_e, zpin)
     add("tube", "Access tube, drilled", t, 3, "made", "tube")
     eod, esock, eend = p["endcap"]
     ec = cyl(eod / 2, p["tube_bot"] - eend, p["tube_bot"] + esock, x=tx) - cyl(to, p["tube_bot"], p["tube_bot"] + esock + 1, x=tx)
@@ -400,8 +536,14 @@ def build_components(p=PARAMS):
 
     # ---------------- 1 transducer
     pr, pl = p["probe"][0] / 2, p["probe"][1]
-    add("probe", "Pressure transducer", cyl(pr, D["probe_bot"] + 8, D["probe_top"], x=tx)
-        + cyl(pr - 4, D["probe_bot"], D["probe_bot"] + 8, x=tx), 1, "bought", "probe")
+    import cad_parts as cp
+    pb0, pt0 = D["probe_bot"], D["probe_top"]
+    pbody = cp.break_edges(cyl(pr, pb0 + 8, pt0 - 12, x=tx), 1.0)
+    nose = cyl(pr - 1, pb0, pb0 + 8, x=tx) - cyl(pr - 2.5, pb0 - 1, pb0 + 6, x=tx)        # nose guard over the diaphragm
+    for a in (0, 60, 120):
+        nose = nose - Pos(tx, 0, pb0 + 3.5) * Rot(0, 0, a) * Rot(0, 90, 0) * cyl(1.6, -pr, pr)
+    relief = cyl(pr - 2, pt0 - 12, pt0 - 4, x=tx) + cyl(p["cable_d"] / 2 + 1.5, pt0 - 4, pt0, x=tx)   # cable gland and strain relief
+    add("probe", "Pressure transducer", pbody + nose + relief, 1, "bought", "probe")
 
     # ---------------- 4 split seal plate on the casing
     g_t, g_od = p["gasket"]
@@ -412,6 +554,15 @@ def build_components(p=PARAMS):
     disc = cyl(sr, sb, stp) - cyl(hr / 2, sb - 1, stp + 1, x=rx) - cyl(hc / 2, sb - 1, stp + 1, x=cx_) - cyl(ht / 2, sb - 1, stp + 1, x=tx)
     spo, spi, spd = p["spigot"]
     sp = ring(spo / 2, spi / 2, sb - spd, sb)
+    # three M4 x 20 countersunk screws per half ring, from below into pilot holes in the plate half
+    import wls_parts as wp
+    r_sp = (spo + spi) / 4
+    spig_screws = []
+    for ang in (30, 90, 150, 210, 270, 330):
+        xs_, ys_ = r_sp * math.cos(math.radians(ang)), r_sp * math.sin(math.radians(ang))
+        sp = sp - wp.on_axis(wp.csk_seat(4), (xs_, ys_, sb - spd), (0, 0, -1)) - cyl(2.2, sb - spd - 1, sb + 1, xs_, ys_)
+        disc = disc - cyl(2.0, sb - 1, sb + spd + 1, xs_, ys_)
+        spig_screws.append(((xs_, ys_), wp.on_axis(wp.csk_screw(4, 20), (xs_, ys_, sb - spd), (0, 0, -1))))
     for s, key, nm in ((+1, "seal_a", "Seal plate half A (back, +Y)"), (-1, "seal_b", "Seal plate half B (front, -Y)")):
         half = bx(-sr - 1, sr + 1, 0 if s > 0 else -sr - 1, sr + 1 if s > 0 else 0, sb - spd - 1, stp + 1)
         add(key, nm, disc & half, 4, "made", "seal")
@@ -423,8 +574,18 @@ def build_components(p=PARAMS):
     zb = (sb + stp) / 2
     rim = ring(sr + rbt, sr, zb - rbw / 2, zb + rbw / 2) + bx(-9, 9, -sr - rbt - 9, -sr - rbt + 0.01, zb - rbw / 2 - 2, zb + rbw / 2 + 2)
     add("rim_band", "Rim band clamp", rim, 4, "bought", "seal")
+    for k, ((xs_, ys_), scr) in enumerate(spig_screws, 1):
+        add(f"spig_screw_{k}", f"M4x20 countersunk screw (ISO 10642), spigot ring {'A' if ys_ > 0 else 'B'}", scr, 4, "fixing", "seal")
     co, cw = p["collar"]
     add("collar", "Tube collar (split shaft collar)", ring(co / 2, to, stp, stp + cw, x=tx), 4, "bought", "seal")
+    # WLS-DEC-001 D-S1: clevis pin on a chord of the tube, 4.2 mm above the collar (2 mm clear of it), with its split pin
+    import cad_parts as cp
+    y_head = math.sqrt(to ** 2 - (pin_e - pin_d * 0.8) ** 2) + 0.1     # head clears the curved tube wall
+    grip_pin = 2 * y_head
+    pin = wp.on_axis(cp.clevis_pin(pin_d, grip_pin), (tx + pin_e, y_head, zpin), (0, 1, 0))
+    add("tube_pin", f"Clevis pin {pin_d:.0f} x {grip_pin + 2 * pin_d:.0f} (ISO 2341 B), stainless", pin, 4, "fixing", "seal")
+    spl = Pos(tx + pin_e, y_head - grip_pin - pin_d, zpin) * cp.split_pin(pin_d)
+    add("split_pin", f"Split pin {pin_d * 0.32:.1f} mm (ISO 1234), stainless", spl, 4, "fixing", "seal")
 
     # ---------------- 5 tube cap with cross bolt and support grip
     cod, csock, chead, ctop = p["cap"]
@@ -459,7 +620,8 @@ def build_components(p=PARAMS):
         bar = xcyl(sr_, xc - sspan, xc + sspan, yc, zbar_)
         legs = [cyl(sr_, zbar_ - sleg, zbar_, x=xc + s * sspan, y=yc) + Pos(xc + s * sspan, yc, zbar_) * Sphere(sr_) for s in (+1, -1)]
         shackle = bar + legs[0] + legs[1]
-        body = bx(xc - pw / 2, xc + pw / 2, yc - pwy / 2, yc + pwy / 2, zbar_ - sleg - pwz, zbar_ - sleg)
+        body = cp.break_edges(bx(xc - pw / 2, xc + pw / 2, yc - pwy / 2, yc + pwy / 2, zbar_ - sleg - pwz, zbar_ - sleg), 2.0)
+        body = body - cyl(2.2, zbar_ - sleg - pwz - 1, zbar_ - sleg - pwz + 6, xc, yc)     # key way in the base
         add(key + "_shackle", name + " shackle", shackle, 16, "bought", group)
         add(key, name + " body", body, 16, "bought", group)
 
@@ -496,8 +658,19 @@ def build_components(p=PARAMS):
         spacer = bx(jf, hx - ro, -ro - 12, ro + 12, zs - 10, zs + 10)
         # the strap's feet sit on the spacer, which sits on the plate; the conduit sits in the spacer's face
         feet = bx(hx - ro, hx, -ro - 12, -ro - 1.5, zs - 10, zs + 10) + bx(hx - ro, hx, ro + 1.5, ro + 12, zs - 10, zs + 10)
-        sad.append(strap + spacer + feet - cyl(ro, zs - 12, zs + 12, x=hx))
+        sd = strap + spacer + feet - cyl(ro, zs - 12, zs + 12, x=hx)
+        for s in (+1, -1):                          # M5 screw holes through the feet and spacer, on the plate's holes
+            sd = sd - xcyl(2.75, jf - 1, hx + 1, s * (ro + 6.75), zs)
+        sad.append(sd)
     add("saddles", "Conduit spacer saddles (2)", fuse(sad), 14, "bought", "conduit")
+    # each saddle: two M5 bolt sets through the feet, spacer and plate (bolt head on the foot, nut behind the plate)
+    grip_s = hx - D["jplate_x0"]
+    n = 0
+    for zs in p["saddle_z"]:
+        for s in (+1, -1):
+            for nm, shp in cp.hex_bolt_set(5, grip_s):
+                n += 1
+                add(f"saddle_fix_{n}", nm + ", conduit saddle", wp.on_axis(shp, (hx, s * (ro + 6.75), zs), (1, 0, 0)), 14, "fixing", "conduit")
 
     # ---------------- 10 post, cap, footing, junction box plate, V-blocks, band clamps
     px, po = p["post_x"], p["post_od"] / 2
@@ -514,6 +687,7 @@ def build_components(p=PARAMS):
         for s in (+1, -1):
             jp = jp - bx(jx0 - 1, jx0 + jt + 1, s * p["band_slot_y"] - 1.5, s * p["band_slot_y"] + 1.5, zb_ - 7.5, zb_ + 7.5)
             jp = jp - xcyl(2.25, jx0 - 1, jx0 + jt + 1, s * 18.0, zb_)
+            jp = jp - wp.on_axis(wp.csk_seat(4), (jx0 + jt, s * 18.0, zb_), (1, 0, 0))   # countersink for the V-block screw
     jd, jw, jh = p["jbox"]
     for zl in (D["jbox_top"] + p["jlug"][3] / 2, D["jbox_bot"] - p["jlug"][3] / 2):
         for s in (+1, -1):
@@ -527,6 +701,12 @@ def build_components(p=PARAMS):
     add("jplate", "Junction box plate", jp, 10, "made", "post")
     add("vblock_low", "Lower V-block", vblock(p, D["jband_z"][0]), 10, "made", "post")
     add("vblock_up", "Upper V-block", vblock(p, D["jband_z"][1]), 10, "made", "post")
+    n = 0
+    for zb_ in D["jband_z"]:
+        for s in (+1, -1):
+            n += 1
+            add(f"vblock_screw_{n}", "M4x12 countersunk screw (ISO 10642), V-block to plate",
+                wp.on_axis(wp.csk_screw(4, 12), (jx0 + jt, s * 18.0, zb_), (1, 0, 0)), 10, "fixing", "post")
     add("jbands", "Band clamps (2)", band_clamp(p, D["jband_z"][0]) + band_clamp(p, D["jband_z"][1]), 10, "bought", "post")
 
     # ---------------- 6 junction box: body, lid, lugs, bottom entries; 7 internal plate and modules
@@ -539,11 +719,20 @@ def build_components(p=PARAMS):
     for sy in (+1, -1):
         for sz in (+1, -1):
             body = body + xcyl(4.0, xb + jwall - 0.01, xb + jwall + ib[2], sy * ib[0], jzc + sz * ib[1])
+            body = body - xcyl(1.5, xb + jwall + 1.0, xb + jwall + ib[2] + 0.01, sy * ib[0], jzc + sz * ib[1])  # moulded screw bore
     ent = p["jentries"]
     for k, (u, v, hd_, od_, ln) in ent.items():
         body = body - cyl(hd_ / 2, jb - 1, jb + jwall + 1, x=xb + u, y=v)
+    HASP_SCREWS = [(xfr - jl - 14.0, sz_) for sz_ in (-6.0, 6.0)] + [(xfr - jl + 8.8, sz_) for sz_ in (-6.0, 6.0)]
+    for hx_, dz_ in HASP_SCREWS[:2]:
+        body = body - ycyl(1.5, jw / 2 - jwall - 0.5, jw / 2 + 0.01, hx_, jzc + dz_)
     add("jbody", "Junction box body, drilled", body, 6, "made", "jbox")
-    add("jlid", "Junction box lid", bx(xfr - jl, xfr, -jw / 2, jw / 2, jb, jtop), 6, "bought", "jbox")
+    lid = bx(xfr - jl, xfr, -jw / 2, jw / 2, jb, jtop)
+    lid = cp.break_edges(lid, 1.5)
+    lid = lid - bx(xfr - jl - 1, xfr - jwall, -jw / 2 + jwall, jw / 2 - jwall, jb + jwall, jtop - jwall)   # moulded lid, 3 mm walls
+    for hx_, dz_ in HASP_SCREWS[2:]:
+        lid = lid - ycyl(1.5, jw / 2 - jwall - 0.5, jw / 2 + 0.01, hx_, jzc + dz_)
+    add("jlid", "Junction box lid", lid, 6, "bought", "jbox")
     lw = p["jlug"]
     lugs = []
     for zl0, zl1 in ((jtop, jtop + lw[3]), (jb - lw[3], jb)):
@@ -557,7 +746,19 @@ def build_components(p=PARAMS):
         for s in (+1, -1):
             lsc.append(xcyl(2.5, jx0 - 0.01, xb + lw[2] + 5, s * lw[0], zl) + xcyl(4.5, jx0 - 3, jx0, s * lw[0], zl)
                        + xcyl(4.5, xb + lw[2], xb + lw[2] + 5, s * lw[0], zl))
-    add("jlug_screws", "M5 lug screws and nyloc nuts", fuse(lsc), 6, "fixing", "jbox")
+    add("jlug_screws", "M5 lug screws and nyloc nuts", fuse(lsc), 6, "view", None)    # legacy envelope for the build plan pictures
+    # upper lugs: screw from behind the plate, nyloc nut on the lug; lower lugs: screw from the front, nut behind
+    # the plate, because the M16 gland body below the box floor sits where the screw's tail would be
+    n = 0
+    for zl, front in ((jtop + lw[3] / 2, False), (jb - lw[3] / 2, True)):
+        for s in (+1, -1):
+            n += 1
+            head_at, nut_at = ((xb + lw[2], jx0) if front else (jx0, xb + lw[2]))
+            sgn = 1 if front else -1
+            add(f"lug_screw_{n}", "M5x16 button head screw (ISO 7380), junction box lug",
+                wp.on_axis(wp.button_screw(5, 16), (head_at, s * lw[0], zl), (sgn, 0, 0)), 6, "fixing", "jbox")
+            add(f"lug_nut_{n}", "M5 nyloc nut (ISO 10511, drawn as ISO 4032), junction box lug",
+                wp.on_axis(cp.hex_nut(5), (nut_at, s * lw[0], zl), (-sgn, 0, 0)), 6, "fixing", "jbox")
     ents = {}
     for k, (u, v, hd_, od_, ln) in ent.items():
         xx = xb + u
@@ -584,26 +785,20 @@ def build_components(p=PARAMS):
           + bx(xs + egap, xs + egap + et, yw, yw + ereach, zh - eh / 2, zh + eh / 2))
     hb = hb - xcyl(hr_, xs - egap - et - 1, xs - egap + 1, yh, zh)
     hl = hl - xcyl(hr_, xs + egap - 1, xs + egap + et + 1, yh, zh)
+    for k, (hx_, dz_) in enumerate(HASP_SCREWS):
+        if k < 2:
+            hb = hb - ycyl(1.6, yw - 1, yw + 3, hx_, zh + dz_)
+        else:
+            hl = hl - ycyl(1.6, yw - 1, yw + 3, hx_, zh + dz_)
+        add(f"hasp_washer_{k + 1}", "M3 bonded sealing washer, hasp tab", wp.on_axis(wp.sealing_washer(3), (hx_, yw + 2, zh + dz_), (0, 1, 0)), 16, "fixing", "jbox")
+        add(f"hasp_screw_{k + 1}", "M3x6 pan head screw (ISO 7045), hasp tab", wp.on_axis(wp.pan_screw(3, 6), (hx_, yw + 3, zh + dz_), (0, 1, 0)), 16, "fixing", "jbox")
     add("hasp_body", "Hasp tab on the box body", hb, 16, "bought", "jbox")
     add("hasp_lid", "Hasp tab on the lid", hl, 16, "bought", "jbox")
     sr2, sleg2, sspan2 = p["shackle"]
     zbar2 = zh - 1.0
     padlock(xs, yh, zbar2, "padlock_box", "Padlock on the hasp", "jbox")
     C["hasp_void"] = Comp("hasp holes (void)", xcyl(hr_, xs - egap - et, xs + egap + et, yh, zh), None, "void", None)
-    iw, ih, itk = p["iplate"]
-    xi = xb + jwall + ib[2]
-    ipl = bx(xi, xi + itk, -iw / 2, iw / 2, jzc - ih / 2, jzc + ih / 2)
-    for sy in (+1, -1):
-        for sz in (+1, -1):
-            ipl = ipl - xcyl(2.25, xi - 1, xi + itk + 1, sy * ib[0], jzc + sz * ib[1])
-    add("iplate", "Internal plate", ipl, 7, "made", "board")
-    xm = xi + itk
-    mods = {"boost": (-25.0, 1290.0, 21.0, 43.0, 20.0), "adc": (25.0, 1295.0, 18.0, 28.0, 14.0),
-            "reg": (25.0, 1255.0, 20.0, 30.0, 16.0), "strip": (0.0, 1215.0, 70.0, 12.0, 20.0)}
-    for k, (yc, zc, wy, hz, dx) in mods.items():
-        add(f"mod_{k}", {"boost": "12 to 24 V boost module", "adc": "ADC and shunt module",
-                         "reg": "3.3 V regulator and surge module", "strip": "Terminal strip"}[k],
-            bx(xm, xm + dx, yc - wy / 2, yc + wy / 2, zc - hz / 2, zc + hz / 2), 7, "bought", "board")
+    add_boards(C, p, D, BOARDS_A, bom=7)
 
     # ---------------- 9 barometric housing on the plate, its lead into the box
     flange = bx(jf, jf + 3, by - 20, by + 20, bz_ - 30, bz_ + 30)
@@ -617,6 +812,9 @@ def build_components(p=PARAMS):
     blead = polyline_tube([(hx_c, by, bz_ + bl / 2), (hx_c, by, bz_ + bl / 2 + 30), (xb + bg[0], bg[1], jb - bg[4] - 25),
                            (xb + bg[0], bg[1], jb + jwall + 6)], 2.5)
     add("baro", "Barometric sensor housing and lead", flange + housing + blead, 9, "bought", "baro")
+    for k, zz in enumerate((bz_ - 22, bz_ + 22), 1):
+        add(f"baro_screw_{k}", "M4x6 pan head screw (ISO 7045), barometric flange, from behind the plate",
+            wp.on_axis(wp.pan_screw(4, 6), (jx0, by, zz), (-1, 0, 0)), 9, "fixing", "baro")
 
     # ---------------- 2 vented cable: probe, tube, cap, flexible tail, conduit, hub, service loop
     run = (swept_pipe([(tx, 0, D["probe_top"]), (tx, 0, cz), (x0, 0, cz)], cr_, bend=60.0)
@@ -643,11 +841,15 @@ def build_components(p=PARAMS):
     return C
 
 
-def build_parts(p=PARAMS):
-    """Return {BOM or CONTEXT key: solid}, grouping components by BOM line."""
+def build_parts(p=PARAMS, fixings=True):
+    """Return {BOM or CONTEXT key: solid}, grouping components by BOM line. fixings=False leaves the small
+    screws, nuts, washers and pins out (the GA drawing: they are too small to read at its scale, and their cones
+    and fillets stall the hidden-line projection)."""
     C = build_components(p)
     out = {}
     for c in C.values():
+        if not fixings and c.kind == "fixing":
+            continue
         if c.group:
             out[c.group] = c.shape if c.group not in out else out[c.group] + c.shape
     return out
@@ -656,7 +858,7 @@ def build_parts(p=PARAMS):
 def assembly(p=PARAMS, context=True):
     from build123d import Compound
     C = build_components(p)
-    keys = [k for k, c in C.items() if (context or c.kind != "context") and c.kind != "void" and k != "water"]
+    keys = [k for k, c in C.items() if (context or c.kind != "context") and c.kind not in ("void", "view") and k != "water"]
     return Compound(children=[C[k].shape for k in keys])
 
 
@@ -671,6 +873,285 @@ def subset(keys, p=PARAMS, clip=None):
         if sh is not None and sh.volume > 1e-6:
             shapes.append(sh)
     return Compound(children=shapes)
+
+
+# ------------------------------------------------------------------ kit 1.9 interface (STANDARDS section 24)
+OPTIONS = {"A": "Vented transducer in an access tube", "B": "Bubbler with a surface sensor", "C": "Acoustic echo sounder"}
+PRINCIPLES = {
+    "A": "A vented 4 to 20 mA pressure transducer hangs in its own PVC access tube and reads the head of water "
+         "above it; FieldNode powers it for 2 s every 15 min through a 24 V boost.",
+    "B": "A small pump in the junction box pushes air down a PE line in the access tube until it bubbles out of a "
+         "stainless weight; the back-pressure, read by a gauge sensor at the surface, equals the head over the orifice.",
+    "C": "A loudspeaker and microphone in a head on top of the access tube send a chirp down the air column; the "
+         "echo time from the water surface gives the depth to water.",
+}
+CHOSEN = "A"          # the current design; the concept choice is proposed, awaiting Amish (WLS-OPT-001, WLS-DDR-005)
+OPTION_VIEWS = {k: {"el": 18, "az": -40, "scale": "person", "keep_context": True, "ground_z": 0} for k in OPTIONS}
+ALLOWED_CONTACTS = [("Split pin", "Clevis pin"), ("countersunk screw", "V-block")]
+
+# key prefix -> (material in cad_parts.MATERIALS, colour or None). PVC parts use hdpe_natural (no PVC class in the
+# kit); the polycarbonate junction box body uses an opaque light grey hdpe_natural moulding, its lid clear
+# polycarbonate; boards use hdpe_recycled in board green (no FR-4 class). Masses of these parts read low.
+MAT = [
+    ("casing", "mild_steel", "#9CA3AF"), ("apron", "concrete", None), ("pump", "mild_steel", "#6B7280"), ("water", "water", None),
+    ("tube_pin", "stainless", None), ("split_pin", "stainless", None), ("tube", "hdpe_natural", "#E5E7EB"),
+    ("endcap", "hdpe_natural", "#E5E7EB"), ("probe", "stainless", None), ("gasket", "epdm", None), ("wraps", "epdm", None),
+    ("seal_", "hdpe_natural", "#2563EB"), ("spigot_", "hdpe_natural", "#2563EB"), ("spig_screw", "stainless", None),
+    ("rim_band", "stainless", None), ("collar", "aluminium", None), ("cap", "hdpe_natural", "#E5E7EB"),
+    ("cross_bolt", "stainless", None), ("grip", "stainless", None), ("padlock", "stainless", None), ("sec_screw", "stainless", None),
+    ("connector", "zinc_plated", None), ("flex", "matte_black", None), ("coupling", "zinc_plated", None),
+    ("conduit", "galvanised", None), ("saddle_fix", "stainless", None), ("saddles", "galvanised", None), ("post_cap", "hdpe_black", None),
+    ("post", "galvanised", None), ("footing", "concrete", None), ("jplate", "aluminium", None), ("vblock_screw", "stainless", None),
+    ("vblock", "aluminium", None), ("jbands", "stainless", None), ("jbody", "hdpe_natural", "#C9CED6"), ("jlid", "polycarbonate", None),
+    ("jlugs", "hdpe_natural", "#C9CED6"), ("lug_", "stainless", None), ("hub", "zinc_plated", None), ("glands", "hdpe_black", None),
+    ("breather", "hdpe_natural", "#F59E0B"), ("hasp", "stainless", None), ("iplate_screw", "zinc_plated", None),
+    ("iplate", "hdpe_black", None), ("baro_screw", "stainless", None), ("baro", "hdpe_natural", "#F3F4F6"),
+    ("cable", "epdm", "#111827"), ("fieldnode", "hdpe_natural", "#D1D5DB"), ("fnd_bands", "stainless", None), ("lead", "epdm", "#374151"),
+]
+OPT_MAT = {}      # options B and C: key -> (material, colour)
+
+
+def _material(key):
+    for table in (OPT_MAT, BOARD_MAT):
+        if key in table:
+            return table[key]
+    for pre, mat, col in MAT:
+        if key.startswith(pre):
+            return mat, col
+    raise KeyError(f"no material for model key '{key}'")
+
+
+def _put(C, key, name, shape, kind, material, color=None, group="option"):
+    C[key] = Comp(name, shape, None, kind, group)
+    OPT_MAT[key] = (material, color)
+
+
+def _drop(C, *prefixes):
+    for k in [k for k in C if any(k == p_ or (p_.endswith("*") and k.startswith(p_[:-1])) for p_ in prefixes)]:
+        del C[k]
+
+
+def _service_loop(p, D, r):
+    """The service loop coil in the junction box and its run from the hub, for a line or cable of radius r."""
+    from build123d import Pos, Rot, Torus, Sphere
+    jl, jwall = p["jlid"], p["jwall"]
+    coil_r, coil_b, _ = p["coil"]
+    xcoil = D["jbox_front"] - jl - coil_b - 4
+    zcoil = D["jbox_top"] - jwall - coil_b - coil_r - 2
+    hx, jb = D["hub_x"], D["jbox_bot"]
+    coil = Pos(xcoil, 0, zcoil) * Rot(0, 90, 0) * Torus(coil_r, r)
+    tie = tube((hx, 0, jb + 10), (xcoil, 0, zcoil - coil_r), r) + Pos(hx, 0, jb + 10) * Sphere(r)
+    return coil + tie, (xcoil, zcoil, coil_r)
+
+
+def _surface_run(p, D, z_start, r):
+    """A line or cable from z_start on the tube axis up through the cap, the flexible tail, the rigid conduit and
+    the hub into the junction box (the route of the vented cable in option A)."""
+    tx, cz, x0, hx = p["tube_x"], p["cable_z"], p["rigid_x0"], D["hub_x"]
+    return (swept_pipe([(tx, 0, z_start), (tx, 0, cz), (x0, 0, cz)], r, bend=60.0)
+            + swept_pipe([(x0, 0, cz), (hx, 0, cz), (hx, 0, D["jbox_bot"] + 10)], r, bend=p["bend_r"]))
+
+
+def _boards(C, p, D, boards, extra_holes=()):
+    holes = list(extra_holes)
+    for key, spec in boards.items():
+        parts, h = board_parts(p, D, key, spec)
+        holes += h
+        for k, nm, shp, kind, mat, col in parts:
+            _put(C, f"bd_{k}", nm, shp, "fixing" if kind == "fastener" else "bought", mat, col, "board")
+    _put(C, "bd_iplate", "Internal plate", internal_plate(p, D, holes), "made", "hdpe_black", None, "board")
+    for i, s in enumerate(plate_screws(p, D), 1):
+        _put(C, f"bd_iplate_screw_{i}", "M3x8 pan head screw (ISO 7045), internal plate", s, "fixing", "zinc_plated", None, "board")
+
+
+def _option_b(C, p=PARAMS):
+    """Option B, bubbler: A's wellhead, tube, cap, post and box; the probe and vented cable give way to a
+    stainless bubbler weight on a 1/4 in PE air line, and the boost and ADC boards to a pump, a manifold with a
+    vent valve and a gauge sensor board."""
+    import cad_parts as cp
+    import wls_parts as wp
+    from build123d import Pos, Rot
+    D = derived(p)
+    _drop(C, "probe", "cable", "mod_*", "iplate", "iplate_screw_*")
+    tx = p["tube_x"]
+    z0 = D["probe_bot"]
+    w = cyl(10.0, z0 + 30, z0 + 130, x=tx) - cyl(2.15, z0 + 25, z0 + 131, x=tx)
+    w = cp.break_edges(w, 0.8) + ring(10.0, 7.0, z0, z0 + 30, x=tx)
+    for a in (0, 90):
+        w = w - Pos(tx, 0, z0 + 8) * Rot(0, 0, a) * Rot(0, 90, 0) * cyl(2.0, -11, 11)       # orifice ports in the bell
+    w = w + cyl(5.0, z0 + 130, z0 + 138, x=tx) + cyl(2.15, z0 + 138, z0 + 140, x=tx)         # union nut and barb
+    _put(C, "bub_weight", "Bubbler weight and orifice bell, 316 stainless, 20 x 140 mm", w, "bought", "stainless")
+    r_line = 3.175
+    loop, (xcoil, zcoil, coil_r) = _service_loop(p, D, r_line)
+    xb, jw_ = D["jbox_back"], p["jwall"]
+    xi = xb + jw_ + p["iboss"][2]
+    xm = xi + p["iplate"][2]
+    zc_y = zcoil - math.sqrt(coil_r ** 2 - 38.0 ** 2)
+    to_man = polyline_tube([(xcoil, 38.0, zc_y), (xm + 24.0, 38.0, 1240.0)], r_line)
+    _put(C, "bub_line", "Air line, 1/4 in (6.35 x 4.3 mm) PE, with its service loop", _surface_run(p, D, z0 + 140, r_line) + loop + to_man,
+         "bought", "hdpe_natural", "#D9F99D")
+    X, NX = (1, 0, 0), (-1, 0, 0)
+    # pump: vertical can and head, barbs on top, desiccant inlet filter on the inlet barb
+    yp, zp = -27.0, 1226.0
+    xc = xm + 15.0
+    pump = cyl(13.5, zp, zp + 40, x=xc, y=yp)
+    pump = cp.break_edges(pump, 1.0) + cp.break_edges(bx(xm + 3, xm + 27, yp - 13.5, yp + 13.5, zp + 40, zp + 60), 1.5)
+    pump = pump + cyl(1.6, zp + 60, zp + 68, x=xc, y=yp + 6) + cyl(1.6, zp + 60, zp + 68, x=xc, y=yp - 6)
+    _put(C, "bub_pump", "12 V miniature diaphragm air pump, 0 to 150 kPa", pump, "bought", "matte_black")
+    _put(C, "bub_filter", "Desiccant inlet filter cartridge", cp.break_edges(cyl(6.0, zp + 68, zp + 93, x=xc, y=yp - 6), 1.0), "bought", "hdpe_natural", "#F59E0B")
+    zbk = (zp + 10, zp + 30)
+    band = ring(15.0, 13.5, *zbk, x=xc, y=yp) & bx(xc, xc + 16, yp - 16, yp + 16, zbk[0] - 1, zbk[1] + 1)
+    legs = bx(xm + 1.5, xc, yp + 13.5, yp + 15, *zbk) + bx(xm + 1.5, xc, yp - 15, yp - 13.5, *zbk)
+    base = bx(xm, xm + 1.5, yp - 22, yp + 22, *zbk)
+    brk = band + legs + base
+    for s in (1, -1):
+        brk = brk - xcyl(1.7, xm - 1, xm + 3, yp + s * 18.5, sum(zbk) / 2)
+    _put(C, "bub_bracket", "Pump bracket, 1.5 mm stainless sheet, folded", brk, "made", "stainless")
+    holes = []
+    for i, s in enumerate((1, -1)):
+        y_ = yp + s * 18.5
+        holes.append((y_, sum(zbk) / 2, 1.7))
+        _put(C, f"bub_bk_screw{i}", "M3x8 pan head screw (ISO 7045), pump bracket", wp.on_axis(wp.pan_screw(3, 8), (xm + 1.5, y_, sum(zbk) / 2), X), "fixing", "zinc_plated")
+        _put(C, f"bub_bk_nut{i}", "M3 hex nut (ISO 4032), pump bracket", wp.on_axis(wp.nut(3), (xi, y_, sum(zbk) / 2), NX), "fixing", "zinc_plated")
+    # manifold block with the vent valve on its front face and the line barb below it
+    man = cp.break_edges(bx(xm, xm + 16, 2.0, 42.0, 1235.0, 1255.0), 0.8)
+    for y_ in (4.0, 38.0):
+        man = man - xcyl(1.7, xm - 1, xm + 17, y_, 1250.0)
+    for y_ in (10.0, 30.0):
+        man = man - xcyl(1.5, xm + 6, xm + 16.01, y_, 1245.0)                                    # valve screw bores
+    man = man + cyl(1.6, 1255.0, 1262.0, x=xm + 8, y=10.0) + cyl(1.6, 1255.0, 1262.0, x=xm + 8, y=30.0)
+    man = man + xcyl(1.6, xm + 16, xm + 24, 38.0, 1240.0)
+    _put(C, "bub_manifold", "Air manifold, 40 x 20 x 16 mm aluminium block, drilled, with barbs", man, "made", "aluminium")
+    for i, y_ in enumerate((4.0, 38.0)):
+        holes.append((y_, 1250.0, 1.7))
+        _put(C, f"bub_mf_screw{i}", "M3x22 pan head screw (ISO 7045), manifold", wp.on_axis(wp.pan_screw(3, 22), (xm + 16, y_, 1250.0), X), "fixing", "zinc_plated")
+        _put(C, f"bub_mf_nut{i}", "M3 hex nut (ISO 4032), manifold", wp.on_axis(wp.nut(3), (xi, y_, 1250.0), NX), "fixing", "zinc_plated")
+    fl = bx(xm + 16, xm + 18, 8.0, 32.0, 1237.0, 1253.0)
+    for y_ in (10.0, 30.0):
+        fl = fl - xcyl(1.7, xm + 15, xm + 19, y_, 1245.0)
+    valve = fl + cp.break_edges(bx(xm + 18, xm + 30, 14.0, 26.0, 1238.0, 1252.0), 1.0) + cp.break_edges(xcyl(6.0, xm + 30, xm + 40, 20.0, 1245.0), 0.8)
+    _put(C, "bub_valve", "12 V 2/2 solenoid vent valve, manifold mount", valve, "bought", "matte_black")
+    for i, y_ in enumerate((10.0, 30.0)):
+        _put(C, f"bub_vv_screw{i}", "M3x10 pan head screw (ISO 7045), vent valve", wp.on_axis(wp.pan_screw(3, 10), (xm + 18, y_, 1245.0), X), "fixing", "zinc_plated")
+    # sensor and regulator board, with the gauge sensor's barb pointing down to the manifold
+    spec = ("Gauge pressure sensor and 3.3 V regulator board", 26.0, 1293.0, 20.0, 30.0, 14.0,
+            [("ic", (6.5, 3.5, 1.6), (-4.0, -8.0)), ("cap", (2.5, 5.0), (5.0, -9.0)), ("ic", (3.0, 3.0, 1.0), (-5.0, 8.0))])
+    boards = {"sens": spec, "strip": BOARDS_A["strip"]}
+    xp = xm + STANDOFF_H + 1.6
+    sens = cp.break_edges(bx(xp, xp + 6, 22.0, 30.0, 1293.0, 1301.0), 0.6) + cyl(1.6, 1286.0, 1293.0, x=xm + 11, y=26.0)
+    _put(C, "bub_sensor", "Gauge pressure sensor, 0 to 150 kPa, 0.25 % class, with barb", sens, "bought", "matte_black")
+    t1 = polyline_tube([(xc, yp + 6, zp + 68), (xc, yp + 6, 1306.0), (xc, 10.0, 1306.0), (xm + 8, 10.0, 1300.0), (xm + 8, 10.0, 1262.0)], 2.0)
+    t2 = polyline_tube([(xm + 11, 26.0, 1286.0), (xm + 11, 26.0, 1270.0), (xm + 8, 30.0, 1266.0), (xm + 8, 30.0, 1262.0)], 2.0)
+    _put(C, "bub_tube1", "Pump to manifold tube, 4 mm PU", t1, "bought", "hdpe_natural", "#93C5FD")
+    _put(C, "bub_tube2", "Sensor to manifold tube, 4 mm PU", t2, "bought", "hdpe_natural", "#93C5FD")
+    _boards(C, p, D, boards, holes)
+    return C
+
+
+def _option_c(C, p=PARAMS):
+    """Option C, acoustic sounder: A's wellhead, tube, post and box; the probe, cable, grip and cap give way to a
+    sounder head on the tube (loudspeaker, microphone board, retaining ring), a 4-core signal cable and a
+    ranging board in the junction box. The eye bolt and padlock pass through the head's socket and the tube."""
+    import cad_parts as cp
+    import wls_parts as wp
+    from build123d import Pos, Rot, Cone, Torus, Sphere
+    D = derived(p)
+    _drop(C, "probe", "cable", "grip", "cap", "cross_bolt", "padlock_cap", "padlock_cap_shackle", "eye_void", "connector", "flex",
+          "mod_*", "iplate", "iplate_screw_*")
+    tx, T = p["tube_x"], p["tube_top"]
+    to, ti = p["tube_od"] / 2, p["tube_id"] / 2
+    cod, csock = p["cap"][0], p["cap"][1]
+    e, zb = 9.0, T - 10.0
+    # head body: socket over the tube end, a stop, a 2 in chamber and a top plate for the conduit connector
+    R_o, R_i, H = 24.15, 20.45, 60.0                              # 1-1/2 in Sch 40 chamber (48.3 x 3.7 mm), clear of the pump cable
+    body = ring(cod / 2, to, T - csock, T, x=tx) + ring(R_o, ti, T, T + 3, x=tx) + ring(R_o, R_i, T + 3, T + 3 + H, x=tx)
+    body = body + cyl(R_o, T + 3 + H, T + 8 + H, x=tx) - cyl(p["cap_hole"] / 2, T + 2 + H, T + 9 + H, x=tx)
+    body = body - ycyl(2.6, -cod, cod, tx + e, zb)
+    for a in (90, 210, 330):                                      # radial screw holes for the retaining ring
+        body = body - Pos(tx, 0, T + 8) * Rot(0, 0, a) * Rot(0, 90, 0) * cyl(1.6, R_i - 1, R_o + 1)
+    _put(C, "snd_head", "Sounder head: 1 in socket, 2 in chamber and top plate, PVC, drilled", body, "made", "hdpe_natural", "#E5E7EB", "cap")
+    C["tube"].shape = C["tube"].shape - ycyl(2.6, -to - 2, to + 2, tx + e, zb)
+    # loudspeaker facing down the tube, on the floor of the chamber; retaining ring; microphone board
+    frame = ring(18.0, 13.5, T + 3, T + 6, x=tx)
+    cone = Pos(tx, 0, T + 3) * Cone(13.5, 5.0, 3.0, align=None)
+    spk = frame + cone + cyl(8.0, T + 6, T + 15, x=tx)
+    _put(C, "snd_speaker", "Loudspeaker, 36 mm, IP67, 8 ohm 1 W", spk, "bought", "matte_black", None, "cap")
+    rr = ring(R_i, 16.0, T + 6, T + 10, x=tx)
+    for a in (90, 210, 330):
+        rr = rr - Pos(tx, 0, T + 8) * Rot(0, 0, a) * Rot(0, 90, 0) * cyl(1.5, 16.0, R_i + 0.1)
+    rr = rr - cyl(1.0, T + 6, T + 10.01, x=tx - 18, y=0)
+    _put(C, "snd_ring", "Speaker retaining ring, printed ASA", cp.break_edges(rr, 0.4), "made", "hdpe_black", None, "cap")
+    for i, a in enumerate((90, 210, 330)):
+        d_ = (math.cos(math.radians(a)), math.sin(math.radians(a)), 0)
+        _put(C, f"snd_rs{i}", "M3x8 pan head screw (ISO 7045), retaining ring", wp.on_axis(wp.pan_screw(3, 8), (tx + R_o * d_[0], R_o * d_[1], T + 8), d_), "fixing", "stainless", None, "cap")
+    mb = wp.pcb(8.0, 8.0, 1.6, holes=[(-3.0, 0.0, 2.2)])
+    _put(C, "snd_mic_pcb", "Microphone board, 8 x 8 mm", Pos(tx - 15, 0, T + 10) * mb, "bought", "hdpe_recycled", "#1F5F3A", "cap")
+    _put(C, "snd_mic", "MEMS microphone, bottom port", Pos(tx - 13, 0, T + 11.6) * cyl(1.5, 0, 1.2), "bought", "matte_black", None, "cap")
+    _put(C, "snd_mic_screw", "M2x5 pan head screw (ISO 7045), microphone board", Pos(tx - 18, 0, T + 11.6) * wp.pan_screw(2, 5), "fixing", "stainless", None, "cap")
+    # eye bolt through the socket and the tube, with the padlock hung through its eye (as option A)
+    er, ew = p["eye"]
+    bolt = ycyl(2.5, -cod / 2 - 4, cod / 2 + 4, tx + e, zb) + ycyl(4.5, cod / 2 + 0.1, cod / 2 + 4, tx + e, zb) + ycyl(4.5, -cod / 2 - 4, -cod / 2 - 0.1, tx + e, zb)
+    ye = cod / 2 + 4.0 + er + ew - 0.2
+    bolt = bolt + Pos(tx + e, ye, zb) * Rot(0, 90, 0) * Torus(er, ew)
+    _put(C, "snd_eyebolt", "M5 eye bolt with nyloc nut, through the head and the tube", bolt, "fixing", "stainless", None, "cap")
+    pw, pwy, pwz = p["padlock"]
+    sr_, sleg, sspan = p["shackle"]
+    xc_, zbar = tx + e, zb - 1.5
+    shackle = xcyl(sr_, xc_ - sspan, xc_ + sspan, ye, zbar)
+    for s in (1, -1):
+        shackle = shackle + cyl(sr_, zbar - sleg, zbar, x=xc_ + s * sspan, y=ye) + Pos(xc_ + s * sspan, ye, zbar) * Sphere(sr_)
+    lbody = cp.break_edges(bx(xc_ - pw / 2, xc_ + pw / 2, ye - pwy / 2, ye + pwy / 2, zbar - sleg - pwz, zbar - sleg), 2.0)
+    _put(C, "snd_padlock_shackle", "Padlock on the eye bolt shackle", shackle, "bought", "stainless", None, "cap")
+    _put(C, "snd_padlock", "Padlock on the eye bolt body", lbody, "bought", "stainless", None, "cap")
+    # conduit connector on the head, flexible tail to the existing rigid conduit, 4-core signal cable and loop
+    ct = T + 8 + H
+    conn = cyl(p["cap_hole"] / 2, ct - 5, ct, x=tx) + cyl(13.0, ct, ct + 20, x=tx) + cyl(13.0, ct - 8, ct - 5, x=tx)
+    conn = conn - cyl(8.0, ct - 9, ct + 21, x=tx)
+    _put(C, "snd_connector", "Flexible conduit connector on the head", conn, "bought", "zinc_plated", None, "conduit")
+    fo, fi = p["flex"]
+    flex = swept_pipe([(tx, 0, ct + 20), (tx, 0, p["cable_z"]), (p["rigid_x0"] + 30, 0, p["cable_z"])], fo / 2, fi / 2, bend=60.0)
+    _put(C, "snd_flex", "Flexible conduit tail", flex, "bought", "matte_black", None, "conduit")
+    loop, _ = _service_loop(p, D, 3.0)
+    _put(C, "snd_cable", "Signal cable, 4-core screened, 6 mm, with its service loop", _surface_run(p, D, T + 20, 3.0) + loop, "bought", "epdm", "#111827", "cable")
+    boards = {"rng": ("Acoustic ranging board (microcontroller, amplifier, codec)", -18.0, 1285.0, 40.0, 45.0, 16.0,
+                      [("ic", (7.0, 7.0, 1.0), (0.0, 4.0)), ("ic", (4.0, 4.0, 1.0), (-10.0, -8.0)), ("ic", (5.0, 4.0, 1.5), (8.0, -8.0)),
+                       ("cap", (3.0, 7.0), (10.0, 10.0)), ("header", (6, 6.0), (0.0, -15.0))]),
+              "reg": BOARDS_A["reg"], "strip": BOARDS_A["strip"]}
+    _boards(C, p, D, boards)
+    return C
+
+
+_BASE = {}
+
+
+def _base_components():
+    """build_components(PARAMS) once per run, handed out as a fresh dict of copied Comps (options edit their copy)."""
+    import dataclasses
+    if "C" not in _BASE:
+        _BASE["C"] = build_components(PARAMS)
+    return {k: dataclasses.replace(c) for k, c in _BASE["C"].items()}
+
+
+def components(option=CHOSEN):
+    """Kit 1.9: every part of one concept option as cad_parts.part() dicts (made, bought, fastener, context).
+    BOM line numbers are given for the chosen option only."""
+    import cad_parts as cp
+    C = _base_components()
+    if option == "B":
+        C = _option_b(C)
+    elif option == "C":
+        C = _option_c(C)
+    elif option != "A":
+        raise KeyError(option)
+    out = []
+    for k, c in C.items():
+        if c.kind in ("void", "view"):
+            continue
+        mat, col = _material(k)
+        kind = "fastener" if c.kind == "fixing" else c.kind
+        bom = c.bom if option == CHOSEN and kind != "context" else None
+        out.append(cp.part(c.name, c.shape, mat, kind=kind, bom=bom, group=c.group or "context", color=col))
+    return out
 
 
 # ------------------------------------------------------------------ constructability checks

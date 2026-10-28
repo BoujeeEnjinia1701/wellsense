@@ -3,9 +3,9 @@ doc_id: WLS-BLD-001
 title: WellSense prototype build plan
 project: WellSense
 doc_type: Build plan
-version: "0.2"
+version: "0.3"
 status: Draft
-date: '2026-10-02'
+date: '2026-10-25'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -17,6 +17,10 @@ revisions:
     date: '2026-10-02'
     author: Amish Chadha
     change: Locks added as decided on 2026-10-02 (security-head screw, eye bolt and padlock, hasp and padlock, Figures 9a and 23a, step 18); wiring redrawn to FieldNode's standard port pinout
+  - version: "0.3"
+    date: '2026-10-25'
+    author: Amish Chadha
+    change: Fixes under Amish's standing instruction of 2026-10-23 (WLS-DEC-001 D-S1 clevis pin through the tube on the collar, D-S2 joints wiped and a 23 mm drift pulled through); lower lug screws fitted from the front, clear of the gland; pictures regenerated from the kit 1.9 model
 ---
 
 # WellSense prototype build plan
@@ -304,11 +308,13 @@ The gasket lies on the casing rim and the plate halves lie on the gasket, their 
 
 **How to make it.**
 
-1. Work out the length: the probe depth plus 0.5 m below the probe plus 0.11 m above the casing top. Join 3 m lengths with solvent-weld couplings, wiping the inside of each joint smooth.
+1. Work out the length: the probe depth plus 0.5 m below the probe plus 0.11 m above the casing top. Join 3 m lengths with solvent-weld couplings, wiping the inside of each joint smooth while the cement is wet, so no bead stands proud of the bore (WLS-DEC-001 D-S2).
 2. Over the bottom 0.5 m, drill ten rings of 8 mm holes 50 mm apart, the first 40 mm up from the end. Each ring is two holes drilled straight through at right angles (four holes); turn the next ring 45°. Hold the tube in a V-block to drill.
 3. Deburr each hole inside with a round file.
 4. Solvent-weld the slip cap on the bottom end and drill one 8 mm drain hole in it.
 5. Cut the top square and deburr.
+6. Pull a 23 mm drift (a 300 mm hardwood or PVC dowel turned to 23 mm, on a cord) through the whole string from end to end. If it snags, find the joint and clear the bead. The 22 mm probe has 2.3 mm radial clearance at the nominal bore but only 1.24 mm at a bead in the thickest pipe (WLS-CAL-001 [D9]).
+7. After step 14 sets the tube height, drill one 5.2 mm hole through the tube on a chord 9 mm off its axis (on the side away from the riser), its centre 6.7 mm above the collar's top face, for the clevis pin (WLS-DEC-001 D-S1).
 
 **How it fits the parts next to it.**
 
@@ -318,7 +324,7 @@ The gasket lies on the casing rim and the plate halves lie on the gasket, their 
 
 The tube hangs beside the riser, 32 mm clear of it and 18 mm from the casing wall, from a collar resting on the seal plate.
 
-**Check before moving on.** A 22 mm rod drops through the whole tube freely.
+**Check before moving on.** The 23 mm drift passes the whole string freely.
 
 ### 3.9 Tube cap with eye bolt and support grip
 
@@ -402,7 +408,7 @@ Fit the modules and terminal strip on M3 screws and standoffs and wire them as F
 
 ![Step 5](05-build-plan/step-05.png)
 
-Hold the box flat on the front of the plate, centred, its bottom 310 mm up the plate. Four M5 button-head screws through the lugs from behind the plate, nyloc nuts in front, snug.
+Hold the box flat on the front of the plate, centred, its bottom 310 mm up the plate. Four M5 x 16 button-head screws through the lugs and plate: the two upper ones from behind the plate with their nyloc nuts in front, the two lower ones from the front with their nuts behind the plate, because the M16 gland body below the box floor sits where a screw's tail would be. Snug.
 
 ### Step 6: internal plate into the box
 
@@ -456,7 +462,7 @@ Lay the gasket on the casing rim. Wrap one turn of EPDM round the riser, the pum
 
 ![Step 14](05-build-plan/step-14.png)
 
-Put the band round the rim and tighten it with the security-head bit until the halves meet. Set the tube so its top is 110 mm above the casing top, clamp the collar on the tube and let it rest on the plate.
+Put the band round the rim and tighten it with the security-head bit until the halves meet. Set the tube so its top is 110 mm above the casing top, clamp the collar on the tube and let it rest on the plate. Drill the 5.2 mm chord hole 6.7 mm above the collar (section 3.8, item 7), push the 5 mm stainless clevis pin through and fit its split pin; the pin sits 2 mm clear of the collar and takes the string only if the collar's grip slips (WLS-DEC-001 D-S1).
 
 ### Step 15: thread the cable
 
@@ -497,7 +503,7 @@ These are the checks a TRL 4 test report would record; this plan only lists them
 | Loop reading | R3, R4 | Loop calibrator at 4, 12 and 20 mA; read the ADC | Within 0.1 % of 0.60, 1.80 and 3.00 V across the shunt |
 | ADC protection | R4 | Calibrator at 25 mA | ADC input stays below its 3.6 V limit |
 | Barometric sensor | R15 | Read it over I2C with the box shut | Within 1 hPa of a reference barometer |
-| Two-point calibration lift | R4 | Undo the tail's connector at the cap, lift cap and probe 1 m, read, lower, reconnect | The service loop feeds the 1 m without pulling on the terminals |
+| Calibration: offset by tape, 1 m lift as a response check (span from the probe's certificate, WLS-DEC-001 D-S3) | PR-004 (R4) | Undo the tail's connector at the cap, lift cap and probe 1 m, read, lower, reconnect | The service loop feeds the 1 m without pulling on the terminals |
 | Fixings | R16 | Push on the box, conduit and FieldNode core by hand | Nothing moves at any joint; the conduit does not touch the riser |
 | Locks | R16 | With both padlocks shut, try to lift the lid, turn the eye bolt and undo the rim band screw with ordinary tools | None of the three can be undone; the one key opens both padlocks |
 | Installation time | R11 | Time steps 12 to 18 with two people | 2 h or less at a well with the tube already in place |

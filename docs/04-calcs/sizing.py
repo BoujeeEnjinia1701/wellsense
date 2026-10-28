@@ -1,4 +1,5 @@
-"""WellSense sizing calculations, WLS-CAL-001 v0.5 (TRL 3, WLS-DDR-002 and WLS-DDR-004 applied; locking added under WLS-DEC-001, 2026-10-02).
+"""WellSense sizing calculations, WLS-CAL-001 v0.6 (TRL 3, WLS-DDR-002 and WLS-DDR-004 applied; locking added under WLS-DEC-001, 2026-10-02;
+tube pin and worst-case tube bore added under the fix rule, WLS-DEC-001 D-S1 and D-S2, 2026-10-25).
 
 Run from the repo root:  python docs/04-calcs/sizing.py
 Prints every number quoted in docs/04-calcs/01-sizing.md. Each line carries a tag such as
@@ -49,7 +50,9 @@ READ_DAY = 96              # 15 min default (D5)
 READ_TEST = 1440           # 1 min during a pumping test
 BYTES_STORED = 32          # FieldNode record size (FND-CAL-001)
 FLASH = 16 * 1024 * 1024   # bytes, FieldNode SPI flash
-# accuracy budget (0.25 % class, after two-point field calibration)
+# accuracy budget (0.25 % class): offset from the installation tape reading, span from the probe's per-unit factory
+# calibration certificate (WLS-DEC-001 D-S3); a 1 m lift cannot fix span to the needed accuracy
+SPAN_CERT = 0.0010         # fraction of reading, per-unit certificate span uncertainty (typical, to confirm with the supplier)
 NL = {"0.25 % class": 0.0010, "0.5 % class": 0.0020}  # nonlinearity, hysteresis, repeatability, fraction of FS
 TC_PROBE = 0.0002          # fraction of FS per K, compensated thermal effect
 DT_GW = 2.0                # K, groundwater temperature change after calibration
@@ -93,7 +96,7 @@ def airtime(pl, sf=9, bw=125e3, cr=1, npre=8, header=True, crc=True):
     return (npre + 4.25) * ts + n * ts
 
 
-print("WellSense sizing, WLS-CAL-001 v0.4")
+print("WellSense sizing, WLS-CAL-001 v0.6")
 print(f"Model: casing {P['casing_id']:.0f} mm bore, tube {P['tube_od']} x {P['tube_id']} mm, probe {P['probe'][0]:.0f} x {P['probe'][1]:.0f} mm; "
       f"design probe depth {DS['probe_depth_m']:.0f} m (to {DS['probe_depth_max_m']:.0f} m)")
 
@@ -120,6 +123,8 @@ tag("B1", f"Loop at {I_MAX * 1000:.0f} mA, {L_loop:.0f} m cable ({r_cable:.1f} o
     f"against {V_MIN_TX:.0f} V minimum (short by {V_MIN_TX - v_tx_direct:.2f} V); with a {V_BOOST:.0f} V boost it gets {v_tx_boost:.2f} V (margin {v_tx_boost - V_MIN_TX:.2f} V)")
 v_adc_max = 0.025 * R_SHUNT
 tag("B1b", f"Shunt voltage at a 25 mA fault is {v_adc_max:.2f} V, above the ADC's 3.6 V limit at 3.3 V supply; a series input resistor is needed")
+i_sh = V_BOOST / (R_SHUNT + r_cable)
+tag("B1c", f"Cable short (WLS-DEC-001 D-S4): the boost across the shunt drives {i_sh * 1000:.0f} mA, {i_sh ** 2 * R_SHUNT:.1f} W in the shunt; a 50 mA resettable fuse (PTC) in the loop trips within about 1 s, and the 22 mA loop stays below its hold current")
 e_loop = V_BOOST * I_MAX * T_ON / ETA_BOOST / ETA_RAIL
 e_ctrl = CTRL[0] * CTRL[1] * T_ON
 e_read = e_loop + e_ctrl
@@ -132,10 +137,10 @@ e_trl2 = 12 * I_MAX * T_ON / 0.80
 tag("B5", f"TRL 2 figure for comparison: {e_trl2:.2f} J per reading, {e_trl2 * READ_DAY / 3600 * 1000:.0f} mWh/day (12 V direct, 80 %)")
 
 # ------------------------------------------------------------------ C. Accuracy (R4, R5)
-print("\nC. Accuracy after two-point field calibration")
+print("\nC. Accuracy after field calibration (offset by tape, span by certificate)")
 lat_g = (g_lat(0), g_lat(45), g_lat(60))
 tag("C1", f"Gravity {lat_g[0]:.4f} m/s2 at the equator, {lat_g[1]:.4f} at 45 deg, {lat_g[2]:.4f} at 60 deg: "
-    f"using standard g misreads 10 m by {(G0 / lat_g[0] - 1) * RANGE_M * 1000:+.0f} mm at the equator; firmware uses local g, and calibration absorbs the rest")
+    f"using standard g reads 10 m about {(G0 / lat_g[0] - 1) * RANGE_M * 1000:.0f} mm low at the equator; firmware uses local g, and the offset calibration absorbs the rest")
 r4, r15, r25 = rho_water(4), rho_water(15), rho_water(25)
 tag("C2", f"Density {r4:.2f} kg/m3 at 4 degC, {r15:.2f} at 15 degC, {r25:.2f} at 25 degC: {(r4 / r25 - 1) * 100:.2f} % or {(r4 / r25 - 1) * RANGE_M * 1000:.0f} mm at 10 m across 4 to 25 degC")
 d_rho = abs(rho_water(15 + DT_GW) - r15) / r15 * RANGE_M
@@ -144,6 +149,7 @@ budget = {}
 for cls, nl in NL.items():
     terms = {
         "nonlinearity, hysteresis, repeatability": nl * RANGE_M,
+        "span from the factory certificate, at full head": SPAN_CERT * RANGE_M,
         f"probe thermal effect, {DT_GW:.0f} K": TC_PROBE * DT_GW * RANGE_M,
         f"density at a fixed site value, {DT_GW:.0f} K": d_rho,
         f"shunt drift, {DT_BOX:.0f} K": TC_SHUNT * DT_BOX * k_i * RANGE_M,
@@ -156,9 +162,13 @@ for cls, nl in NL.items():
 terms, rss, tot = budget["0.25 % class"]
 for i, (k, v) in enumerate(terms.items(), 1):
     tag(f"C3.{i}", f"{k}: {v * 1000:.1f} mm")
-tag("C4", f"0.25 % class after two-point calibration: RSS {rss * 1000:.1f} mm, worst-case sum {tot * 1000:.1f} mm (target 20 mm)")
+tag("C4", f"0.25 % class, offset by tape and span by certificate: RSS {rss * 1000:.1f} mm, worst-case sum {tot * 1000:.1f} mm (target 20 mm)")
 _, rss5, tot5 = budget["0.5 % class"]
-tag("C5", f"0.5 % class after two-point calibration: RSS {rss5 * 1000:.1f} mm, worst-case sum {tot5 * 1000:.1f} mm")
+tag("C5", f"0.5 % class, offset by tape and span by certificate: RSS {rss5 * 1000:.1f} mm, worst-case sum {tot5 * 1000:.1f} mm")
+span_lift = math.sqrt(2 * TAPE ** 2 + 2 * (NL["0.25 % class"] * RANGE_M) ** 2) / 1.0
+tag("C4b", f"Rejected (WLS-DEC-001 D-S3): span from a 1 m lift has two tape readings (+/-{TAPE * 1000:.0f} mm) and two probe repeatability terms "
+    f"(+/-{NL['0.25 % class'] * RANGE_M * 1000:.0f} mm) over 1 m, {span_lift * 100:.1f} % of span, {span_lift * RANGE_M * 1000:.0f} mm at 10 m; "
+    f"tape checks at levels at least 3 m apart refine the span to {math.sqrt(2) * TAPE / 3.0 * 100:.2f} % from the tape alone")
 tag("C6", f"Datasheet only, no field calibration: {0.0050 * RANGE_M * 1000:.0f} mm (0.5 % class), {0.0025 * RANGE_M * 1000:.0f} mm (0.25 % class)")
 tag("C7", f"Absolute sensor without compensation, +/-3 kPa weather: +/-{3000 / (1000 * G0) * 1000:.0f} mm")
 tag("C8", f"Drift: with a tape check every quarter, a transducer drifting 20 mm a year leaves at most {20 / 4:.0f} mm uncorrected between checks, "
@@ -200,6 +210,17 @@ tag("D7", f"Locking (WLS-DEC-001): the padlock hangs from the eye bolt with {w_p
     f"({(w_cable + w_pad) / a_bolt:.2f} MPa); the cap still lifts off the tube once the padlock is open, so the padlock stops the eye bolt being unscrewed and the "
     f"grip and probe being freed, and the lockable steel wellhead cover is what stops the cap being lifted at exposed sites")
 
+# WLS-DEC-001 D-S1 (fix rule, 2026-10-25): clevis pin through the tube on the collar (STM S14)
+pin_d = P["tube_pin"][0]
+wall_t = (P["tube_od"] - P["tube_id"]) / 2
+grip0 = 0.25 * 2 * 2.0 / (0.2 * 0.006)
+tag("D8", f"Tube retention (WLS-DEC-001 D-S1): the collar's friction on PVC, about {grip0:.0f} N new at a reduced 2 N m on an M6 clamp screw, falls to about "
+    f"{grip0 / 3:.0f} N as the PVC relaxes, short of 3 x {w_tube:.0f} N; a {pin_d:.0f} mm stainless clevis pin through the tube just above the collar takes the load if the grip slips: "
+    f"PVC bearing {w_tube / (2 * pin_d * wall_t):.1f} MPa, pin double shear {w_tube / (2 * math.pi / 4 * pin_d ** 2):.1f} MPa")
+bore_min = P["tube_od"] - 0.13 - 2 * (3.38 + 0.51)
+tag("D9", f"Worst-case bore (WLS-DEC-001 D-S2): at the thickest Sch 40 wall the bore is {bore_min:.1f} mm, leaving {(bore_min - P['probe'][0]) / 2:.2f} mm radial for a 22 mm probe and "
+    f"{(bore_min - P['probe'][0]) / 2 - 0.5:.2f} mm at a 0.5 mm cement bead; joints are wiped inside and a 23 mm drift is pulled through the string before the probe goes in")
+
 # ------------------------------------------------------------------ E. Storage and airtime (R6, R7)
 print("\nE. Storage and airtime")
 yr = READ_DAY * 365
@@ -226,7 +247,7 @@ print("\nG. Installation time with an access tube already in place")
 steps_min = [("Isolate and lock off the pump, open the wellhead", 10), ("Disinfect probe and cable", 15),
              ("Fit the split seal plate round the riser", 20), ("Lower the probe, set the hanger", 10),
              ("Tape datum at the measuring point", 10), ("Fit junction box and FieldNode on a set post", 20),
-             ("Wire, seal glands, fit desiccant", 15), ("Two-point calibration (probe lifted 1 m)", 15),
+             ("Wire, seal glands, fit desiccant", 15), ("Offset calibration against the tape, 1 m lift as a response check", 15),
              ("Confirm an uplink", 5), ("Fit the two padlocks and check that one key opens both", 5)]
 t_inst = sum(m for _, m in steps_min)
 tag("G1", f"Estimated {t_inst} min for two people ({len(steps_min)} steps) against 120 min, {abs(t_inst - 120)} min {'over' if t_inst > 120 else 'under'} the limit with the locks fitted; post footing set and cured on an earlier visit")
@@ -254,7 +275,7 @@ tag("H2", f"WellSense parts (lines 1 to 7, 9, 10, 13 to 16): ${c_own:.2f} agains
 c_dfc = {n: sum(line(r) for r in rows if num(r) == n) for n in (4, 5, 6, 7, 10, 14, 15)}
 c_lock = sum(line(r) for r in rows if num(r) == 16) + 1.50     # line 16 plus the eye bolt over a plain bolt in line 5
 tag("H2c", "Lines repriced or added for construction (WLS-DDR-004): " + ", ".join(f"{n} ${v:.2f}" for n, v in c_dfc.items())
-    + "; the concept total was $197.60")
+    + "; the concept total was $197.60; line 4 includes the $1.50 clevis pin of WLS-DEC-001 D-S1")
 c_conduit = sum(line(r) for r in rows if num(r) == 14)
 tag("H2d", f"Locking (WLS-DEC-001, decision 2): line 16 ${sum(line(r) for r in rows if num(r) == 16):.2f} (security-head screw and bit, two padlocks, hasp kit) and $1.50 more in line 5 for an eye bolt, ${c_lock:.2f} in all; "
     f"without the locking parts the cost would be ${c_own - c_lock:.2f}")
@@ -265,7 +286,7 @@ tag("H3", f"Depth-dependent ${per_m:.2f}/m; {('the fixed parts alone are $' + fo
 # ------------------------------------------------------------------ results table
 results = [
     ("R9", "Not met", "No drinking water certificate in hand for low-cost cable, seal or probe"),
-    ("R4", "At risk", f"RSS {rss * 1000:.1f} mm, sum {tot * 1000:.1f} mm (0.25 % class, calibrated)"),
+    ("R4", "At risk", f"RSS {rss * 1000:.1f} mm, sum {tot * 1000:.1f} mm (0.25 % class, offset by tape, span by certificate)"),
     ("R10", "At risk", f"{D['probe_clear_radial']:.1f} mm radial clearance with a 22 mm probe; tube may need the pump pulled"),
     ("R15", "At risk", "FieldNode shield at hot sites (48.5 to 52.2 degC inside at 45 degC); FieldNode rated to 45 degC ambient against 55 degC"),
     ("R16", "Met", "Cable in conduit from the tube cap to the box; by design review the seal plate, cross bolt and junction box are each lockable (security-head screw, padlock on the eye bolt, hasp and padlock); lifting the cap at exposed sites needs the steel cover"),

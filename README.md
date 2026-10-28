@@ -1,14 +1,14 @@
 # WellSense
 
-![TRL 3](https://img.shields.io/badge/TRL-3%20of%209-0F766E) ![Hardware: CERN-OHL-S-2.0](https://img.shields.io/badge/hardware-CERN--OHL--S--2.0-111827) ![Software: MIT](https://img.shields.io/badge/software-MIT-111827) [![DOI](https://zenodo.org/badge/1388478202.svg)](https://zenodo.org/badge/latestdoi/1388478202) [![REUSE compliant](https://github.com/BoujeeEnjinia1701/wellsense/actions/workflows/reuse.yml/badge.svg)](https://github.com/BoujeeEnjinia1701/wellsense/actions/workflows/reuse.yml) [![Archived in Software Heritage](https://archive.softwareheritage.org/badge/origin/https://github.com/BoujeeEnjinia1701/wellsense/)](https://archive.softwareheritage.org/browse/origin/?origin_url=https://github.com/BoujeeEnjinia1701/wellsense)
+![TRL 3](https://img.shields.io/badge/TRL-3%20of%209-0F766E) ![Hardware: CERN-OHL-S-2.0](https://img.shields.io/badge/hardware-CERN--OHL--S--2.0-111827) ![Software: MIT](https://img.shields.io/badge/software-MIT-111827) ![Stage P3](https://img.shields.io/badge/stage-P3%20design%20outputs-0F766E) [![DOI](https://zenodo.org/badge/1388478202.svg)](https://zenodo.org/badge/latestdoi/1388478202) [![REUSE compliant](https://github.com/BoujeeEnjinia1701/wellsense/actions/workflows/reuse.yml/badge.svg)](https://github.com/BoujeeEnjinia1701/wellsense/actions/workflows/reuse.yml) [![Archived in Software Heritage](https://archive.softwareheritage.org/badge/origin/https://github.com/BoujeeEnjinia1701/wellsense/)](https://archive.softwareheritage.org/browse/origin/?origin_url=https://github.com/BoujeeEnjinia1701/wellsense)
 
-**Area:** Water Security · **TRL:** 3 of 9 (proof of concept on paper) · **Value-engineering target:** $200 USD for WellSense parts (estimated $262.40), FieldNode core costed separately · **Difficulty:** 2 of 5
+**Area:** Water Security · **TRL:** 3 of 9 (proof of concept on paper) · **Value-engineering target:** $200 USD for WellSense parts (estimated $264.40), FieldNode core costed separately · **Difficulty:** 2 of 5
 
 A well and borehole water level logger with a submersible pressure sensor and FieldNode telemetry, showing seasonal drawdown so communities can manage shared groundwater.
 
 ![WellSense: well and borehole water level logger, product render](media/render-hero.png)
 
-[Exploded render](media/render-exploded.png) · [Detail render](media/render-detail.png) · [Interactive 3D model](media/viewer.html) · [Concept blueprint (PDF)](media/concept-blueprint.pdf) · [General arrangement WLS-DWG-001 (PDF)](cad/drawings/WLS-DWG-001.pdf) · [Sizing calculations](docs/04-calcs/01-sizing.md) · [Prototype build plan](docs/05-build-plan.md) · [Design decisions register](docs/06-design-decisions.md) · [Review note](docs/REVIEW.md)
+[Studio render](media/render-studio.png) · [Exploded render](media/render-exploded.png) · [Interactive 3D model](media/viewer.html) · [Concept blueprint (PDF)](media/concept-blueprint.pdf) · [General arrangement WLS-DWG-001 (PDF)](cad/drawings/WLS-DWG-001.pdf) · [STEM check](docs/01b-stem-check.md) · [Concept options](docs/02a-concept-options.md) · [Requirements](docs/03-requirements.md) · [Traceability](docs/03b-traceability.md) · [Sizing calculations](docs/04-calcs/01-sizing.md) · [Prototype build plan](docs/05-build-plan.md) · [Design decisions register](docs/06-design-decisions.md) · [Review note](docs/REVIEW.md)
 
 ## Concept rationale
 
@@ -58,29 +58,39 @@ Groundwater is falling in many regions, yet most wells have no measurement, so o
 
 A well and borehole water level logger with a submersible pressure sensor and FieldNode telemetry, showing seasonal drawdown so communities can manage shared groundwater. A vented 4 to 20 mA transducer hangs in its own access tube beside the pump, a sealed wellhead plate keeps the well clean, and the lab's FieldNode core reads it every 15 minutes and sends the level over LoRaWAN to an open dashboard.
 
-TRL 3 calculations ([WLS-CAL-001](docs/04-calcs/01-sizing.md)): 0.52 mm resolution; 12.5 mm accuracy by root sum square after a two-point tape calibration with a 0.25 % class probe, 27.1 mm worst case, so the ±20 mm target is at risk; a 24 V boost on the interface board, because FieldNode's 12 V rail cannot drive the loop; 38.2 mWh a day of sensor energy, 1.6 % of FieldNode's allowance; a 22 mm probe with 2.3 mm radial clearance in the 1 in access tube; and $262.40 in WellSense parts at a 30 m probe depth for the constructable design with its locks, against a $200 value-engineering target, a hypothetical control target ($401.40 with the FieldNode core). Eight of sixteen requirements are met on paper; drinking water evidence (R9) is not. See the [design precis](docs/02-concept.md), [requirements](docs/03-requirements.md) and decision records [WLS-DDR-001](docs/decisions/0001-trl2-review-decisions.md), [WLS-DDR-002](docs/decisions/0002-recommendations-accepted.md) [WLS-DDR-003](docs/decisions/0003-panel-tilt-direction.md) and [WLS-DDR-004](docs/decisions/0004-design-for-construction.md).
+TRL 3 calculations ([WLS-CAL-001](docs/04-calcs/01-sizing.md)): 0.52 mm resolution; 16.0 mm accuracy by root sum square with a 0.25 % class probe calibrated for offset against a tape and for span by its factory certificate, 37.1 mm worst case, so the ±20 mm target is at risk; a 24 V boost on the interface board, because FieldNode's 12 V rail cannot drive the loop; 38.2 mWh a day of sensor energy, 1.6 % of FieldNode's allowance; a 22 mm probe with 2.3 mm radial clearance in the 1 in access tube; and $264.40 in WellSense parts at a 30 m probe depth for the constructable design with its locks, against a $200 value-engineering target, a hypothetical control target ($403.40 with the FieldNode core). Ten of eighteen product requirements are met on paper or by design; drinking water evidence (PR-009) is not. See the [design precis](docs/02-concept.md), [user requirements](docs/03a-user-requirements.md), [product requirements](docs/03-requirements.md) and decision records [WLS-DDR-001](docs/decisions/0001-trl2-review-decisions.md), [WLS-DDR-002](docs/decisions/0002-recommendations-accepted.md) [WLS-DDR-003](docs/decisions/0003-panel-tilt-direction.md) and [WLS-DDR-004](docs/decisions/0004-design-for-construction.md).
 
 Full design precis: [docs/02-concept.md](docs/02-concept.md)
+
+## STEM check
+
+Twenty-eight claims of the current design are checked against known science ([WLS-STM-001](docs/01b-stem-check.md)): 25 are within known science and 3 need data at TRL 4 (calibrated accuracy and long-term drift of a low-cost probe, and the junction box temperature in full sun), so the check stays open. Four details failed, two found by the author and two by an independent reviewer, and were fixed under Amish's standing instruction of 2026-10-23 ([WLS-DEC-001](docs/06-design-decisions.md) D-S1 to D-S4): a stainless clevis pin now backs up the tube collar, whose grip on PVC creeps; the tube joints are wiped and a 23 mm drift is pulled through the string so the 22 mm probe cannot snag; span comes from the probe's factory calibration certificate, because a 1 m lift cannot fix it to the needed accuracy; and a 50 mA resettable fuse protects the shunt if the cable cores short.
+
+## Concept options
+
+![Three ways to measure the water level in the same access tube, side by side at one scale](media/options.png)
+
+Option A, the vented transducer in an access tube (the current design, score 173 of 215), and option C, an acoustic echo sounder that times a chirp down the tube's air column (164), score within 10 %, so both go to Amish without a pick; option B, a bubbler with a surface sensor (147), uses too much energy. All three are modelled at detail level D3 ([WLS-OPT-001](docs/02a-concept-options.md), [WLS-DDR-005](docs/decisions/0005-concept-selection.md)). Proposed, awaiting Amish; the repo stays on option A.
 
 ## Key components
 
 - Vented submersible pressure transducer, 4 to 20 mA, 0 to 10 m, 0.25 % class, 22 mm diameter or less
 - Vented cable with desiccant breather
 - 25 mm PVC access tube, drilled at the bottom, with a tube cap, cross bolt and cable support grip
-- Split HDPE seal plate with spigot rings, EPDM gasket and wraps, rim band and tube collar
+- Split HDPE seal plate with spigot rings, EPDM gasket and wraps, rim band, tube collar and a stainless clevis pin through the tube
 - Galvanized conduit with a flexible tail over the surface cable from the tube cap to the junction box
 - 4 to 20 mA interface board with 24 V boost, and barometric reference sensor
 - Junction box on an aluminium plate with V-blocks and band clamps
 - FieldNode core (shared lab node, built to its own build plan) on a mounting post set in a concrete footing, with FieldNode's sun shield at hot sites
 - Open community dashboard, plus a shared manual water level tape for checks
 
-The priced bill of materials is in [bom/bom.csv](bom/bom.csv). The parametric model is `cad/src/model.py`, with STEP and STL exports in `cad/step/` and `cad/stl/`.
+The priced bill of materials is in [bom/bom.csv](bom/bom.csv). The parametric model is `cad/src/model.py` (kit 1.9: every option at detail level D3, checked by `python .kit/cad_check.py --export` into `cad/fidelity.json`), with STEP exports per part and per option in `cad/step/` and STL in `cad/stl/`.
 
 ## Building the prototype
 
 ![Every component of the WellSense prototype, pulled apart and numbered in build order](docs/05-build-plan/overview.png)
 
-The [prototype build plan](docs/05-build-plan.md) (WLS-BLD-001, plan, not yet built) shows how to make each component and fit it to the next, in 9 making sketches, 11 joint close-ups and 18 assembly steps drawn from the model. The post, junction box plate, V-blocks and conduit are sawn, drilled and bent from steel and aluminium stock; the seal plate is cut from HDPE sheet with a jigsaw; the access tube and its cap are drilled PVC; the junction box's internal plate is 3D printed; the FieldNode core is built to its own plan. Writing the plan made the design constructable: eleven changes, such as a split seal plate that fits round an installed riser, a tube collar, a cross bolt and support grip that carry the probe, a flexible conduit tail so the cap can lift for calibration, and a junction box plate on V-blocks, are recorded in [WLS-DDR-004](docs/decisions/0004-design-for-construction.md). The parts now cost about $244, $44 over the $200 value-engineering target, a hypothetical control target; the [design decisions register](docs/06-design-decisions.md) lists the savings worth trying.
+The [prototype build plan](docs/05-build-plan.md) (WLS-BLD-001, plan, not yet built) shows how to make each component and fit it to the next, in 9 making sketches, 11 joint close-ups and 18 assembly steps drawn from the model. The post, junction box plate, V-blocks and conduit are sawn, drilled and bent from steel and aluminium stock; the seal plate is cut from HDPE sheet with a jigsaw; the access tube and its cap are drilled PVC; the junction box's internal plate is 3D printed; the FieldNode core is built to its own plan. Writing the plan made the design constructable: eleven changes, such as a split seal plate that fits round an installed riser, a tube collar, a cross bolt and support grip that carry the probe, a flexible conduit tail so the cap can lift for calibration, and a junction box plate on V-blocks, are recorded in [WLS-DDR-004](docs/decisions/0004-design-for-construction.md). With the locks and the clevis pin the parts now cost $264.40, $64.40 over the $200 value-engineering target, a hypothetical control target; the [design decisions register](docs/06-design-decisions.md) lists the savings worth trying.
 
 ## Safety
 
@@ -94,7 +104,7 @@ The [prototype build plan](docs/05-build-plan.md) (WLS-BLD-001, plan, not yet bu
 
 | Folder | Contents |
 | --- | --- |
-| `docs/` | Problem, concept, requirements, calculations and design decisions |
+| `docs/` | Problem, STEM check, concept options, user and product requirements, traceability, calculations, build plan, design decisions, regulatory, feasibility, risk, market and plan |
 | `cad/src/` | build123d Python source, the source of truth for all geometry |
 | `cad/step/`, `cad/stl/` | Exported models for FreeCAD, other CAD tools and printing |
 | `cad/drawings/` | 2D sketches and dimensioned drawings |

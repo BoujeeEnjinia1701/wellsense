@@ -3,9 +3,9 @@ doc_id: WLS-PRB-001
 title: WellSense problem statement
 project: WellSense
 doc_type: Problem statement
-version: "0.6"
+version: "0.7"
 status: Draft
-date: '2026-10-02'
+date: '2026-10-25'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -33,6 +33,10 @@ revisions:
   date: '2026-10-02'
   author: Amish Chadha
   change: Partner and region answered by Amish's decision of 2026-10-02 (WLS-DEC-001)
+- version: "0.7"
+  date: '2026-10-25'
+  author: Amish Chadha
+  change: Kit 1.8 users-and-needs and stakeholder tables added (Tables 2 and 3), the source of the user requirements in WLS-URS-001; requirements now in WLS-PRS-001
 ---
 
 # WellSense problem statement
@@ -49,6 +53,8 @@ Commercial water level loggers exist and work well, but they cost several hundre
 
 ## Users and context
 
+Table 1. Users and context.
+
 | User | Need | Context |
 | --- | --- | --- |
 | Village water committee or farmer group sharing an aquifer | See whether the water table is falling, how fast, and how it responds to pumping and rain; set local rules | Rural India, sub-Saharan Africa, Mexico, Middle East; shared tube wells and boreholes |
@@ -56,6 +62,28 @@ Commercial water level loggers exist and work well, but they cost several hundre
 | Farmer with a private irrigation well | Plan pumping hours and crop choice; avoid dry wells | Seasonal peaks in the dry season |
 | WASH NGO, utility or groundwater agency | Low-cost network densification between official monitoring wells | Programme monitoring, drought early warning |
 | Hydrogeology student or researcher | Open, inspectable data and hardware for teaching and small studies | Universities, schools |
+
+Table 2. Users and needs (kit 1.8; the source of the user requirements in WLS-URS-001).
+
+| User type | Goals and needs | Typical use scenario | Pain points and challenges |
+| --- | --- | --- | --- |
+| Village water committee or farmer group sharing an aquifer | A trusted, continuous record of the water table that shows whether it is falling, how fast and how it answers pumping and rain, to set local pumping rules | Monthly meeting looks at the season's curve on a phone and compares it with last year | No measurement until wells fail; official data arrive late; costly loggers belong to agencies |
+| Handpump or borehole caretaker | Early warning when the static level nears the pump intake; simple checks they can do themselves | Quarterly visit: tape reading, desiccant change, glance at the dashboard | No grid power; tampering and livestock at the wellhead; little time and few tools |
+| Farmer with a private irrigation well | Plan pumping hours and crop choice through the dry season; see drawdown and recovery | Runs a pumping test with the logger at 1 min and reads the recovery | Wells go dry at the peak of the season; deepening a well is the usual answer and is costly |
+| WASH NGO, utility or groundwater agency | Low-cost densification between official monitoring wells, with data they can merge | Installs a handful of loggers beside a programme's wells; exports CSV | Commercial loggers cost several hundred dollars before telemetry; vendor software |
+| Hydrogeology student or researcher | Open, inspectable hardware and data for teaching and small studies | Builds one in a lab, compares it with a tape and a commercial logger | Closed instruments cannot be inspected or repaired |
+
+Table 3. Stakeholders.
+
+| Stakeholder group | Role or interest | Engagement needed |
+| --- | --- | --- |
+| ACWADAM, Pune (first candidate co-design partner, WLS-DEC-001; not yet approached) | Participatory groundwater management with farmer groups on shared aquifers; sets the design well | Co-design sessions, well sizes, site access, field trial at TRL 5 |
+| Gram panchayat water committees and farmer groups | Host the wells and own the data | Consent, siting, data-sharing rules, dashboard language |
+| Well owners and pump installers or drillers | Own the pump, riser and wellhead the logger shares | Permission to open the wellhead; advice on fitting the tube beside a pump |
+| Central and state groundwater bodies (CGWB, state groundwater departments, CGWA) | Run monitoring networks and regulate extraction; CGWA's guidelines require piezometers with digital water level recorders for larger abstractors (WLS-REG-001) | Data formats; whether community data can complement official records |
+| WASH NGOs and utilities | Programme monitoring and drought warning | Pilot sites, maintenance arrangements |
+| FieldNode and TwinKit projects (same lab) | Supply the core node and the gateway | Port pinout, energy allowance, 55 degC rating (WLS-DEC-001) |
+| Helpful Engineering volunteers and universities | Build, review and teach with the design | Build reports, design suggestions |
 
 Typical wells are 100 to 200 mm (4 to 8 in) boreholes 20 to 150 m deep with a submersible pump or handpump riser inside, or large-diameter dug wells. Static water levels lie from a few metres to more than 50 m below ground, with seasonal swings of several metres in intensively pumped areas. The wellhead may be exposed to sun, flooding, livestock and tampering. Mobile coverage is patchy; the lab's shared node, FieldNode, reports over LoRaWAN to a TwinKit gateway or a public network.
 
@@ -94,4 +122,4 @@ This design is for communities the author is not part of, so requirements come f
 - [ ] Identify a local partner organization (Helpful Engineering network, NGO or university)
 - [ ] Run co-design sessions with intended users; record who, where and what was learned
 - [ ] Validate load, distance, terrain and cost assumptions in the field
-- [ ] Revise requirements (REQ) from findings before freezing the design
+- [ ] Revise the user and product requirements (WLS-URS-001, WLS-PRS-001) from findings before freezing the design

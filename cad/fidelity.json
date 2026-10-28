@@ -1,0 +1,54 @@
+{
+ "level": "D3",
+ "stage": "P3",
+ "hash": "fe610974cfef7299",
+ "options": {
+  "A": {
+   "title": "Vented transducer in an access tube",
+   "parts": 132,
+   "made_or_bought": 59,
+   "fasteners": 73,
+   "welds": 0,
+   "bare": [
+    "Security-head screw on the rim band"
+   ],
+   "bare_share": 0.017,
+   "interference": [],
+   "mass_kg": 107.5,
+   "step_files": 59
+  },
+  "B": {
+   "title": "Bubbler with a surface sensor",
+   "parts": 129,
+   "made_or_bought": 58,
+   "fasteners": 71,
+   "welds": 0,
+   "bare": [
+    "Security-head screw on the rim band"
+   ],
+   "bare_share": 0.017,
+   "interference": [],
+   "mass_kg": 107.2,
+   "step_files": 0
+  },
+  "C": {
+   "title": "Acoustic echo sounder",
+   "parts": 129,
+   "made_or_bought": 58,
+   "fasteners": 71,
+   "welds": 0,
+   "bare": [
+    "Security-head screw on the rim band",
+    "MEMS microphone, bottom port"
+   ],
+   "bare_share": 0.034,
+   "interference": [],
+   "mass_kg": 106.8,
+   "step_files": 0
+  }
+ },
+ "failures": [],
+ "warnings": [],
+ "passed": true,
+ "seconds": 297.6
+}

@@ -24,7 +24,7 @@ def box(cx, cy, cz, dx, dy, dz):
     return Pos(cx, cy, cz) * Box(dx, dy, dz)
 
 
-S = build_parts()
+S = build_parts(fixings=False)   # small fasteners left out: too small at this scale, and they stall the hidden-line views
 EXPLODE = {"probe": (-340, -212, 500), "cable": (-187, -117, 0), "tube": (255, 159, 0), "seal": (0, 0, 350),
            "cap": (128, 80, 300), "jbox": (300, -250, -150), "board": (380, -330, 0), "fieldnode": (-255, -159, 250),
            "baro": (-298, -186, -120), "post": (0, 0, 0), "footing": (0, 0, -300),
@@ -38,10 +38,10 @@ person = human_figure(1750.0, x=350.0, y=700.0, z=0.0)
 render_all(
     parts, project="WellSense", title="Well water level logger concept", dwg_no="WLS-DWG-010",
     key_figures=["Vented 4 to 20 mA transducer, 22 mm, 0 to 10 m, 24 V loop (WLS-CAL-001)",
-                 "Resolution 0.52 mm; 12.5 mm RSS after two-point tape calibration",
+                 "Resolution 0.52 mm; 16.0 mm RSS after two-point tape calibration",
                  "Probe 30 m design case, to 60 m; borehole shortened for display",
                  "15 min readings; 38 mWh/day, 1.6 % of the FieldNode allowance",
-                 "Parts $262.40 at 30 m (target $200); $401.40 with FieldNode"],
+                 "Parts $264.40 at 30 m (target $200); $403.40 with FieldNode"],
     scale_figure=False, context=[person],
     cut=False,
     flow={"title": "data flow (estimated values, WLS-CAL-001)", "unit": "",

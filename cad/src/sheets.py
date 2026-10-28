@@ -22,6 +22,7 @@ DATE = "2026-09-25"
 DATE_P3 = "2026-09-27"
 DATE_P5 = "2026-10-02"
 DATE_P6 = "2026-10-02"
+DATE_P7 = "2026-10-25"
 Z_CUT = -700.0
 
 
@@ -100,7 +101,7 @@ def leader(x1, y1, x2, y2, text, anchor="start"):
 def main():
     from build123d import Compound
     D = derived(P)
-    s_parts = build_parts(P)
+    s_parts = build_parts(P, fixings=False)      # fasteners are listed in the BOM; too small for the GA scale
     work = ROOT / "cad" / "drawings" / "_views"
     clip = box(0, -125, (Z_CUT + 3000) / 2, 6000, 550, 3000 - Z_CUT)     # y -400..150: leaves out the pump discharge
     keep = [k for k in s_parts if k not in ("water", "apron")]
@@ -110,15 +111,16 @@ def main():
     probe = Compound(children=[s_parts[k] & lo for k in ("tube", "probe")])
     pviews = safe_project_views(probe, work / "probe", names=("front",))
     bb = surf.bounding_box()
-    s = Sheet(project="WellSense", title="General arrangement", dwg_no="WLS-DWG-001", rev="P6",
-              author="Amish Chadha", date=DATE_P6, scale=None, theme="technical",
+    s = Sheet(project="WellSense", title="General arrangement", dwg_no="WLS-DWG-001", rev="P7",
+              author="Amish Chadha", date=DATE_P7, scale=None, theme="technical",
               material="Bought-in parts per bom/bom.csv; borehole not drawn below -700. PRELIMINARY, NOT FOR FABRICATION",
               revisions=[("P1", "Preliminary GA for TRL 3 (from cad/src/model.py)", DATE, "AC"),
                          ("P2", "22 mm probe; conduit 14 added (WLS-DDR-002)", DATE, "AC"),
                          ("P3", "FieldNode panel tilt corrected to face -Y (WLS-DDR-003)", DATE_P3, "AC"),
                          ("P4", "Layout and labels tidied", DATE_P3, "AC"),
                          ("P5", "Constructable design (WLS-DDR-004)", DATE_P5, "AC"),
-                         ("P6", "Locks added, line 16 (WLS-DEC-001)", DATE_P6, "AC")])
+                         ("P6", "Locks added, line 16 (WLS-DEC-001)", DATE_P6, "AC"),
+                         ("P7", "Kit 1.9 model; tube drilled for clevis pin (D-S1)", DATE_P7, "AC")])
     s.add_ortho(views)
     k = s.scale
     c = ortho_cells(s, views)
